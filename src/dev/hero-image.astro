@@ -1,0 +1,451 @@
+---
+// Hero image composition, for export only (not linked anywhere).
+// Open /hero-image?v=desktop or /hero-image?v=mobile on the dev server, or run
+// `npm run export:hero` to screenshot both into public/images/*.webp.
+//
+// Dev-only: this file lives outside src/pages and is registered as /hero-image
+// by astro.config.mjs only when the dev server runs, so it never reaches dist/.
+import '../styles/global.css';
+
+// PLACEHOLDER DEMO STATS: replace with real numbers before launch, then re-export.
+const stats = [
+  { key: 'tr', value: '40+', label: 'languages' },
+  { key: 'mr', value: '~5 min', label: 'merge to payout' },
+  { key: 'bl', value: '$250', label: 'avg bounty' },
+];
+
+// The PR scene inside the frame (final state of the archived PrMergeVisual).
+// SAMPLE DEMO CONTENT: a fictional PR and payout.
+const diffLines = [
+  { type: 'del', num: 88, code: '  q_cmd = ik.solve(target);' },
+  { type: 'del', num: 89, code: '  arm.send(q_cmd);' },
+  { type: 'add', num: 88, code: '  q_cmd = ik.solve(target, limits);' },
+  { type: 'add', num: 89, code: '  q_cmd = smooth(q_prev, q_cmd, 0.2);' },
+  { type: 'add', num: 90, code: '  arm.send(clamp(q_cmd, limits));' },
+  { type: 'ctx', num: 91, code: '  q_prev = q_cmd;' },
+];
+const checks = ['Meets bounty requirements', 'Simulation tests pass', 'No safety regressions'];
+const payout = '+$900.00';
+
+// All positions are in px on the fixed-size canvas. Tweak here, then re-export.
+// scene.zoom: the PR scene is laid out at (frame width / zoom) px and enlarged
+// with CSS zoom, so its text stays readable once the image is shown small.
+const versions = {
+  desktop: {
+    // Card sizes follow the desktop reference: ~29% of the image wide, big number,
+    // generous left padding, text left-aligned with free space on the right.
+    w: 1200, h: 1140, num: 88, label: 30, pad: '34px 32px 36px 50px', radius: 26, labelMax: 'none',
+    pill: { x: 40, y: 20, w: 400, h: 720 },
+    circle: { size: 700 }, // anchored bottom-right
+    frame: { x: 190, y: 150, w: 740, h: 820, radius: 28 },
+    scene: { zoom: 1.95, prLeft: '17%', prRight: '15%' },
+    // bl ($250) straddles the bottom of the violet pill (pill ends at y 740).
+    cards: {
+      tr: { x: 760, y: 80, w: 350 },
+      mr: { x: 820, y: 560, w: 360 },
+      bl: { x: 16, y: 690, w: 320 },
+    },
+  },
+  mobile: {
+    // Card sizes follow the mobile reference (the 936 x 893 file).
+    w: 936, h: 893, num: 80, label: 36, pad: '28px 26px 30px 32px', radius: 24, labelMax: 'none',
+    pill: { x: 24, y: 10, w: 300, h: 560 },
+    circle: { size: 560 },
+    frame: { x: 140, y: 110, w: 560, h: 640, radius: 24 },
+    scene: { zoom: 1.5, prLeft: '21%', prRight: '17%' },
+    // bl ($250) straddles the bottom of the violet pill (pill ends at y 570).
+    cards: {
+      tr: { x: 648, y: 28, w: 270 },
+      mr: { x: 590, y: 400, w: 334 },
+      bl: { x: 16, y: 520, w: 262 },
+    },
+  },
+};
+
+// Pages are prerendered, so the server can't read ?v=. Both versions are
+// rendered and a tiny inline script keeps the requested one.
+
+const varsFor = (v: (typeof versions)['desktop']) => [
+  `--w:${v.w}px`, `--h:${v.h}px`, `--num:${v.num}px`, `--label:${v.label}px`,
+  `--pad:${v.pad}`, `--radius:${v.radius}px`, `--label-max:${v.labelMax}`,
+  `--pill-x:${v.pill.x}px`, `--pill-y:${v.pill.y}px`, `--pill-w:${v.pill.w}px`, `--pill-h:${v.pill.h}px`,
+  `--circle:${v.circle.size}px`,
+  `--frame-x:${v.frame.x}px`, `--frame-y:${v.frame.y}px`, `--frame-w:${v.frame.w}px`,
+  `--frame-h:${v.frame.h}px`, `--frame-r:${v.frame.radius}px`, `--zoom:${v.scene.zoom}`,
+  `--pr-left:${v.scene.prLeft}`, `--pr-right:${v.scene.prRight}`,
+].join(';');
+
+const canvases = (['desktop', 'mobile'] as const).map((key) => ({ key, v: versions[key], vars: varsFor(versions[key]) }));
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex" />
+    <title>Hero image export</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    />
+  </head>
+  <body>
+    {canvases.map(({ key, v, vars }) => (
+      <div class="canvas" style={vars} data-canvas data-version={key}>
+        <div class="shape shape--pill"></div>
+        <div class="shape shape--circle"></div>
+
+        <div class="frame">
+          <div class="scene">
+            <!-- Back layer: the code diff -->
+            <div class="diff">
+              <div class="diff__head">
+                <span>src/control/ik_solver.cpp</span>
+                <span><span class="diff__plus">+3</span> <span class="diff__minus">−2</span></span>
+              </div>
+              {diffLines.map((line) => (
+                <div class={`diff__line diff__line--${line.type}`}>
+                  <span class="diff__num">{line.num}</span>
+                  <span class="diff__sign">{line.type === 'del' ? '−' : line.type === 'add' ? '+' : ' '}</span>
+                  <span class="diff__code">{line.code}</span>
+                </div>
+              ))}
+            </div>
+
+            <!-- Front layer: the merged PR card. data-keep-clear = stat cards may overlap its
+                 edges and padding, but never its text or icons. -->
+            <div class="pr" data-keep-clear="PR card">
+              <div class="pr__top">
+                <span class="badge">
+                  <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                    <circle cx="4.5" cy="3.5" r="1.75"></circle>
+                    <circle cx="4.5" cy="12.5" r="1.75"></circle>
+                    <circle cx="11.5" cy="8" r="1.75"></circle>
+                    <path d="M4.5 5.25v5.5M4.5 5.25c0 2.4 2 2.75 5.25 2.75"></path>
+                  </svg>
+                  Merged
+                </span>
+                <span class="pr__num">PR #482</span>
+              </div>
+              <p class="pr__title">Fix arm jitter near joint limits</p>
+              <p class="pr__author"><span class="avatar">A</span><span class="pr__handle">amara-o</span> into main</p>
+              <div class="pr__review">
+                <p class="pr__review-title">
+                  <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M8 1.5l1.6 4.1 4.1 1.6-4.1 1.6L8 12.9 6.4 8.8 2.3 7.2l4.1-1.6z"></path></svg>
+                  AI review
+                </p>
+                <ul class="checks">
+                  {checks.map((label) => (
+                    <li class="check">
+                      <span class="check__box"><svg viewBox="0 0 16 16" width="11" height="11"><path d="M3.5 8.5l3 3 6-7"></path></svg></span>
+                      {label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <!-- Payout toast -->
+            <p class="toast" data-keep-clear="payout toast">
+              <span class="toast__icon">
+                <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12.5v-9M4 7.5l4-4 4 4"></path></svg>
+              </span>
+              <span><span class="toast__amount">{payout}</span> sent via PayPal</span>
+            </p>
+          </div>
+        </div>
+
+        {stats.map((s) => (
+          <div class="card" style={`left:${v.cards[s.key].x}px;top:${v.cards[s.key].y}px;width:${v.cards[s.key].w}px`} data-card={s.key}>
+            <span class="card__num">{s.value}</span>
+            <span class="card__label">{s.label}</span>
+          </div>
+        ))}
+      </div>
+    ))}
+    <script is:inline>
+      const want = new URLSearchParams(location.search).get('v') === 'mobile' ? 'mobile' : 'desktop';
+      document.querySelectorAll('[data-canvas]').forEach((c) => { if (c.dataset.version !== want) c.remove(); });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  /* Transparent page so the screenshot keeps an alpha channel. */
+  html body,
+  html {
+    margin: 0;
+    min-height: 0;
+    background: transparent;
+  }
+
+  .canvas {
+    position: relative;
+    width: var(--w);
+    height: var(--h);
+    overflow: hidden;
+  }
+
+  .shape { position: absolute; }
+
+  /* Tall vertical pill, top-left. */
+  .shape--pill {
+    left: var(--pill-x);
+    top: var(--pill-y);
+    width: var(--pill-w);
+    height: var(--pill-h);
+    border-radius: 999px;
+    background: var(--hero-shape-violet);
+  }
+
+  /* Large circle, bottom-right corner of the canvas. */
+  .shape--circle {
+    right: 0;
+    bottom: 0;
+    width: var(--circle);
+    height: var(--circle);
+    border-radius: 50%;
+    background: var(--hero-shape-green);
+  }
+
+  .frame {
+    position: absolute;
+    left: var(--frame-x);
+    top: var(--frame-y);
+    width: var(--frame-w);
+    height: var(--frame-h);
+    border-radius: var(--frame-r);
+    overflow: hidden;
+  }
+
+  /* ---------- PR scene inside the frame ----------
+     Laid out in small "design" pixels, then enlarged with zoom. Unlike
+     transform: scale, zoom lays the text out again at the bigger size, so it
+     stays sharp in the screenshot. */
+  .frame {
+    background: linear-gradient(165deg, var(--surface) 10%, var(--merged-tint));
+  }
+
+  .scene {
+    position: relative;
+    zoom: var(--zoom);
+    width: calc(var(--frame-w) / var(--zoom));
+    height: calc(var(--frame-h) / var(--zoom));
+    font-family: var(--font-body);
+    color: var(--ink);
+  }
+
+  .diff {
+    position: absolute;
+    top: 7%;
+    left: 6%;
+    width: 84%;
+    transform: rotate(-3deg);
+    transform-origin: top left;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: var(--font-code);
+    font-size: 9.5px;
+    line-height: 1.8;
+    box-shadow: 0 12px 28px -16px color-mix(in srgb, var(--ink) 30%, transparent);
+  }
+
+  .diff__head {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 10px;
+    background: var(--canvas);
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-muted);
+  }
+
+  .diff__plus { color: var(--payout); }
+  .diff__minus { color: var(--removed); }
+
+  .diff__line {
+    display: grid;
+    grid-template-columns: 2.4em 1.3em minmax(0, 1fr);
+    white-space: pre;
+  }
+
+  .diff__num { padding-right: 0.5em; text-align: right; color: var(--ink-muted); }
+  .diff__code { overflow: hidden; }
+  .diff__line--del { background: var(--removed-tint); }
+  .diff__line--del .diff__sign { color: var(--removed); }
+  .diff__line--add { background: var(--payout-tint); }
+  .diff__line--add .diff__sign { color: var(--payout); }
+
+  /* Desktop: the PR card sits below the top of the diff and stops short of the
+     frame's right edge, where the "~5 min" card overlaps. */
+  .pr {
+    position: absolute;
+    left: var(--pr-left);
+    right: var(--pr-right);
+    top: 31%;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow:
+      0 24px 48px -24px color-mix(in srgb, var(--ink) 40%, transparent),
+      0 2px 6px color-mix(in srgb, var(--ink) 6%, transparent);
+  }
+
+  .pr__top { display: flex; align-items: center; justify-content: space-between; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--merged);
+    color: var(--surface);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .pr__num { font-family: var(--font-code); font-size: 10.5px; color: var(--ink-muted); }
+
+  .pr__title {
+    margin-top: 10px;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .pr__author {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--ink-muted);
+  }
+
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--merged-tint);
+    color: var(--merged);
+    font-family: var(--font-display);
+    font-size: 9.5px;
+    font-weight: 700;
+  }
+
+  .pr__handle { font-family: var(--font-code); font-weight: 500; color: var(--ink); }
+
+  .pr__review { margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--line); }
+
+  .pr__review-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .pr__review-title svg { color: var(--merged); }
+
+  .checks { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 7px; }
+
+  .check { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+
+  .check__box {
+    display: grid;
+    place-items: center;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--payout-tint);
+    color: var(--payout);
+  }
+
+  .check__box path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .toast {
+    position: absolute;
+    right: 5%;
+    bottom: 3.5%;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 12px 7px 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 11.5px;
+    white-space: nowrap;
+    box-shadow: 0 14px 28px -14px color-mix(in srgb, var(--ink) 40%, transparent);
+  }
+
+  .toast__icon {
+    display: grid;
+    place-items: center;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: var(--payout);
+    color: var(--surface);
+  }
+
+  /* Mobile: no room for the diff, so the PR card moves up and the diff is dropped. */
+  [data-version='mobile'] .diff { display: none; }
+  [data-version='mobile'] .pr { top: 9%; }
+  [data-version='mobile'] .toast { right: 6%; bottom: 5%; }
+
+  .toast__amount { font-family: var(--font-code); font-weight: 600; color: var(--payout); }
+
+  /* Glass stat card. */
+  .card {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: var(--pad);
+    border-radius: var(--radius);
+    background: var(--glass-surface);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--line);
+    box-shadow:
+      0 2px 6px color-mix(in srgb, var(--ink) 6%, transparent),
+      0 24px 48px -20px color-mix(in srgb, var(--ink) 28%, transparent);
+  }
+
+  .card__num {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--num);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--merged);
+    white-space: nowrap;
+  }
+
+  .card__label {
+    max-width: var(--label-max);
+    font-family: var(--font-body);
+    font-size: var(--label);
+    line-height: 1.25;
+    color: var(--ink-muted);
+  }
+</style>

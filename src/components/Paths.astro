@@ -1,0 +1,935 @@
+---
+// Paths: contributor (Earn), learner (Grow) and maintainer (Ship) paths.
+//
+// Three layouts from one set of markup:
+//  - Desktop (>= 1024px) with JS and motion allowed: `.is-pinned`. The section is
+//    300vh tall; a sticky wrapper holds the grid while scroll drives the active path.
+//  - Desktop with reduced motion (or no JS): the three paths stacked as static rows.
+//  - Below 1024px: one media card above a scroll-snap carousel of content cards.
+
+const paths = [
+  {
+    key: 'earn',
+    num: '01',
+    label: 'Earn',
+    caption: 'Earning on merge.',
+    sub: 'Paid bounties',
+    summary: 'Example payout history: three merged pull requests paid $400, $150 and $900 via PayPal.',
+    quote: "I pick up robotics bounties between client projects. It's the most predictable income I have.",
+    who: 'Kenji T. · Japan · Robotics, C++',
+    body: 'You already know how to ship. Earn turns your skills into a payout for every merged pull request. No proposals, no invoices, no chasing clients.',
+  },
+  {
+    key: 'grow',
+    num: '02',
+    label: 'Grow',
+    caption: 'Learning in public.',
+    sub: 'Portfolio-building bounties',
+    summary: 'Example AI review on a small fix to a robot’s obstacle avoidance, asking for one more test before the bounty requirements are met.',
+    quote: 'Every AI review taught me something. Six months of merged simulation tests got me my first robotics job.',
+    who: 'Sofia R. · Mexico · Robotics, Python',
+    body: 'Start with beginner-friendly bounties and get AI feedback on every pull request. Build a public record of merged work that hiring managers can actually check.',
+  },
+  {
+    key: 'ship',
+    num: '03',
+    label: 'Ship',
+    caption: 'Clearing the backlog.',
+    sub: 'For maintainers and startups',
+    summary: 'Example bounty for adding timeouts to AI agent tool calls: AI suggested $280 to $360, it was posted at $320, and a contributor countered at $340.',
+    quote: 'The AI suggested a fair price, a contributor countered, and the fix shipped in two days.',
+    who: 'Daniel K. · Germany · CTO, AI agents startup',
+    body: 'Turn issues into bounties. AI suggests a fair price from each issue’s complexity, reviews every pull request against your brief, and payouts go out via PayPal only when you merge.',
+  },
+];
+
+const payouts = [
+  { pr: 'PR #512 merged', amount: '+$400.00' },
+  { pr: 'PR #498 merged', amount: '+$150.00' },
+  { pr: 'PR #476 merged', amount: '+$900.00' },
+];
+
+const diff = [
+  { type: 'ctx', code: 'scan = lidar.latest()' },
+  { type: 'add', code: 'if scan is None:' },
+  { type: 'add', code: '    return Stop()' },
+  { type: 'ctx', code: 'return plan_path(scan)' },
+];
+
+const total = String(paths.length).padStart(2, '0');
+---
+
+<section class="paths section section--dark" id="paths" aria-labelledby="paths-title" data-paths data-active="0">
+  <div class="paths__pin">
+    <div class="paths__grid">
+      <div class="paths__intro">
+        <h2 class="paths__title" id="paths-title">
+          <span>One platform.</span>
+          <span>Three paths.</span>
+        </h2>
+        <p class="paths__lede">
+          Pick the one that fits where you are. Every path ends with merged code and a fair payout.
+        </p>
+      </div>
+
+      <!-- Row backgrounds: only used in the static (stacked) desktop layout. -->
+      <div class="paths__bgs" aria-hidden="true">
+        {paths.map((p, i) => (
+          <div class={`paths__rowbg paths__rowbg--${p.key}`} style={`--row: ${i + 2}`}></div>
+        ))}
+      </div>
+
+      <!-- Middle column: media cards (vignettes are decorative; each has a text summary). -->
+      <div class="paths__media">
+        {paths.map((p, i) => (
+          <div class:list={['media', { 'is-active': i === 0 }]} style={`--row: ${i + 2}`} data-media>
+            <p class="visually-hidden">{p.summary}</p>
+            <div class="media__stage" aria-hidden="true">
+              {p.key === 'earn' && (
+                <div class="vig">
+                  <div class="vig__head">
+                    <span>Payout history</span>
+                    <span class="vig__tag">via PayPal</span>
+                  </div>
+                  <ul class="vig__rows">
+                    {payouts.map((row) => (
+                      <li class="vig__row">
+                        <span class="vig__pr">{row.pr}</span>
+                        <span class="vig__amount">{row.amount}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {p.key === 'grow' && (
+                <div class="vig">
+                  <div class="vig__head vig__head--code">
+                    <span>nav/avoid.py</span>
+                    <span class="vig__plus">+2</span>
+                  </div>
+                  <div class="vig__diff">
+                    {diff.map((line) => (
+                      <div class:list={['vig__line', { 'vig__line--add': line.type === 'add' }]}>
+                        <span class="vig__sign">{line.type === 'add' ? '+' : ' '}</span>
+                        <span>{line.code}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div class="vig__bubble">
+                    <span class="vig__bubble-label">AI review</span>
+                    <p>Nice fix. Add a test for the dropped-frame case and this meets the bounty.</p>
+                  </div>
+                </div>
+              )}
+              {p.key === 'ship' && (
+                <div class="vig">
+                  <p class="vig__title">Add timeouts to agent tool calls</p>
+                  <p class="vig__ai">
+                    AI suggested price: <strong>$280–$360</strong> based on complexity
+                  </p>
+                  <div class="vig__posted">
+                    <span>Bounty posted</span>
+                    <strong>$320</strong>
+                  </div>
+                  <div class="vig__counter">
+                    <span class="vig__avatar">A</span>
+                    <span class="vig__counter-text"><b>amara-o</b> countered $340</span>
+                    <span class="vig__chips">
+                      <span class="vig__chip vig__chip--accept">Accept</span>
+                      <span class="vig__chip">Decline</span>
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div class="media__text">
+              <p class="media__caption">{p.caption}</p>
+              <p class="media__sub">{p.sub}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Right column: content cards. On tablet/mobile this is the swipeable carousel.
+           Testimonials below are SAMPLE DEMO CONTENT, not real customers. -->
+      <div
+        class="paths__track"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Fairmerge paths"
+        data-track
+      >
+        {paths.map((p, i) => (
+          <article
+            class:list={['pcard', { 'is-active': i === 0 }]}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${paths.length}: ${p.label}`}
+            style={`--row: ${i + 2}`}
+            data-card
+            data-label={p.label}
+          >
+            <div class="pcard__meta anim" style="--d: 0ms">
+              <span class="pcard__num">{p.num}</span>
+              <span class="pcard__line" aria-hidden="true"></span>
+              <span class="pcard__label">{p.label}</span>
+            </div>
+            <h3 class="pcard__title anim" style="--d: 80ms">{p.label}</h3>
+            <blockquote class="pcard__quote anim" style="--d: 160ms">
+              <svg class="pcard__mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M4 18v-5.5C4 8.4 6.4 6 10 5.5V8c-2 .5-3 1.8-3 4h3v6H4zm10 0v-5.5c0-4.1 2.4-6.5 6-7V8c-2 .5-3 1.8-3 4h3v6h-6z"></path>
+              </svg>
+              <p>{p.quote}</p>
+            </blockquote>
+            <p class="pcard__who anim" style="--d: 220ms">{p.who}</p>
+            <p class="pcard__body anim" style="--d: 300ms">{p.body}</p>
+          </article>
+        ))}
+      </div>
+
+      <div class="paths__controls" data-controls hidden>
+        <button class="paths__btn" type="button" aria-label="Previous path" disabled data-prev>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"></path></svg>
+        </button>
+        <!-- Segment buttons are rendered here by the shared carousel script. -->
+        <div class="paths__segs" data-segs></div>
+        <p class="paths__counter" aria-hidden="true">
+          <span data-counter>01</span> / {total}
+        </p>
+        <button class="paths__btn" type="button" aria-label="Next path" data-next>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"></path></svg>
+        </button>
+      </div>
+
+      <p class="visually-hidden" aria-live="polite" data-live></p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { createCarousel } from '../scripts/carousel.js';
+
+  const section = document.querySelector<HTMLElement>('[data-paths]');
+
+  if (section) {
+    const track = section.querySelector<HTMLElement>('[data-track]')!;
+    const cards = [...section.querySelectorAll<HTMLElement>('[data-card]')];
+    const medias = [...section.querySelectorAll<HTMLElement>('[data-media]')];
+    const counter = section.querySelector<HTMLElement>('[data-counter]')!;
+    const controls = section.querySelector<HTMLElement>('[data-controls]')!;
+
+    const wide = window.matchMedia('(min-width: 1024px)');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const count = cards.length;
+    let active = -1;
+
+    type Mode = 'pinned' | 'static' | 'carousel';
+    const mode = (): Mode => (wide.matches ? (reduceMotion.matches ? 'static' : 'pinned') : 'carousel');
+
+    // ---------- Shared: show path i (background, media card, content card, counter) ----------
+    const setActive = (i: number) => {
+      if (i === active) return;
+      active = i;
+      section.dataset.active = String(i); // drives the background color in CSS
+      cards.forEach((c, n) => c.classList.toggle('is-active', n === i));
+      medias.forEach((m, n) => m.classList.toggle('is-active', n === i));
+      counter.textContent = String(i + 1).padStart(2, '0');
+    };
+
+    // ---------- Desktop: scroll position -> active path + progress ----------
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const range = section.offsetHeight - window.innerHeight; // the scroll distance while pinned
+      const scrolled = -section.getBoundingClientRect().top;
+      const p = Math.min(Math.max(scrolled / range, 0), 1); // 0..1 across the whole section
+      const scaled = p * count; // 0..3
+      const i = Math.min(count - 1, Math.floor(scaled));
+      setActive(i);
+      section.style.setProperty('--progress', Math.min(scaled - i, 1).toFixed(4));
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+
+    // ---------- Tablet/mobile: the shared carousel (one card per page) ----------
+    const carousel = createCarousel({
+      track,
+      slides: cards,
+      prev: section.querySelector<HTMLButtonElement>('[data-prev]')!,
+      next: section.querySelector<HTMLButtonElement>('[data-next]')!,
+      indicators: section.querySelector<HTMLElement>('[data-segs]')!,
+      indicatorClass: 'paths__seg',
+      indicatorLabel: (page) => `Go to path ${page + 1}: ${cards[page].dataset.label}`,
+      perPage: { 0: 1 },
+      live: section.querySelector<HTMLElement>('[data-live]')!,
+      announce: ({ first }) => `Path ${first + 1} of ${count}: ${cards[first].dataset.label}`,
+      onChange: ({ first }) => setActive(first),
+      isEnabled: () => mode() === 'carousel',
+    });
+
+    // ---------- Switch layouts when the viewport or motion setting changes ----------
+    const applyMode = () => {
+      const m = mode();
+      section.classList.toggle('is-pinned', m === 'pinned');
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      controls.hidden = m !== 'carousel';
+
+      if (m === 'carousel') track.tabIndex = 0;
+      else track.removeAttribute('tabindex');
+
+      if (m === 'pinned') {
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        update();
+      } else {
+        section.style.removeProperty('--progress');
+        if (m === 'carousel') {
+          active = -1;
+          carousel.reset(); // first card, segments rebuilt, buttons updated
+        } else {
+          setActive(0);
+        }
+      }
+    };
+
+    applyMode();
+    wide.addEventListener('change', applyMode);
+    reduceMotion.addEventListener('change', applyMode);
+  }
+</script>
+
+<style>
+  /* ==========================================================================
+     Base = tablet/mobile carousel layout (< 1024px)
+     ========================================================================== */
+  .paths {
+    --path-bg: var(--path-earn-bg);
+    --edge: max(var(--content-pad), calc((100% - var(--content-width)) / 2 + var(--content-pad)));
+    position: relative;
+    --section-bg: var(--path-bg);
+    padding-block: clamp(64px, 10vw, 112px);
+    color: var(--surface);
+    transition: background-color 600ms ease;
+  }
+
+  .paths[data-active='1'] { --path-bg: var(--path-grow-bg); }
+  .paths[data-active='2'] { --path-bg: var(--path-ship-bg); }
+
+  .paths__grid {
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--content-pad);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(28px, 5vw, 40px);
+  }
+
+  /* ---------- Intro ---------- */
+  .paths__title {
+    color: var(--surface);
+    font-weight: 600;
+  }
+
+  .paths__title span { display: block; }
+
+  .paths__lede {
+    margin-top: 16px;
+    max-width: 28rem;
+    font-size: 1.0625rem;
+    color: var(--on-dark-muted);
+  }
+
+  .paths__bgs { display: none; }
+
+  /* ---------- Media cards (stacked; only the active one shows) ---------- */
+  .paths__media { display: grid; }
+
+  .media {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: clamp(16px, 2vw, 24px);
+    background: var(--on-dark-surface);
+    border: 1px solid var(--on-dark-line);
+    border-radius: var(--radius-lg);
+    transition: opacity 400ms ease;
+  }
+
+  .media:not(.is-active) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .media__stage {
+    flex: 1;
+    display: grid;
+    align-items: center;
+    transition:
+      opacity 500ms ease,
+      transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      clip-path 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    clip-path: inset(0 0 0 0 round 12px);
+  }
+
+  .media:not(.is-active) .media__stage {
+    opacity: 0;
+    transform: scale(0.96);
+    clip-path: inset(0 0 100% 0 round 12px);
+  }
+
+  .media__caption,
+  .media__sub {
+    transition: opacity 400ms ease, transform 400ms ease;
+  }
+
+  .media.is-active .media__caption { transition-delay: 250ms; }
+  .media.is-active .media__sub { transition-delay: 370ms; }
+
+  .media:not(.is-active) .media__caption,
+  .media:not(.is-active) .media__sub {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .media__caption {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--surface);
+  }
+
+  .media__sub {
+    margin-top: 4px;
+    font-size: 0.9375rem;
+    color: var(--on-dark-muted);
+  }
+
+  /* ---------- Vignettes: small light "app" panels ---------- */
+  .vig {
+    padding: 14px 16px;
+    background: var(--surface);
+    border-radius: 12px;
+    color: var(--ink);
+    font-size: 0.875rem;
+    box-shadow: 0 20px 40px -24px color-mix(in srgb, var(--ink) 80%, transparent);
+  }
+
+  .vig__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    font-weight: 600;
+  }
+
+  .vig__head--code {
+    font-family: var(--font-code);
+    font-weight: 500;
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+  }
+
+  .vig__tag {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--canvas);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+  }
+
+  .vig__plus { color: var(--payout); }
+
+  .vig__rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .vig__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .vig__row:last-child { border-bottom: 0; padding-bottom: 0; }
+
+  .vig__pr { color: var(--ink-muted); }
+
+  .vig__amount {
+    font-family: var(--font-code);
+    font-weight: 600;
+    color: var(--payout);
+  }
+
+  .vig__diff {
+    margin-top: 10px;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    line-height: 1.9;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .vig__line {
+    display: grid;
+    grid-template-columns: 1.6em minmax(0, 1fr);
+    padding-right: 8px;
+    white-space: pre;
+  }
+
+  .vig__line > span:last-child { overflow: hidden; }
+  .vig__sign { text-align: center; color: var(--ink-muted); }
+  .vig__line--add { background: var(--payout-tint); }
+  .vig__line--add .vig__sign { color: var(--payout); }
+
+  .vig__bubble {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--merged-tint);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  .vig__bubble-label {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--merged);
+  }
+
+  .vig__title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .vig__ai {
+    margin-top: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--merged-tint);
+    font-size: 0.8125rem;
+    color: var(--ink);
+  }
+
+  .vig__ai strong { color: var(--merged); }
+
+  .vig__posted {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    padding-block: 8px;
+    border-block: 1px solid var(--line);
+    color: var(--ink-muted);
+  }
+
+  .vig__posted strong {
+    font-family: var(--font-code);
+    color: var(--ink);
+  }
+
+  .vig__counter {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+  }
+
+  .vig__avatar {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--merged-tint);
+    color: var(--merged);
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  .vig__counter-text b {
+    font-family: var(--font-code);
+    font-weight: 500;
+  }
+
+  .vig__chips {
+    margin-left: auto;
+    display: flex;
+    gap: 6px;
+  }
+
+  .vig__chip {
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+
+  .vig__chip--accept {
+    border-color: transparent;
+    background: var(--payout-tint);
+    color: var(--payout);
+  }
+
+  /* ---------- Content cards: carousel by default ---------- */
+  .paths__track {
+    position: relative;
+    display: flex;
+    gap: 14px;
+    margin-inline: calc(-1 * var(--content-pad));
+    padding: 4px var(--content-pad);
+    scroll-padding-inline: var(--content-pad);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .paths__track::-webkit-scrollbar { display: none; }
+
+  .paths__track:focus-visible {
+    outline: 3px solid var(--merged-tint);
+    outline-offset: -3px;
+    border-radius: var(--radius-sm);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .paths__track[tabindex] { cursor: grab; }
+    .paths__track.is-dragging {
+      cursor: grabbing;
+      user-select: none;
+      scroll-snap-type: none;
+    }
+  }
+
+  .pcard {
+    flex: 0 0 min(86%, 440px);
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(20px, 2.4vw, 32px);
+    background: var(--on-dark-surface);
+    border: 1px solid var(--on-dark-line);
+    border-radius: var(--radius-lg);
+  }
+
+  .pcard__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--on-dark-line);
+    font-size: 0.875rem;
+  }
+
+  .pcard__num {
+    font-family: var(--font-code);
+    font-weight: 500;
+    color: var(--surface);
+  }
+
+  .pcard__label { color: var(--surface); }
+
+  /* The thin line: a track with a white fill that can grow (scaleX) as a progress bar. */
+  .pcard__line {
+    position: relative;
+    flex: 1;
+    height: 1px;
+    overflow: hidden;
+    background: var(--on-dark-line);
+  }
+
+  .pcard__line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--surface);
+    transform-origin: left center;
+    transform: scaleX(1);
+  }
+
+  .pcard__title {
+    margin-top: 20px;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 1.9rem + 2.4vw, 4rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--surface);
+  }
+
+  .pcard__quote {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+    color: var(--surface);
+  }
+
+  /* Light violet: reads on all three path backgrounds (--merged was ~1.9:1). */
+  .pcard__mark { color: var(--merged-tint); margin-top: 2px; }
+
+  .pcard__who {
+    margin-top: 10px;
+    padding-left: 34px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--on-dark-line);
+    font-size: 0.8125rem;
+    color: var(--on-dark-muted);
+  }
+
+  .pcard__body {
+    margin-top: 20px;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--on-dark-muted);
+  }
+
+  /* ---------- Carousel controls ---------- */
+  .paths__controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .paths__controls[hidden] { display: none; }
+
+  .paths__btn {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--on-dark-line);
+    border-radius: 50%;
+    background: var(--on-dark-surface);
+    color: var(--surface);
+  }
+
+  .paths__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .paths__segs {
+    flex: 1;
+    display: flex;
+    gap: 6px;
+  }
+
+  /* Segments are created by the carousel script, hence :global(). */
+  .paths__segs :global(.paths__seg) {
+    position: relative;
+    flex: 1;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .paths__segs :global(.paths__seg)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 3px;
+    margin-top: -1.5px;
+    border-radius: 999px;
+    background: var(--on-dark-control);
+    transition: background-color 300ms ease;
+  }
+
+  .paths__segs :global(.paths__seg[aria-current='true'])::before { background: var(--surface); }
+
+  .paths__counter {
+    flex: none;
+    font-family: var(--font-code);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--on-dark-muted);
+  }
+
+  .paths__counter span { color: var(--surface); }
+
+  /* ==========================================================================
+     Desktop default (>= 1024px): static stacked rows.
+     Used with reduced motion, and before/without JS.
+     ========================================================================== */
+  @media (min-width: 1024px) {
+    .paths {
+      padding-block: 0;
+      --section-bg: var(--ink);
+      transition: none;
+    }
+
+    .paths__grid {
+      max-width: none;
+      padding-inline: 0;
+      gap: 0;
+      grid-template-columns:
+        [full-start] var(--edge)
+        [content-start] minmax(0, 1fr) clamp(24px, 3vw, 48px) minmax(0, 1fr)
+        [content-end] var(--edge) [full-end];
+    }
+
+    .paths__intro {
+      grid-column: content;
+      grid-row: 1;
+      padding-block: clamp(80px, 8vw, 112px) 56px;
+    }
+
+    .paths__bgs,
+    .paths__media,
+    .paths__track { display: contents; }
+
+    .paths__rowbg {
+      grid-column: full;
+      grid-row: var(--row);
+    }
+
+    .paths__rowbg--earn { background: var(--path-earn-bg); }
+    .paths__rowbg--grow { background: var(--path-grow-bg); }
+    .paths__rowbg--ship { background: var(--path-ship-bg); }
+
+    .media,
+    .pcard {
+      grid-row: var(--row);
+      margin-block: 56px;
+    }
+
+    .media { grid-column: 2; }
+    .pcard { grid-column: 4; }
+
+    /* Everything visible, nothing animated. */
+    .media:not(.is-active),
+    .media:not(.is-active) .media__stage,
+    .media:not(.is-active) .media__caption,
+    .media:not(.is-active) .media__sub {
+      opacity: 1;
+      transform: none;
+      clip-path: none;
+      pointer-events: auto;
+    }
+
+    .paths__controls { display: none; }
+  }
+
+  /* ==========================================================================
+     Desktop pinned (>= 1024px, JS + motion allowed): `.is-pinned` added by script.
+     ========================================================================== */
+  @media (min-width: 1024px) {
+    .paths.is-pinned {
+      height: 300vh; /* ~100vh of scrolling per path */
+      --section-bg: var(--path-bg);
+      transition: background-color 600ms ease;
+    }
+
+    .is-pinned .paths__pin {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .is-pinned .paths__grid {
+      width: 100%;
+      max-width: var(--content-width);
+      margin-inline: auto;
+      padding-inline: var(--content-pad);
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas: 'intro media card';
+      align-items: center;
+      gap: clamp(24px, 3vw, 48px);
+    }
+
+    .is-pinned .paths__intro {
+      grid-area: intro;
+      padding-block: 0;
+    }
+
+    .is-pinned .paths__bgs { display: none; }
+
+    .is-pinned .paths__media {
+      grid-area: media;
+      display: grid;
+    }
+
+    .is-pinned .paths__track {
+      grid-area: card;
+      display: grid;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+    }
+
+    .is-pinned .media,
+    .is-pinned .pcard {
+      grid-area: 1 / 1;
+      margin: 0;
+    }
+
+    .is-pinned .media:not(.is-active) { opacity: 0; pointer-events: none; }
+
+    .is-pinned .media:not(.is-active) .media__stage {
+      opacity: 0;
+      transform: scale(0.96);
+      clip-path: inset(0 0 100% 0 round 12px);
+    }
+
+    .is-pinned .media:not(.is-active) .media__caption,
+    .is-pinned .media:not(.is-active) .media__sub {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    /* Card swap: outgoing pieces fade at once, incoming pieces stagger in (--d). */
+    .is-pinned .pcard { transition: opacity 400ms ease; }
+    .is-pinned .pcard:not(.is-active) { opacity: 0; pointer-events: none; }
+
+    .is-pinned .anim {
+      transition:
+        opacity 350ms ease,
+        transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    .is-pinned .pcard.is-active .anim { transition-delay: var(--d, 0ms); }
+
+    .is-pinned .pcard:not(.is-active) .anim {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    /* Progress line: the active card's line follows scroll progress (0..1). */
+    .is-pinned .pcard .pcard__line::after { transform: scaleX(0); }
+    .is-pinned .pcard.is-active .pcard__line::after {
+      transform: scaleX(var(--progress, 0));
+    }
+  }
+</style>

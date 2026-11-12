@@ -1,0 +1,473 @@
+---
+// Contributors: quote-led testimonial cards in a scroll-snap carousel.
+// 3 cards per view on desktop, 2 on tablet, 1 + a peek on mobile. Carousel
+// behaviour comes from the shared src/scripts/carousel.js (also used by Paths).
+import fs from 'node:fs';
+import path from 'node:path';
+import Icon from './ui/Icon.astro';
+
+// SAMPLE DEMO CONTRIBUTORS: fictional people, repos and numbers, not real users.
+// Personas match the hero testimonials and the Paths section (Amara and Kenji:
+// robotics, C++; Sofia: robotics, Python; Priya: agent framework maintainer).
+const contributors = [
+  {
+    repo: 'openarm/gripper-sim',
+    stat: 'Merged in 3 hrs',
+    quote: "I've debugged flaky robot sims for years. An AI tool wrote the fix in minutes, but knowing the gripper raced the physics step was the real work.",
+    name: 'Amara O.',
+    role: 'Robotics engineer · Nigeria',
+    avatar: 'amara.webp',
+  },
+  {
+    repo: 'orbitkit/propagator',
+    stat: 'Merged in 5 hrs',
+    quote: "The issue sat open for two months. It was a batching bottleneck I'd fixed in flight software before. PR up before lunch, paid by dinner.",
+    name: 'Lena W.',
+    role: 'Flight software engineer · Germany',
+    avatar: 'lena.webp',
+  },
+  {
+    repo: 'groundlink/telemetry',
+    stat: 'Merged in 1 day',
+    quote: "I'm no Go expert, but I've decoded satellite beacons for years. AI helped with the syntax. I knew what those AX.25 frames actually meant.",
+    name: 'Tomás R.',
+    role: 'Embedded developer · Argentina',
+    avatar: 'tomas.webp',
+  },
+  {
+    repo: 'openarm/motion-planner',
+    stat: 'Merged same day',
+    quote: 'No proposal, no invoice. I picked the arm-jitter bounty, shipped the smoothing fix, and the payout landed minutes after the merge.',
+    name: 'Kenji T.',
+    role: 'Robotics developer · Japan',
+    avatar: 'kenji.webp',
+  },
+  {
+    repo: 'relaykit/agents',
+    stat: '30 issues closed',
+    quote: "I don't care if a PR was written with AI. I care that it solves the issue, and the review checks exactly that.",
+    name: 'Priya S.',
+    role: 'Agent framework maintainer · India',
+    avatar: 'priya.webp',
+  },
+  {
+    repo: 'trailbot/nav-stack',
+    stat: '18 PRs merged',
+    quote: 'Every review told me what was missing and why. My merged simulation tests became the portfolio that got me interviews.',
+    name: 'Sofia R.',
+    role: 'Junior robotics developer · Mexico',
+    avatar: 'sofia.webp',
+  },
+];
+
+// Use the photo if it exists in public/images/contributors/, otherwise show
+// the person's initial in a plain circle, so the layout never breaks.
+const avatarDir = path.join(process.cwd(), 'public/images/contributors');
+const avatarSrc = (file: string) =>
+  fs.existsSync(path.join(avatarDir, file)) ? `/images/contributors/${file}` : null;
+---
+
+<section class="contrib section" id="contributors" aria-labelledby="contrib-title" data-contrib>
+  <div class="contrib__inner">
+    <h2 class="contrib__title" id="contrib-title">Expertise gets merged. However you write the code.</h2>
+    <p class="contrib__lede">
+      Use the AI tools you like. What gets you paid is understanding the problem: a pull request
+      that truly solves the issue gets reviewed and merged fast.
+    </p>
+
+    <!-- Shown by the script; without JS the track still scrolls and snaps. -->
+    <div class="contrib__nav" data-nav hidden>
+      <button class="contrib__btn" type="button" aria-label="Previous stories" data-prev>
+        <Icon name="chevron-left" size={20} />
+      </button>
+      <div class="contrib__dots" data-dots></div>
+      <button class="contrib__btn" type="button" aria-label="Next stories" data-next>
+        <Icon name="chevron-right" size={20} />
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="contrib__track"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="Contributor stories"
+    tabindex="0"
+    data-track
+  >
+    {contributors.map((c, i) => {
+      const src = avatarSrc(c.avatar);
+      return (
+        <article
+          class="qcard"
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`${i + 1} of ${contributors.length}: ${c.name}`}
+          data-slide
+        >
+          <div class="qcard__top">
+            <span class="qcard__repo">{c.repo}</span>
+            <span class="qcard__stat">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false">
+                <circle cx="4.5" cy="3.5" r="1.75"></circle>
+                <circle cx="4.5" cy="12.5" r="1.75"></circle>
+                <circle cx="11.5" cy="8" r="1.75"></circle>
+                <path d="M4.5 5.25v5.5M4.5 5.25c0 2.4 2 2.75 5.25 2.75"></path>
+              </svg>
+              {c.stat}
+            </span>
+          </div>
+
+          <blockquote class="qcard__quote">
+            <p>“{c.quote}”</p>
+          </blockquote>
+
+          <footer class="qcard__foot">
+            <div class="qcard__person">
+              {src ? (
+                <img class="qcard__avatar" src={src} alt={c.name} width="44" height="44" loading="lazy" decoding="async" />
+              ) : (
+                <span class="qcard__avatar qcard__avatar--initial" role="img" aria-label={c.name}>
+                  {c.name.charAt(0)}
+                </span>
+              )}
+              <div>
+                <p class="qcard__name">{c.name}</p>
+                {/* Role and country on their own lines, so every card breaks the same way. */}
+                <p class="qcard__role">
+                  {c.role.split(' · ').map((part, n) => (
+                    <span class="qcard__role-part">{n > 0 && <span class="visually-hidden"> · </span>}{part}</span>
+                  ))}
+                </p>
+              </div>
+            </div>
+            <a class="qcard__link" href="#">
+              View PR<span class="visually-hidden"> by {c.name}</span>
+              <Icon name="arrow-right" size={14} />
+            </a>
+          </footer>
+        </article>
+      );
+    })}
+  </div>
+
+  <p class="visually-hidden" aria-live="polite" data-live></p>
+</section>
+
+<script>
+  import { createCarousel } from '../scripts/carousel.js';
+
+  const section = document.querySelector<HTMLElement>('[data-contrib]');
+
+  if (section) {
+    section.querySelector<HTMLElement>('[data-nav]')!.hidden = false;
+
+    createCarousel({
+      track: section.querySelector<HTMLElement>('[data-track]')!,
+      slides: [...section.querySelectorAll<HTMLElement>('[data-slide]')],
+      prev: section.querySelector<HTMLButtonElement>('[data-prev]')!,
+      next: section.querySelector<HTMLButtonElement>('[data-next]')!,
+      indicators: section.querySelector<HTMLElement>('[data-dots]')!,
+      indicatorClass: 'contrib__dot',
+      indicatorLabel: (page) => `Go to page ${page + 1}`,
+      perPage: { 0: 1, 768: 2, 1024: 3 }, // cards per page: mobile 1, tablet 2, desktop 3
+      live: section.querySelector<HTMLElement>('[data-live]')!,
+      announce: ({ first, last, count }) =>
+        first === last
+          ? `Showing story ${first + 1} of ${count}`
+          : `Showing stories ${first + 1} to ${last + 1} of ${count}`,
+    });
+  }
+</script>
+
+<style>
+  .contrib {
+    --section-bg: var(--surface);
+    /* Left edge of the page container, also when the viewport is wider than it. */
+    --edge: max(var(--content-pad), calc((100% - var(--content-width)) / 2 + var(--content-pad)));
+    --gap: 16px;
+    padding-block: clamp(64px, 10vw, 128px);
+    color: var(--ink);
+  }
+
+  @media (min-width: 768px) {
+    .contrib { --gap: 20px; }
+  }
+
+  .contrib__inner {
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--content-pad);
+  }
+
+  .contrib__title {
+    max-width: 22ch;
+    font-weight: 600;
+  }
+
+  .contrib__lede {
+    margin-top: 16px;
+    max-width: 40rem;
+    font-size: 1.0625rem;
+    color: var(--ink-muted);
+  }
+
+  /* ---------- Navigation: prev, dots, next ---------- */
+  .contrib__nav {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .contrib__nav[hidden] { display: none; }
+
+  .contrib__btn {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--ink);
+    transition: border-color 160ms ease, color 160ms ease;
+  }
+
+  .contrib__btn:hover:not(:disabled),
+  .contrib__btn:focus-visible {
+    border-color: var(--merged);
+    color: var(--merged);
+  }
+
+  .contrib__btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  .contrib__dots {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Dots are created by the script, so they need :global() to get these styles.
+     24px hit area; the visible dot is drawn with ::before. */
+  .contrib__dots :global(.contrib__dot) {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .contrib__dots :global(.contrib__dot)::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--ink-muted);
+    transition: width 200ms ease, background-color 200ms ease;
+  }
+
+  .contrib__dots :global(.contrib__dot[aria-current='true']) { width: 36px; }
+
+  .contrib__dots :global(.contrib__dot[aria-current='true'])::before {
+    width: 24px;
+    background: var(--merged);
+  }
+
+  /* ---------- Track ----------
+     Full-bleed scroll container; the padding lines the first card up with the
+     heading, and scroll-padding makes snapping use that same edge. */
+  .contrib__track {
+    position: relative; /* cards' offsetLeft is measured from here */
+    container-type: inline-size;
+    display: flex;
+    gap: var(--gap);
+    margin-top: 40px;
+    padding: 8px var(--edge) 24px; /* bottom room for the hover shadow */
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--edge);
+    scrollbar-width: none;
+  }
+
+  .contrib__track::-webkit-scrollbar { display: none; }
+
+  .contrib__track:focus-visible {
+    outline: 3px solid var(--merged);
+    outline-offset: -3px;
+    border-radius: var(--radius-sm);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .contrib__track { cursor: grab; }
+    .contrib__track.is-dragging {
+      cursor: grabbing;
+      user-select: none;
+      scroll-snap-type: none;
+    }
+  }
+
+  /* ---------- Card ----------
+     Width = cards per view: N cards + (N - 1) gaps fill the track.
+     100cqi = the track's content width. */
+  .qcard {
+    --pad: 20px;
+    flex: 0 0 calc((100cqi - var(--gap)) / 1.1); /* mobile: ~1.1 cards in view */
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: var(--pad);
+    background: linear-gradient(to bottom, var(--canvas), var(--surface));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    transition: box-shadow 200ms ease;
+  }
+
+  @media (min-width: 768px) {
+    .qcard {
+      --pad: 24px;
+      flex-basis: calc((100cqi - var(--gap)) / 2); /* tablet: 2 */
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .qcard { flex-basis: calc((100cqi - 2 * var(--gap)) / 3); } /* desktop: 3 */
+  }
+
+  /* The card is a size container so its footer can adapt to the card's own
+     width (narrow 3-up cards at 1024px, the peeking card on phones). */
+  .qcard { container-type: inline-size; }
+
+  .qcard:hover {
+    box-shadow: 0 16px 32px -24px color-mix(in srgb, var(--ink) 40%, transparent);
+  }
+
+  /* 1. Repo + speed stat */
+  .qcard__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    font-size: 0.8125rem;
+  }
+
+  .qcard__repo {
+    font-family: var(--font-code);
+    color: var(--ink);
+  }
+
+  .qcard__stat {
+    margin-left: auto; /* stays right-aligned even when it wraps under a long repo name */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-muted);
+  }
+
+  .qcard__stat svg { color: var(--merged); }
+
+  /* 2. Quote: the main element */
+  .qcard__quote {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+
+  @media (min-width: 768px) {
+    .qcard__quote { font-size: 1.125rem; }
+  }
+
+  /* 3 + 4. Divider and person row. margin-top: auto pins the footer to the
+     bottom so it lines up across cards; the negative margin lets the dashed
+     divider run edge to edge. */
+  .qcard__foot {
+    margin: auto calc(-1 * var(--pad)) 0;
+    padding: 16px var(--pad) 0;
+    border-top: 1px dashed var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .qcard__person {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .qcard__avatar {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .qcard__avatar--initial {
+    display: grid;
+    place-items: center;
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .qcard__name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .qcard__role {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--ink-muted);
+  }
+
+  .qcard__role-part { display: block; }
+
+  .qcard__link {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding-block: 8px; /* taller hit area */
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .qcard__link:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  /* Narrow cards: "View PR" drops under the name (aligned with it) instead of
+     squeezing the name and role into a thin column. */
+  @container (max-width: 299px) {
+    .qcard__foot {
+      flex-wrap: wrap;
+      row-gap: 0;
+    }
+
+    .qcard__link {
+      flex-basis: 100%; /* always its own line, so every card matches */
+      padding-left: 56px; /* 44px avatar + 12px gap: lines up with the name */
+    }
+  }
+</style>

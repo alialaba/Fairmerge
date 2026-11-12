@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Fairmerge: merge mark on the brand violet (merged token, #6E3FF3). -->
+  <rect width="32" height="32" rx="8" fill="#6E3FF3"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round">
+    <circle cx="11" cy="9" r="2.6"/>
+    <circle cx="11" cy="23" r="2.6"/>
+    <circle cx="22" cy="16" r="2.6"/>
+    <path d="M11 11.6v8.8M11 11.6c0 3.6 3 4.4 8.4 4.4"/>
+  </g>
+</svg>

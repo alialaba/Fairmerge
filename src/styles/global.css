@@ -1,0 +1,208 @@
+/* ==========================================================================
+   Fairmerge global styles
+   1. Design tokens
+   2. Reset
+   3. Base typography
+   4. Section themes
+   5. Utilities
+   ========================================================================== */
+
+/* 1. Design tokens ------------------------------------------------------- */
+:root {
+  --font-display: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-code: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --ink: #14162B;
+  --ink-muted: #5A5F7A;
+  --canvas: #F6F7FB;
+  --surface: #FFFFFF;
+  --line: #DADDEA;
+  --merged: #6E3FF3;
+  --merged-hover: #5A2BD9;
+  --merged-tint: #EFEAFE;
+  --payout: #0F7B4F;
+  --payout-tint: #E6F4EC;
+  --removed: #B42318;
+  --removed-tint: #FBEAEA;
+
+  /* Paths section: one deep background per path */
+  --path-earn-bg: #0B3B2C;
+  --path-grow-bg: #1E2A6B;
+  --path-ship-bg: #3B1A80;
+
+  /* Translucent layers for content on dark backgrounds */
+  --on-dark-surface: rgba(255, 255, 255, 0.06);
+  --on-dark-line: rgba(255, 255, 255, 0.12);
+  --on-dark-muted: rgba(255, 255, 255, 0.72);
+  --on-dark-control: rgba(255, 255, 255, 0.4); /* inactive controls: >= 3:1 on path bgs */
+
+  /* Hero image composition (src/pages/hero-image.astro) */
+  --hero-shape-violet: #CDBEFB;
+  --hero-shape-green: #BFE6D2;
+  --glass-surface: rgba(255, 255, 255, 0.72);
+
+  --content-width: 1240px;
+  --content-pad: clamp(16px, 4vw, 56px);
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+}
+
+/* 2. Reset --------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 3. Base typography ----------------------------------------------------- */
+body {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  background-color: var(--canvas);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  line-height: 1.1;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-code);
+  font-size: 0.9375em;
+}
+
+a {
+  color: var(--merged);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--merged-hover);
+}
+
+:focus-visible {
+  outline: 3px solid var(--merged);
+  outline-offset: 3px;
+}
+
+/* 4. Section themes ------------------------------------------------------ */
+/* Every page section has the .section class and paints its background from
+   one custom property. To change a section's background, set --section-bg on
+   that section's root class (e.g. `.faq { --section-bg: var(--canvas); }`). */
+.section {
+  background-color: var(--section-bg, transparent);
+}
+
+.section--dark {
+  --section-bg: var(--ink);
+  color: var(--canvas);
+}
+
+.section--dark :focus-visible {
+  outline-color: var(--merged-tint);
+}
+
+/* 5. Utilities ----------------------------------------------------------- */
+/* Hidden visually, still read by screen readers. */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

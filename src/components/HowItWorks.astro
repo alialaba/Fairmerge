@@ -1,0 +1,943 @@
+---
+// HowItWorks: four steps from open issue to payout.
+// Left: a decorative stage that swaps one UI card per step. Right: the step
+// list. A progress line in each step acts as a 5-second timer (driven by
+// requestAnimationFrame) that auto-advances while the section is in view.
+// UI cards reuse the PR card / diff / checklist / payout toast from
+// src/components/_archive/PrMergeVisual.astro, with the bounty from the hero image.
+
+const steps = [
+  {
+    title: 'Post a bounty',
+    description:
+      'A maintainer turns an issue into a bounty. AI reads the issue and suggests a fair price based on its complexity.',
+    icon: '<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+    tone: 'merged',
+  },
+  {
+    title: 'Ship a pull request',
+    description:
+      'Pick a bounty that matches your expertise and open a PR. Use any tools you like, AI included.',
+    icon: '<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M6 8.5v7M18 15.5V9a3 3 0 0 0-3-3h-4M13 3.5 10.5 6 13 8.5"/>',
+    tone: 'merged',
+  },
+  {
+    title: 'AI reviews it',
+    description:
+      "Within minutes, the review checks your PR against the bounty's requirements and tells you exactly what's missing, if anything.",
+    icon: '<path d="M10 3l1.6 3.9L15.5 8.5l-3.9 1.6L10 14l-1.6-3.9L4.5 8.5l3.9-1.6z"/><path d="M14 18l2.2 2.2L21 15.5"/>',
+    tone: 'merged',
+  },
+  {
+    title: 'Merged and paid',
+    description:
+      'The maintainer merges, and your payout goes out via PayPal right away, wherever you are.',
+    icon: '<circle cx="12" cy="12" r="8.5"/><path d="M14.6 9.4c-.5-.9-1.5-1.4-2.6-1.4-1.4 0-2.5.8-2.5 2s1.1 1.6 2.5 1.9 2.5.8 2.5 2-1.1 2.1-2.5 2.1c-1.1 0-2.1-.5-2.6-1.4M12 6.5V8M12 16v1.5"/>',
+    tone: 'payout',
+  },
+];
+
+// SAMPLE DEMO CONTENT: the same fictional bounty and PR as the hero image.
+const diffLines = [
+  { type: 'del', num: 88, code: '  q_cmd = ik.solve(target);' },
+  { type: 'del', num: 89, code: '  arm.send(q_cmd);' },
+  { type: 'add', num: 88, code: '  q_cmd = ik.solve(target, limits);' },
+  { type: 'add', num: 89, code: '  q_cmd = smooth(q_prev, q_cmd, 0.2);' },
+  { type: 'add', num: 90, code: '  arm.send(clamp(q_cmd, limits));' },
+];
+const checks = ['Meets bounty requirements', 'Simulation tests pass', 'No safety regressions'];
+const payout = 900;
+const bountyTitle = 'Fix arm jitter near joint limits';
+---
+
+<section class="hiw section" id="how-it-works" aria-labelledby="hiw-title" data-hiw>
+  <div class="hiw__inner">
+    <div class="hiw__panel">
+      <header class="hiw__head">
+        <h2 class="hiw__title" id="hiw-title">From open issue to paid, in four steps</h2>
+        <p class="hiw__lede">No proposals, no invoices, no waiting 30 days. Just merged code and a payout.</p>
+      </header>
+
+      <div class="hiw__grid" data-comp>
+        <!-- Decorative stage: every step's content is visible text in the list. -->
+        <div class="hiw__stage" aria-hidden="true" data-stage data-active="0">
+          <div class="hiw__glow"></div>
+
+          <!-- Label pill: slides between positions; its text crossfades. -->
+          <div class="hiw__pill">
+            <span class="hiw__pill-texts">
+              {steps.map((s, i) => <span class:list={['hiw__pill-text', { 'is-active': i === 0 }]} data-pill-text>{s.title}</span>)}
+            </span>
+            <svg class="hiw__arrow" viewBox="0 0 48 40" width="48" height="40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 4c4 18 16 28 34 30"></path>
+              <path d="M33 28l7 6-8 3"></path>
+            </svg>
+          </div>
+
+          <!-- Step 1: bounty card -->
+          <div class="hiw__card is-active" data-card>
+            <div class="ui">
+              <p class="ui__repo"><code>openarm/motion-planner</code></p>
+              <p class="ui__title">{bountyTitle}</p>
+              <p class="ui__ai">
+                <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M8 1.5l1.6 4.1 4.1 1.6-4.1 1.6L8 12.9 6.4 8.8 2.3 7.2l4.1-1.6z"></path></svg>
+                AI suggested: <strong>$800–$1,050</strong>
+              </p>
+              <div class="ui__row">
+                <span>Bounty posted</span>
+                <strong class="ui__price">${payout}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: code diff -->
+          <div class="hiw__card" data-card>
+            <div class="ui ui--flush">
+              <div class="ui__diff-head">
+                <span class="ui__opened">
+                  <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="4.5" cy="3.5" r="1.75"></circle><circle cx="4.5" cy="12.5" r="1.75"></circle><circle cx="11.5" cy="12.5" r="1.75"></circle><path d="M4.5 5.25v5.5M11.5 10.75V7a2 2 0 0 0-2-2H7.5"></path></svg>
+                  PR #482 opened
+                </span>
+                <span><span class="ui__add">+3</span> <span class="ui__del">−2</span></span>
+              </div>
+              <p class="ui__file"><code>src/control/ik_solver.cpp</code></p>
+              <div class="ui__diff">
+                {diffLines.map((l) => (
+                  <div class={`ui__line ui__line--${l.type}`}>
+                    <span class="ui__num">{l.num}</span>
+                    <span class="ui__sign">{l.type === 'del' ? '−' : '+'}</span>
+                    <code>{l.code}</code>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <!-- Steps 3 and 4: PR card with the AI review (step 4 adds Merged + payout toast) -->
+          {[2, 3].map((n) => (
+            <div class="hiw__card" data-card>
+              <div class="ui">
+                <div class="ui__top">
+                  <span class="ui__badge" data-badge>
+                    <span class="ui__badge-review">In review</span>
+                    <span class="ui__badge-merged">
+                      <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="4.5" cy="3.5" r="1.75"></circle><circle cx="4.5" cy="12.5" r="1.75"></circle><circle cx="11.5" cy="8" r="1.75"></circle><path d="M4.5 5.25v5.5M4.5 5.25c0 2.4 2 2.75 5.25 2.75"></path></svg>
+                      Merged
+                    </span>
+                  </span>
+                  <span class="ui__muted"><code>PR #482</code></span>
+                </div>
+                <p class="ui__title">{bountyTitle}</p>
+                <p class="ui__author"><span class="ui__avatar">A</span><code>amara-o</code> into main</p>
+                <div class="ui__review">
+                  <p class="ui__review-title">
+                    <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M8 1.5l1.6 4.1 4.1 1.6-4.1 1.6L8 12.9 6.4 8.8 2.3 7.2l4.1-1.6z"></path></svg>
+                    AI review
+                  </p>
+                  <ul class="ui__checks">
+                    {checks.map((c) => (
+                      <li class:list={['ui__check', { 'is-done': n === 3 }]} data-check>
+                        <span class="ui__box"><svg viewBox="0 0 16 16" width="11" height="11"><path d="M3.5 8.5l3 3 6-7" pathLength="1"></path></svg></span>
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              {n === 3 && (
+                <div class="ui__toast" data-toast>
+                  <span class="ui__toast-icon">
+                    <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12.5v-9M4 7.5l4-4 4 4"></path></svg>
+                  </span>
+                  <span><span class="ui__toast-amount" data-amount={payout}>+${payout.toFixed(2)}</span> sent via PayPal</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div class="hiw__side">
+          <ol class="hiw__steps" role="list" data-steps>
+            {steps.map((s, i) => (
+              <li>
+                <button
+                  type="button"
+                  class:list={['hiw__step', `hiw__step--${s.tone}`, { 'is-active': i === 0 }]}
+                  aria-current={i === 0 ? 'step' : undefined}
+                  data-step
+                >
+                  <span class="hiw__track" aria-hidden="true"><span class="hiw__fill" data-fill></span></span>
+                  <span class="hiw__tile" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={s.icon} />
+                  </span>
+                  <span class="hiw__text">
+                    <span class="hiw__step-title">{s.title}</span>
+                    <span class="hiw__step-desc">{s.description}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ol>
+
+          <button class="hiw__toggle" type="button" aria-pressed="false" data-toggle hidden>
+            <svg class="hiw__icon-pause" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M5.5 3.5v9M10.5 3.5v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+            <svg class="hiw__icon-play" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M5 3.2v9.6L12.5 8z" fill="currentColor"></path></svg>
+            <span class="visually-hidden">Pause step animation</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const section = document.querySelector<HTMLElement>('[data-hiw]');
+
+  if (section) {
+    const comp = section.querySelector<HTMLElement>('[data-comp]')!;
+    const stage = section.querySelector<HTMLElement>('[data-stage]')!;
+    const stepsList = section.querySelector<HTMLElement>('[data-steps]')!;
+    const buttons = [...section.querySelectorAll<HTMLButtonElement>('[data-step]')];
+    const fills = [...section.querySelectorAll<HTMLElement>('[data-fill]')];
+    const cards = [...section.querySelectorAll<HTMLElement>('[data-card]')];
+    const pillTexts = [...section.querySelectorAll<HTMLElement>('[data-pill-text]')];
+    const toggle = section.querySelector<HTMLButtonElement>('[data-toggle]')!;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const STEP_MS = 5000; // how long each step's line takes to fill
+    const HOLD_MS = 1500; // pause after step 4 before looping
+    const RESET_MS = 250; // fade-out of all lines before the loop restarts
+    const count = buttons.length;
+
+    let active = 0;
+    let phase: 'step' | 'hold' | 'reset' = 'step';
+    let elapsed = 0; // ms spent in the current phase; survives pauses
+    let lastTime: number | null = null;
+    let raf: number | null = null;
+    let visualTimers: number[] = [];
+
+    // Reasons the timer may not run. It runs only when all are false.
+    let stopped = false; // the user clicked a step: auto-advance is off for good
+    let userPaused = false; // pause/play button
+    let hovering = false;
+    let focusWithin = false;
+    let inView = false;
+
+    const setFill = (i: number, amount: number) => {
+      fills[i].style.transform = `scaleY(${amount})`;
+    };
+
+    // ---------- Step state (list + stage) ----------
+    function setActive(i: number) {
+      const prev = active;
+      active = i;
+      buttons.forEach((b, n) => {
+        b.classList.toggle('is-active', n === i);
+        b.classList.toggle('is-done', n < i);
+        if (n === i) b.setAttribute('aria-current', 'step');
+        else b.removeAttribute('aria-current');
+        setFill(n, n < i ? 1 : 0); // completed steps stay filled, later ones empty
+      });
+      pillTexts.forEach((t, n) => t.classList.toggle('is-active', n === i));
+      stage.dataset.active = String(i); // moves the pill (CSS)
+      if (prev !== i) swapCard(prev, i);
+      playVisual(i);
+    }
+
+    // Outgoing card fades up 8px (200ms); incoming fades in from 12px below (CSS).
+    function swapCard(from: number, to: number) {
+      const out = cards[from];
+      out.classList.remove('is-active');
+      out.classList.add('is-leaving');
+      window.setTimeout(() => out.classList.remove('is-leaving'), 220);
+      cards[to].classList.add('is-active');
+    }
+
+    // ---------- Per-step card animations (checks, merge badge, payout count-up) ----------
+    function playVisual(i: number) {
+      visualTimers.forEach((t) => window.clearTimeout(t));
+      visualTimers = [];
+      const card = cards[i];
+      const later = (ms: number, fn: () => void) => visualTimers.push(window.setTimeout(fn, ms));
+      const reduce = reduceMotion.matches;
+
+      if (i === 2) {
+        const checksEls = [...card.querySelectorAll<HTMLElement>('[data-check]')];
+        checksEls.forEach((c) => c.classList.toggle('is-done', reduce));
+        if (!reduce) checksEls.forEach((c, n) => later(400 + n * 500, () => c.classList.add('is-done')));
+      }
+
+      if (i === 3) {
+        const badge = card.querySelector<HTMLElement>('[data-badge]')!;
+        const toast = card.querySelector<HTMLElement>('[data-toast]')!;
+        const amount = card.querySelector<HTMLElement>('[data-amount]')!;
+        const target = Number(amount.dataset.amount);
+        const format = (n: number) =>
+          '+$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        if (reduce) {
+          badge.classList.add('is-merged');
+          toast.classList.add('is-shown');
+          amount.textContent = format(target);
+          return;
+        }
+        badge.classList.remove('is-merged');
+        toast.classList.remove('is-shown');
+        amount.textContent = format(0);
+        later(350, () => badge.classList.add('is-merged'));
+        later(850, () => {
+          toast.classList.add('is-shown');
+          const start = performance.now();
+          const count = (now: number) => {
+            const t = Math.min((now - start) / 900, 1);
+            amount.textContent = format(target * (1 - Math.pow(1 - t, 3))); // ease-out
+            if (t < 1) requestAnimationFrame(count);
+          };
+          requestAnimationFrame(count);
+        });
+      }
+    }
+
+    // ---------- The timer: requestAnimationFrame + elapsed time ----------
+    const running = () =>
+      !stopped && !userPaused && !hovering && !focusWithin && inView && !document.hidden && !reduceMotion.matches;
+
+    function tick(now: number) {
+      // Add only the time since the last frame. After a pause lastTime is null,
+      // so the paused time is never counted: the line continues where it stopped.
+      if (lastTime !== null) elapsed += now - lastTime;
+      lastTime = now;
+
+      if (phase === 'step') {
+        const progress = Math.min(elapsed / STEP_MS, 1);
+        setFill(active, progress);
+        if (progress >= 1) {
+          elapsed = 0;
+          if (active < count - 1) setActive(active + 1);
+          else phase = 'hold'; // step 4 done: hold 1.5s with all lines full
+        }
+      } else if (phase === 'hold' && elapsed >= HOLD_MS) {
+        phase = 'reset';
+        elapsed = 0;
+        stepsList.classList.add('is-resetting'); // all lines fade out (CSS)
+      } else if (phase === 'reset' && elapsed >= RESET_MS) {
+        stepsList.classList.remove('is-resetting');
+        phase = 'step';
+        elapsed = 0;
+        setActive(0);
+      }
+
+      raf = requestAnimationFrame(tick);
+    }
+
+    // Start or stop the loop whenever one of the reasons changes.
+    function sync() {
+      if (running() && raf === null) {
+        lastTime = null;
+        raf = requestAnimationFrame(tick);
+      } else if (!running() && raf !== null) {
+        cancelAnimationFrame(raf);
+        raf = null;
+      }
+      toggle.setAttribute('aria-pressed', String(userPaused));
+    }
+
+    // ---------- User control ----------
+    buttons.forEach((b, i) =>
+      b.addEventListener('click', () => {
+        // The user chose a step: stop auto-advance for good and show it complete.
+        stopped = true;
+        toggle.hidden = true; // nothing left to pause
+        stepsList.classList.remove('is-resetting');
+        phase = 'step';
+        elapsed = 0;
+        if (i !== active) setActive(i);
+        setFill(i, 1);
+        sync();
+      }),
+    );
+
+    toggle.addEventListener('click', () => {
+      userPaused = !userPaused;
+      sync();
+    });
+
+    comp.addEventListener('pointerenter', () => { hovering = true; sync(); });
+    comp.addEventListener('pointerleave', () => { hovering = false; sync(); });
+    comp.addEventListener('focusin', () => { focusWithin = true; sync(); });
+    comp.addEventListener('focusout', (e) => {
+      if (!comp.contains(e.relatedTarget as Node | null)) { focusWithin = false; sync(); }
+    });
+    document.addEventListener('visibilitychange', sync);
+
+    // Run only while at least 40% of the section is on screen.
+    new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.intersectionRatio >= 0.4;
+        sync();
+      },
+      { threshold: [0, 0.4, 0.6, 1] },
+    ).observe(section);
+
+    // ---------- Reduced motion: no timer; active line full; cards show final state ----------
+    function applyMotion() {
+      if (reduceMotion.matches) {
+        toggle.hidden = true;
+        setFill(active, 1);
+        playVisual(active);
+      } else if (!stopped) {
+        toggle.hidden = false;
+      }
+      sync();
+    }
+
+    setActive(0);
+    applyMotion();
+    reduceMotion.addEventListener('change', applyMotion);
+  }
+</script>
+
+<style>
+  .hiw {
+    --section-bg: var(--payout-tint);
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    padding-block: clamp(64px, 10vw, 128px);
+    color: var(--ink);
+  }
+
+  .hiw__inner {
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--content-pad);
+  }
+
+  .hiw__panel {
+    padding: clamp(24px, 5vw, 64px);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+  }
+
+  /* ---------- Header ---------- */
+  .hiw__head {
+    max-width: 40rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .hiw__title { font-weight: 600; }
+
+  .hiw__lede {
+    margin-top: 16px;
+    font-size: 1.0625rem;
+    color: var(--ink-muted);
+  }
+
+  /* ---------- Layout ---------- */
+  .hiw__grid {
+    margin-top: clamp(32px, 5vw, 56px);
+    display: grid;
+    /* minmax(0, …): the diff's unwrapped code lines must not widen the column. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 40px);
+  }
+
+  @media (min-width: 1024px) {
+    .hiw__grid {
+      grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+      align-items: center;
+      gap: clamp(40px, 5vw, 72px);
+    }
+  }
+
+  /* ---------- Stage: fixed size per breakpoint, cards stacked on top of each other ---------- */
+  .hiw__stage {
+    position: relative;
+    container-type: inline-size;
+    width: 100%; /* fixed width first, so min-height can't widen it via the ratio */
+    aspect-ratio: 4 / 3;
+    min-height: 372px; /* tallest card (PR + checklist + toast) must fit on phones */
+    border-radius: var(--radius-lg);
+    background: var(--canvas);
+    overflow: hidden;
+  }
+
+  @media (min-width: 1024px) {
+    .hiw__stage {
+      aspect-ratio: auto;
+      height: 460px;
+    }
+  }
+
+  .hiw__glow {
+    position: absolute;
+    width: 70%;
+    aspect-ratio: 1;
+    left: 15%;
+    top: 22%;
+    border-radius: 50%;
+    background: var(--payout-tint);
+    filter: blur(32px);
+  }
+
+  .hiw__card {
+    position: absolute;
+    inset: 60px 0 28px; /* room for the pill above and the toast below */
+    margin: auto;
+    width: min(94%, 380px);
+    height: fit-content;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98); /* waiting position: below and slightly small */
+    pointer-events: none;
+  }
+
+  .hiw__card.is-active {
+    opacity: 1;
+    transform: none;
+    transition: opacity 450ms var(--ease) 80ms, transform 450ms var(--ease) 80ms;
+  }
+
+  .hiw__card.is-leaving {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 200ms var(--ease), transform 200ms var(--ease);
+  }
+
+  /* ---------- Label pill: slides between left/right; text crossfades ---------- */
+  .hiw__pill {
+    --x: 6cqw;
+    position: absolute;
+    top: 16px;
+    left: 0;
+    z-index: 2;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--merged);
+    color: var(--surface);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transform: translateX(var(--x));
+    transition: transform 450ms var(--ease);
+  }
+
+  /* Right-hand positions: 94% of the stage width minus the pill's own width. */
+  .hiw__stage[data-active='1'] .hiw__pill,
+  .hiw__stage[data-active='3'] .hiw__pill { --x: calc(94cqw - 100%); }
+
+  /* All four labels share one cell, so the pill is as wide as the longest. */
+  .hiw__pill-texts { display: grid; }
+
+  .hiw__pill-text {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transition: opacity 300ms var(--ease);
+  }
+
+  .hiw__pill-text.is-active { opacity: 1; }
+
+  .hiw__arrow {
+    position: absolute;
+    top: calc(100% - 4px);
+    left: 40%;
+    color: var(--merged);
+    transition: transform 450ms var(--ease);
+  }
+
+  .hiw__stage[data-active='1'] .hiw__arrow,
+  .hiw__stage[data-active='3'] .hiw__arrow { transform: scaleX(-1); }
+
+  /* ---------- UI cards (adapted from the archived PrMergeVisual) ---------- */
+  .ui {
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    font-size: 0.8125rem;
+    color: var(--ink);
+    box-shadow: 0 24px 48px -28px color-mix(in srgb, var(--ink) 45%, transparent);
+  }
+
+  .ui--flush { padding: 0; overflow: hidden; }
+
+  .ui code { font-family: var(--font-code); font-size: 0.75rem; }
+
+  .ui__repo,
+  .ui__muted { color: var(--ink-muted); }
+
+  .ui__title {
+    margin-top: 6px;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .ui__ai {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--merged-tint);
+  }
+
+  .ui__ai svg,
+  .ui__ai strong { color: var(--merged); }
+
+  .ui__row {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--ink-muted);
+  }
+
+  .ui__price {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--ink);
+  }
+
+  .ui__diff-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--canvas);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ui__opened {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+  }
+
+  .ui__opened svg { color: var(--payout); }
+  .ui__add { color: var(--payout); font-weight: 600; }
+  .ui__del { color: var(--removed); font-weight: 600; }
+
+  .ui__file {
+    padding: 8px 14px 4px;
+    color: var(--ink-muted);
+  }
+
+  .ui__diff {
+    padding: 4px 0 10px;
+    line-height: 1.85;
+  }
+
+  .ui__line {
+    display: grid;
+    grid-template-columns: 2.6em 1.4em minmax(0, 1fr);
+    padding-right: 10px;
+    white-space: pre;
+  }
+
+  .ui__line code { overflow: hidden; }
+  .ui__num { padding-right: 0.5em; text-align: right; color: var(--ink-muted); font-family: var(--font-code); font-size: 0.75rem; }
+  .ui__sign { text-align: center; }
+  .ui__line--del { background: var(--removed-tint); }
+  .ui__line--del .ui__sign { color: var(--removed); }
+  .ui__line--add { background: var(--payout-tint); }
+  .ui__line--add .ui__sign { color: var(--payout); }
+
+  .ui__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Badge: "In review" by default; .is-merged swaps to the violet "Merged" state. */
+  .ui__badge {
+    display: inline-grid;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--canvas);
+    box-shadow: inset 0 0 0 1px var(--line);
+    color: var(--ink-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: background-color 300ms var(--ease), color 300ms var(--ease), box-shadow 300ms var(--ease);
+  }
+
+  .ui__badge > span {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: opacity 300ms var(--ease);
+  }
+
+  .ui__badge-merged { opacity: 0; }
+
+  .ui__badge.is-merged {
+    background: var(--merged);
+    box-shadow: none;
+    color: var(--surface);
+  }
+
+  .ui__badge.is-merged .ui__badge-review { opacity: 0; }
+  .ui__badge.is-merged .ui__badge-merged { opacity: 1; }
+
+  .ui__author {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink-muted);
+  }
+
+  .ui__author code { color: var(--ink); font-weight: 500; }
+
+  .ui__avatar {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--merged-tint);
+    color: var(--merged);
+    font-size: 0.625rem;
+    font-weight: 700;
+  }
+
+  .ui__review {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+
+  .ui__review-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .ui__review-title svg { color: var(--merged); }
+
+  .ui__checks {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 7px;
+  }
+
+  .ui__check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-muted);
+    transition: color 300ms var(--ease);
+  }
+
+  .ui__box {
+    display: grid;
+    place-items: center;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--canvas);
+    box-shadow: inset 0 0 0 1.5px var(--line);
+    color: var(--payout);
+    transition: background-color 300ms var(--ease), box-shadow 300ms var(--ease);
+  }
+
+  .ui__box path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1; /* pathLength="1": the whole stroke is 1 unit long */
+    stroke-dashoffset: 1; /* hidden */
+    transition: stroke-dashoffset 350ms var(--ease);
+  }
+
+  .ui__check.is-done { color: var(--ink); }
+  .ui__check.is-done .ui__box { background: var(--payout-tint); box-shadow: none; }
+  .ui__check.is-done .ui__box path { stroke-dashoffset: 0; } /* draws the tick */
+
+  .ui__toast {
+    position: absolute;
+    right: 12px;
+    bottom: -18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px 8px 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+    box-shadow: 0 16px 32px -16px color-mix(in srgb, var(--ink) 40%, transparent);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 400ms var(--ease), transform 450ms var(--ease);
+  }
+
+  .ui__toast.is-shown { opacity: 1; transform: none; }
+
+  .ui__toast-icon {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--payout);
+    color: var(--surface);
+  }
+
+  .ui__toast-amount {
+    display: inline-block;
+    min-width: 7.5ch;
+    font-family: var(--font-code);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--payout);
+  }
+
+  /* ---------- Step list ---------- */
+  .hiw__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .hiw__step {
+    width: 100%;
+    min-height: 56px;
+    display: grid;
+    grid-template-columns: 2px 44px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    color: inherit;
+  }
+
+  .hiw__step.is-active { cursor: default; }
+
+  .hiw__step:focus-visible {
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Track: the step's own 2px segment, full height minus a small gap. */
+  .hiw__track {
+    position: relative;
+    align-self: stretch;
+    margin-block: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  /* Fill: scaled from the top by the script (scaleY 0 -> 1 = the timer). */
+  .hiw__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: opacity 250ms var(--ease);
+  }
+
+  /* Loop restart: all lines fade out before they are reset to empty. */
+  .hiw__steps.is-resetting .hiw__fill { opacity: 0; }
+
+  .hiw__tile {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-block: 4px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--ink-muted);
+    transition: background-color 300ms var(--ease), border-color 300ms var(--ease), color 300ms var(--ease);
+  }
+
+  .hiw__text {
+    display: grid;
+    gap: 6px;
+    padding-block: 12px 28px;
+  }
+
+  .hiw__step-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--ink-muted);
+    transition: color 300ms var(--ease);
+  }
+
+  .hiw__step-desc {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--ink-muted);
+    transition: color 300ms var(--ease);
+  }
+
+  @media (hover: hover) {
+    .hiw__step:not(.is-active):hover .hiw__step-title { color: var(--ink); }
+  }
+
+  /* Completed steps: a subtle filled tile. */
+  .hiw__step.is-done .hiw__tile {
+    background: var(--canvas);
+    border-color: var(--canvas);
+    color: var(--ink);
+  }
+
+  /* Active step. */
+  .hiw__step.is-active .hiw__step-title { color: var(--ink); }
+  .hiw__step.is-active .hiw__step-desc { color: color-mix(in srgb, var(--ink) 82%, var(--surface)); }
+
+  .hiw__step--merged.is-active .hiw__tile {
+    background: var(--merged-tint);
+    border-color: var(--merged-tint);
+    color: var(--merged);
+  }
+
+  .hiw__step--payout.is-active .hiw__tile {
+    background: var(--payout-tint);
+    border-color: var(--payout-tint);
+    color: var(--payout);
+  }
+
+  /* ---------- Pause / play ---------- */
+  .hiw__toggle {
+    margin: 4px 0 0 18px; /* under the tiles */
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  .hiw__toggle[hidden] { display: none; }
+  .hiw__toggle:hover { background: var(--canvas); }
+  .hiw__icon-play { display: none; }
+  .hiw__toggle[aria-pressed='true'] .hiw__icon-play { display: block; }
+  .hiw__toggle[aria-pressed='true'] .hiw__icon-pause { display: none; }
+</style>
