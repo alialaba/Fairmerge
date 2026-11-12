@@ -1,43 +1,66 @@
-# Astro Starter Kit: Minimal
+# Fairmerge
 
-```sh
-npm create astro@latest -- --template minimal
+A marketing homepage for a bounty platform where developers get paid the moment their code is merged, anywhere in the world.
+
+The page layout is inspired by the section structure of [oneforma.com](https://www.oneforma.com)'s homepage. All copy, branding, colours, typography and visuals are original. Every person, bounty, repository and number on the page is sample demo content.
+
+## Tech stack
+
+- [Astro](https://astro.build) (minimal template, static output)
+- Plain HTML and CSS in Astro components, with design tokens as CSS custom properties
+- Vanilla JavaScript only: no UI framework, no Tailwind
+- Google Fonts: Bricolage Grotesque, IBM Plex Sans, IBM Plex Mono
+
+## Getting started
+
+Requires Node.js 22.23.4 or later (see `engines` in `package.json`).
+
+```bash
+npm install
+npm run dev       # dev server at http://localhost:4321
+npm run build     # production build to dist/
+npm run preview   # serve the production build locally
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+### Re-exporting the hero image
 
-## 🚀 Project Structure
+The hero image is a flat WebP exported from an HTML composition (`src/dev/hero-image.astro`), which only exists on the dev server. To change its stats or layout, edit that file, then with `npm run dev` running:
 
-Inside of your Astro project, you'll see the following folders and files:
+```bash
+npm run export:hero
+```
+
+This uses Playwright and your installed Google Chrome to screenshot the composition into `public/images/hero-image-desktop.webp` and `hero-image-mobile.webp`.
+
+## Sections
+
+| # | Section | What it demonstrates |
+|---|---|---|
+| 1 | **Hero** | A one-time page-load reveal; a responsive `<picture>` that loads a separate desktop or mobile image; an accessible testimonial carousel with pause/play that stops on hover and focus |
+| 2 | **Ways to Earn** | One set of markup that works as vertical tabs on desktop (roving tabindex, arrow keys) and as an accordion on mobile. The open item can't be closed; the active tab's underline grows from the centre; the accordion's height is animated with `grid-template-rows` |
+| 3 | **Paths** | A scroll-pinned section (`position: sticky`): scrolling switches the path, crossfades the background colour and grows a progress line. On mobile it becomes a scroll-snap carousel with mouse drag, segment buttons and arrow keys |
+| 4 | **Bounty Board** | Language and difficulty filters that combine, with a fade-out/fade-in transition and a live result count; an inline counter-offer form with validation and focus management; a scroll-snap carousel on mobile |
+| 5 | **Contributors** | Quote-led cards in a carousel with page dots, built on a reusable carousel module (`src/scripts/carousel.js`, shared with Paths). Shows 3, 2 or 1 cards per view depending on screen width |
+| 6 | **How It Works** | An auto-advancing four-step list. Each step's progress line is a timer driven by `requestAnimationFrame`, so it pauses and resumes in place. Auto-advance runs only while the section is in view, pauses on hover and focus, and stops after a click; each step swaps a matching UI card with no layout shift |
+| 7 | **FAQ** | Placeholder (not built yet) |
+| 8 | **Final CTA** | Placeholder (not built yet) |
+
+Across the page:
+
+- Every control is a real `<button>`, with visible keyboard focus and WCAG AA contrast.
+- `prefers-reduced-motion` is respected everywhere: animations become instant, and scroll-driven sections become static.
+
+## Project structure
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+├── components/       # one component per page section, plus ui/Icon.astro
+├── dev/              # dev-only pages (hero image composition)
+├── layouts/          # Base.astro: <head>, fonts, global styles
+├── pages/index.astro # the homepage
+├── scripts/          # shared vanilla JS (carousel.js)
+└── styles/global.css # design tokens and base styles
+public/               # favicon and the exported hero images
+scripts/              # export-hero.mjs (Playwright export)
+docs/                 # WEBFLOW-BUILD.md: guide to rebuilding the sections in Webflow
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

@@ -12,10 +12,19 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-
-# environment variables
+# environment variables (an example file without secrets may be committed)
 .env
-.env.production
+.env.*
+!.env.example
+
+# Playwright output
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# working files not meant for the repo
+post-assets/
 
 # macOS-specific files
 .DS_Store
