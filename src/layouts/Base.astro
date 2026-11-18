@@ -17,6 +17,10 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Marks the page as "JS available" before first paint. CSS uses .js to
+         apply starting states (e.g. dimmed letters) that only make sense when
+         a script will later animate them; without JS everything stays visible. -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <meta property="og:title" content={title} />

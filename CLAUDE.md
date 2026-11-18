@@ -32,8 +32,8 @@ Each section is one component in `src/components/`, rendered in `src/pages/index
 | 4 | BountyBoard | `BountyBoard.astro` | `--canvas` | Filterable bounty cards with a counter-offer option (`id="bounties"`) |
 | 5 | Contributors | `Contributors.astro` | `--surface` | Top contributors with earnings, countries, merged PRs |
 | 6 | HowItWorks | `HowItWorks.astro` | `--payout-tint` (content in a white `--surface` panel) | Four steps (post a bounty → ship a PR → AI review → merged and paid) with an auto-advancing step list and a matching UI card. Not scroll-pinned |
-| 7 | FAQ | `FAQ.astro` | `--canvas` | How AI judges PRs, payout timing, fees, countries, disputes |
-| 8 | FinalCTA | `FinalCTA.astro` | `--ink`, white (`--surface`) text | "Claim a bounty" and "Post a bounty" |
+| 7 | FAQ | `FAQ.astro` | `--surface` (content in a large `--canvas` panel) | Sticky heading (desktop) beside an accordion: payouts, AI tools, AI review, disputes, pricing, countries, fees. Works without JS |
+| 8 | FinalCTA | `FinalCTA.astro` | `--surface` (content in a dark photo panel: optional `public/images/cta-photo.webp` under an `--ink` → `--path-ship-bg` overlay, white text) | Scroll-linked heading that lights up letter by letter; "Find a bounty" and "Post a bounty" (`id="get-started"`) |
 
 ### Section backgrounds
 
@@ -77,6 +77,7 @@ Design tokens live in `src/styles/global.css`.
 
 - One deliberate page-load reveal on the hero only.
 - No fade-in on every section.
+- Deliberate exception: FinalCTA's scroll-linked heading and its one-time reveal of the supporting line and buttons (never hidden again; content stays focusable throughout).
 
 ### PayPal
 
