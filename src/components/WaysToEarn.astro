@@ -126,9 +126,9 @@ const testRuns = ['glass_wall_detected', 'pedestrian_crossing', 'dropped_lidar_f
                     <ul class="ways__chips anim" style="--d: 100ms" role="list">
                       {it.chips.map((chip) => <li class="ways__chip">{chip}</li>)}
                     </ul>
-                    <a class="ways__cta anim" style="--d: 150ms" href="#bounties">
+                    <a class="btn btn--primary ways__cta anim" style="--d: 150ms" href="#bounties">
                       {it.cta}
-                      <Icon name="arrow-right" size={18} />
+                      <Icon name="arrow-right" size={18} class="btn__arrow" />
                     </a>
                   </div>
 
@@ -251,8 +251,8 @@ def search(query: str) -&gt; list[Issue]:
 
     const wide = window.matchMedia('(min-width: 1024px)');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const ACCORDION_MS = 300;
-    const FADE_OUT_MS = 150;
+    const ACCORDION_MS = 250; // = --dur-base
+    const FADE_OUT_MS = 160; // = --dur-fast
 
     let active = 0;
     let mode: 'tabs' | 'accordion' | null = null;
@@ -419,8 +419,8 @@ def search(query: str) -&gt; list[Issue]:
 
 <style>
   .ways {
-    --section-bg: var(--merged-tint);
-    padding-block: clamp(64px, 10vw, 128px);
+    --section-bg: var(--brand-tint);
+    padding-block: var(--section-pad);
     color: var(--ink);
   }
 
@@ -433,40 +433,40 @@ def search(query: str) -&gt; list[Issue]:
   /* ---------- Header ---------- */
   .ways__head {
     display: grid;
-    gap: 20px;
-    padding-bottom: clamp(32px, 4vw, 48px);
+    gap: var(--space-5);
+    padding-bottom: clamp(var(--space-6), 4vw, var(--space-8));
     border-bottom: 1px solid var(--line);
   }
 
   .ways__heading-main {
-    font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);
+    font-size: var(--text-h1);
     font-weight: 600;
-    line-height: 1;
-    letter-spacing: -0.025em;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
     color: var(--ink);
   }
 
   .ways__heading-main span { display: block; }
 
   .ways__intro {
-    max-width: 30rem;
+    max-width: var(--measure-narrow);
     color: var(--ink-muted);
   }
 
   .ways__browse {
-    margin-top: 16px;
+    margin-top: var(--space-4);
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding-bottom: 3px;
+    gap: var(--space-2);
+    padding-bottom: var(--space-1);
     border-bottom: 1.5px solid currentColor;
-    font-size: 0.9375rem;
+    font-size: var(--text-small);
     font-weight: 600;
     color: var(--ink);
     text-decoration: none;
   }
 
-  .ways__browse:hover { color: var(--merged); }
+  .ways__browse:hover { color: var(--brand); }
 
   @media (min-width: 1024px) {
     .ways__head {
@@ -494,16 +494,16 @@ def search(query: str) -&gt; list[Issue]:
     min-height: 56px;
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px 0;
+    gap: var(--space-3);
+    padding: var(--space-4) 0;
     border: 0;
     background: none;
     text-align: left;
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: var(--text-h3);
     font-weight: 500;
     color: var(--ink-muted);
-    transition: color 160ms ease;
+    transition: color var(--dur-fast) var(--ease-out);
   }
 
   .ways__tab.is-active {
@@ -514,14 +514,14 @@ def search(query: str) -&gt; list[Issue]:
   .ways__icon {
     flex: none;
     display: grid;
-    color: var(--merged);
+    color: var(--brand);
   }
 
   .ways__tab :global(.ways__chevron) {
     flex: none;
     margin-left: auto;
     color: var(--ink-muted);
-    transition: transform 300ms ease;
+    transition: transform var(--dur-base) var(--ease-out);
   }
 
   .ways__tab.is-active :global(.ways__chevron) { transform: rotate(180deg); }
@@ -535,16 +535,16 @@ def search(query: str) -&gt; list[Issue]:
     right: 0;
     bottom: -1px; /* sits on top of the item's 1px border */
     height: 2px;
-    background: var(--merged);
+    background: var(--brand);
     transform: scaleX(0);
     transform-origin: center;
-    transition: transform 250ms ease-in, opacity 250ms ease-in; /* shrinking back */
+    transition: transform var(--dur-base) var(--ease-in), opacity var(--dur-base) var(--ease-in); /* shrinking back */
   }
 
   .ways__tab.is-active::after {
     transform: scaleX(1);
     opacity: 1;
-    transition: transform 400ms cubic-bezier(0.2, 0.7, 0.2, 1); /* growing (ease-out) */
+    transition: transform var(--dur-slow) var(--ease-out); /* growing (ease-out) */
   }
 
   @media (hover: hover) {
@@ -573,28 +573,28 @@ def search(query: str) -&gt; list[Issue]:
   .ways__clip {
     min-height: 0;
     overflow: hidden;
-    margin: 0 -6px;
-    padding: 0 6px;
+    margin: 0 calc(-1 * var(--space-2));
+    padding: 0 var(--space-2);
   }
 
   .ways__body {
     display: grid;
-    gap: 24px;
-    padding: 4px 0 28px;
+    gap: var(--space-5);
+    padding: var(--space-1) 0 var(--space-6);
   }
 
   .ways__text {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: var(--space-4);
   }
 
   /* The header already shows the label on mobile, so the big title is desktop-only. */
   .ways__title { display: none; }
 
   .ways__desc {
-    max-width: 32rem;
+    max-width: var(--measure-narrow);
     color: var(--ink-muted);
   }
 
@@ -604,18 +604,18 @@ def search(query: str) -&gt; list[Issue]:
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   .ways__chip {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 5px 12px;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
     border: 1px solid var(--line);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--surface);
-    font-size: 0.875rem;
+    font-size: var(--text-small);
     color: var(--ink);
   }
 
@@ -624,28 +624,11 @@ def search(query: str) -&gt; list[Issue]:
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--merged);
+    background: var(--brand);
   }
 
   .ways__cta {
     align-self: stretch;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 48px;
-    padding: 0 22px;
-    border-radius: var(--radius-sm);
-    background: var(--ink);
-    color: var(--surface);
-    font-weight: 600;
-    text-decoration: none;
-    transition: background-color 160ms ease;
-  }
-
-  .ways__cta:hover {
-    background: var(--merged-hover);
-    color: var(--surface);
   }
 
   /* ---------- Accordion (script adds .is-accordion below 1024px) ----------
@@ -654,13 +637,13 @@ def search(query: str) -&gt; list[Issue]:
   .is-accordion .ways__panel {
     grid-template-rows: 0fr;
     visibility: hidden;
-    transition: grid-template-rows 300ms ease, visibility 0s linear 300ms;
+    transition: grid-template-rows var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base);
   }
 
   .is-accordion .ways__panel.is-open {
     grid-template-rows: 1fr;
     visibility: visible;
-    transition: grid-template-rows 300ms ease, visibility 0s;
+    transition: grid-template-rows var(--dur-base) var(--ease-out), visibility 0s;
   }
 
   .ways__panels:empty { display: none; }
@@ -681,8 +664,8 @@ def search(query: str) -&gt; list[Issue]:
     .is-tabs .ways__item:last-child { border-bottom: 0; }
 
     .is-tabs .ways__tab {
-      padding: 28px 24px 28px 0;
-      font-size: 1.5rem;
+      padding: var(--space-6) var(--space-5) var(--space-6) 0;
+      font-size: var(--text-h3);
     }
 
     .is-tabs .ways__tab :global(.ways__chevron) { display: none; }
@@ -690,7 +673,7 @@ def search(query: str) -&gt; list[Issue]:
     .is-tabs .ways__panels {
       display: grid;
       align-items: center;
-      padding: 40px 0 40px clamp(32px, 4vw, 64px);
+      padding: var(--space-7) 0 var(--space-7) clamp(var(--space-6), 4vw, var(--space-9));
     }
 
     .is-tabs .ways__panel { grid-area: 1 / 1; } /* all panels share one cell */
@@ -698,19 +681,19 @@ def search(query: str) -&gt; list[Issue]:
     .is-tabs .ways__body {
       grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
       align-items: center;
-      gap: clamp(32px, 4vw, 56px);
-      padding: 4px 0;
+      gap: clamp(var(--space-6), 4vw, var(--space-9));
+      padding: var(--space-1) 0;
     }
 
-    .is-tabs .ways__text { gap: 20px; }
+    .is-tabs .ways__text { gap: var(--space-5); }
 
     .is-tabs .ways__title {
       display: block;
       font-family: var(--font-display);
-      font-size: clamp(2.5rem, 3.4vw, 3rem);
+      font-size: var(--text-h2);
       font-weight: 400;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-tight);
       color: var(--ink);
     }
 
@@ -718,16 +701,16 @@ def search(query: str) -&gt; list[Issue]:
 
     /* Panel swap. Outgoing: quick fade. Incoming: each piece rises 12px and
        fades in, staggered by --d; the visual scales up from 0.96. */
-    .is-tabs .ways__panel { transition: opacity 150ms ease; }
+    .is-tabs .ways__panel { transition: opacity var(--dur-fast) var(--ease-out); }
     .is-tabs .ways__panel.is-leaving { opacity: 0; }
 
     .is-tabs .anim {
-      transition: opacity 300ms ease, transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+      transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
       transition-delay: var(--d, 0ms);
     }
 
     .is-tabs .ways__visual {
-      transition: opacity 300ms ease, transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+      transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
       transition-delay: 100ms;
     }
 
@@ -749,26 +732,25 @@ def search(query: str) -&gt; list[Issue]:
 
   .vig {
     max-width: 440px;
-    padding: 18px 20px;
+    padding: var(--space-4) var(--space-5);
     background: var(--surface);
     border-radius: var(--radius-lg);
     box-shadow:
-      0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent),
-      0 24px 48px -28px color-mix(in srgb, var(--ink) 40%, transparent);
-    font-size: 0.875rem;
+      var(--shadow-sm), var(--shadow-lg);
+    font-size: var(--text-small);
     color: var(--ink);
   }
 
   .is-tabs .vig { margin-left: auto; }
 
   .vig code,
-  .vig pre { font-family: var(--font-code); font-size: 0.8125rem; }
+  .vig pre { font-family: var(--font-code); font-size: var(--text-caption); }
 
   .vig__head {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
-    padding-bottom: 10px;
+    gap: var(--space-3);
+    padding-bottom: var(--space-2);
     border-bottom: 1px solid var(--line);
     color: var(--ink-muted);
   }
@@ -778,16 +760,16 @@ def search(query: str) -&gt; list[Issue]:
   .vig__del { color: var(--removed); font-weight: 600; }
 
   .vig__diff {
-    margin-top: 10px;
-    border-radius: 8px;
+    margin-top: var(--space-2);
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    line-height: 1.9;
+    line-height: var(--leading-code);
   }
 
   .vig__line {
     display: grid;
     grid-template-columns: 1.8em minmax(0, 1fr);
-    padding-right: 8px;
+    padding-right: var(--space-2);
     white-space: pre;
   }
 
@@ -800,27 +782,27 @@ def search(query: str) -&gt; list[Issue]:
 
   .vig__title {
     font-family: var(--font-display);
-    font-size: 1.0625rem;
+    font-size: var(--text-body-lg);
     font-weight: 600;
-    line-height: 1.3;
+    line-height: var(--leading-snug);
   }
 
-  .vig > .vig__muted + .vig__title { margin-top: 6px; }
+  .vig > .vig__muted + .vig__title { margin-top: var(--space-2); }
 
   .vig__pr-meta {
-    margin-top: 14px;
-    padding-top: 12px;
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
     border-top: 1px solid var(--line);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-3);
   }
 
   .vig__counts {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
     font-variant-numeric: tabular-nums;
   }
 
@@ -829,7 +811,7 @@ def search(query: str) -&gt; list[Issue]:
   .vig__bars i {
     width: 8px;
     height: 8px;
-    border-radius: 2px;
+    border-radius: var(--radius-xs);
   }
 
   .vig__bars .is-add { background: var(--payout); }
@@ -838,14 +820,14 @@ def search(query: str) -&gt; list[Issue]:
   .vig__tests {
     list-style: none;
     margin: 0;
-    padding: 6px 0 0;
+    padding: var(--space-2) 0 0;
   }
 
   .vig__tests li {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding-block: 6px;
+    gap: var(--space-2);
+    padding-block: var(--space-2);
   }
 
   .vig__check {
@@ -859,57 +841,57 @@ def search(query: str) -&gt; list[Issue]:
   }
 
   .vig__result {
-    margin-top: 8px;
-    padding-top: 10px;
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
     border-top: 1px solid var(--line);
   }
 
   .vig__result strong { color: var(--payout); }
 
   .vig__text {
-    margin-top: 8px;
-    font-size: 0.8125rem;
-    line-height: 1.5;
+    margin-top: var(--space-2);
+    font-size: var(--text-caption);
+    line-height: var(--leading-normal);
     color: var(--ink-muted);
   }
 
   .vig__code {
-    margin: 12px 0 0;
-    padding: 10px 12px;
-    border-radius: 8px;
+    margin: var(--space-3) 0 0;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
     background: var(--canvas);
-    line-height: 1.6;
+    line-height: var(--leading-normal);
     white-space: pre;
     overflow: hidden;
   }
 
   .vig__codeline {
     display: flex;
-    gap: 12px;
-    padding: 8px 10px;
-    border-radius: 8px;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-2);
+    border-radius: var(--radius-sm);
     background: var(--canvas);
     white-space: pre;
     overflow: hidden;
   }
 
   .vig__comment {
-    margin-top: 12px;
-    padding: 12px;
+    margin-top: var(--space-3);
+    padding: var(--space-3);
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
   }
 
   .vig__comment-head {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
   }
 
   .vig__comment p {
-    font-size: 0.8125rem;
-    line-height: 1.5;
+    font-size: var(--text-caption);
+    line-height: var(--leading-normal);
     color: var(--ink-muted);
   }
 
@@ -919,9 +901,9 @@ def search(query: str) -&gt; list[Issue]:
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: var(--merged-tint);
-    color: var(--merged);
-    font-size: 0.6875rem;
+    background: var(--brand-tint);
+    color: var(--brand);
+    font-size: var(--text-caption);
     font-weight: 700;
   }
 
@@ -929,26 +911,26 @@ def search(query: str) -&gt; list[Issue]:
     margin-left: auto;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: 999px;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-pill);
     background: var(--payout-tint);
     color: var(--payout);
-    font-size: 0.75rem;
+    font-size: var(--text-caption);
     font-weight: 600;
   }
 
   /* ---------- Language chips row ---------- */
   .ways__langs {
-    margin-top: clamp(32px, 4vw, 48px);
+    margin-top: clamp(var(--space-6), 4vw, var(--space-8));
     display: grid;
-    gap: 12px;
+    gap: var(--space-3);
   }
 
   .ways__langs-label {
-    font-size: 0.8125rem;
+    font-size: var(--text-caption);
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
     color: var(--ink-muted);
   }
@@ -957,9 +939,9 @@ def search(query: str) -&gt; list[Issue]:
   .ways__lang-list {
     list-style: none;
     margin: 0 calc(-1 * var(--content-pad));
-    padding: 4px var(--content-pad);
+    padding: var(--space-1) var(--content-pad);
     display: flex;
-    gap: 8px;
+    gap: var(--space-2);
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -970,32 +952,32 @@ def search(query: str) -&gt; list[Issue]:
     display: inline-flex;
     align-items: center;
     min-height: 36px;
-    padding: 0 14px;
+    padding: 0 var(--space-3);
     border: 1px solid var(--line);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--surface);
-    font-size: 0.875rem;
+    font-size: var(--text-small);
     color: var(--ink);
     text-decoration: none;
     white-space: nowrap;
-    transition: border-color 160ms ease, color 160ms ease;
+    transition: border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
   }
 
   .ways__lang:hover {
-    border-color: var(--merged);
-    color: var(--merged);
+    border-color: var(--brand);
+    color: var(--brand);
   }
 
   @media (min-width: 768px) {
     .ways__langs {
       grid-template-columns: auto minmax(0, 1fr);
       align-items: center;
-      gap: 16px;
+      gap: var(--space-4);
     }
 
     .ways__lang-list {
       margin: 0;
-      padding: 4px;
+      padding: var(--space-1);
       flex-wrap: wrap;
       overflow: visible;
     }

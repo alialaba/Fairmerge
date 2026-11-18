@@ -315,9 +315,9 @@ const total = String(paths.length).padStart(2, '0');
     --edge: max(var(--content-pad), calc((100% - var(--content-width)) / 2 + var(--content-pad)));
     position: relative;
     --section-bg: var(--path-bg);
-    padding-block: clamp(64px, 10vw, 112px);
+    padding-block: var(--section-pad);
     color: var(--surface);
-    transition: background-color 600ms ease;
+    transition: background-color var(--dur-slower) var(--ease-out);
   }
 
   .paths[data-active='1'] { --path-bg: var(--path-grow-bg); }
@@ -329,7 +329,7 @@ const total = String(paths.length).padStart(2, '0');
     padding-inline: var(--content-pad);
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: clamp(28px, 5vw, 40px);
+    gap: clamp(var(--space-6), 5vw, var(--space-7));
   }
 
   /* ---------- Intro ---------- */
@@ -341,9 +341,9 @@ const total = String(paths.length).padStart(2, '0');
   .paths__title span { display: block; }
 
   .paths__lede {
-    margin-top: 16px;
-    max-width: 28rem;
-    font-size: 1.0625rem;
+    margin-top: var(--space-4);
+    max-width: var(--measure-narrow);
+    font-size: var(--text-body-lg);
     color: var(--on-dark-muted);
   }
 
@@ -356,12 +356,12 @@ const total = String(paths.length).padStart(2, '0');
     grid-area: 1 / 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: clamp(16px, 2vw, 24px);
+    gap: var(--space-5);
+    padding: clamp(var(--space-4), 2vw, var(--space-5));
     background: var(--on-dark-surface);
     border: 1px solid var(--on-dark-line);
     border-radius: var(--radius-lg);
-    transition: opacity 400ms ease;
+    transition: opacity var(--dur-slow) var(--ease-out);
   }
 
   .media:not(.is-active) {
@@ -374,9 +374,9 @@ const total = String(paths.length).padStart(2, '0');
     display: grid;
     align-items: center;
     transition:
-      opacity 500ms ease,
-      transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1),
-      clip-path 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+      opacity var(--dur-slow) var(--ease-out),
+      transform var(--dur-slower) var(--ease-out),
+      clip-path var(--dur-slower) var(--ease-out);
     clip-path: inset(0 0 0 0 round 12px);
   }
 
@@ -388,7 +388,7 @@ const total = String(paths.length).padStart(2, '0');
 
   .media__caption,
   .media__sub {
-    transition: opacity 400ms ease, transform 400ms ease;
+    transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
   }
 
   .media.is-active .media__caption { transition-delay: 250ms; }
@@ -402,34 +402,34 @@ const total = String(paths.length).padStart(2, '0');
 
   .media__caption {
     font-family: var(--font-display);
-    font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+    font-size: var(--text-h3);
     font-weight: 500;
-    line-height: 1.2;
+    line-height: var(--leading-snug);
     color: var(--surface);
   }
 
   .media__sub {
-    margin-top: 4px;
-    font-size: 0.9375rem;
+    margin-top: var(--space-1);
+    font-size: var(--text-small);
     color: var(--on-dark-muted);
   }
 
   /* ---------- Vignettes: small light "app" panels ---------- */
   .vig {
-    padding: 14px 16px;
+    padding: var(--space-3) var(--space-4);
     background: var(--surface);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     color: var(--ink);
-    font-size: 0.875rem;
-    box-shadow: 0 20px 40px -24px color-mix(in srgb, var(--ink) 80%, transparent);
+    font-size: var(--text-small);
+    box-shadow: var(--shadow-lg);
   }
 
   .vig__head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    padding-bottom: 10px;
+    gap: var(--space-3);
+    padding-bottom: var(--space-2);
     border-bottom: 1px solid var(--line);
     font-weight: 600;
   }
@@ -437,15 +437,15 @@ const total = String(paths.length).padStart(2, '0');
   .vig__head--code {
     font-family: var(--font-code);
     font-weight: 500;
-    font-size: 0.8125rem;
+    font-size: var(--text-caption);
     color: var(--ink-muted);
   }
 
   .vig__tag {
-    padding: 2px 8px;
-    border-radius: 999px;
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-pill);
     background: var(--canvas);
-    font-size: 0.75rem;
+    font-size: var(--text-caption);
     font-weight: 500;
     color: var(--ink-muted);
   }
@@ -461,8 +461,8 @@ const total = String(paths.length).padStart(2, '0');
   .vig__row {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
-    padding-block: 10px;
+    gap: var(--space-3);
+    padding-block: var(--space-2);
     border-bottom: 1px solid var(--line);
   }
 
@@ -471,24 +471,24 @@ const total = String(paths.length).padStart(2, '0');
   .vig__pr { color: var(--ink-muted); }
 
   .vig__amount {
-    font-family: var(--font-code);
+    font-variant-numeric: tabular-nums;
     font-weight: 600;
     color: var(--payout);
   }
 
   .vig__diff {
-    margin-top: 10px;
+    margin-top: var(--space-2);
     font-family: var(--font-code);
-    font-size: 0.8125rem;
-    line-height: 1.9;
-    border-radius: 6px;
+    font-size: var(--text-caption);
+    line-height: var(--leading-code);
+    border-radius: var(--radius-sm);
     overflow: hidden;
   }
 
   .vig__line {
     display: grid;
     grid-template-columns: 1.6em minmax(0, 1fr);
-    padding-right: 8px;
+    padding-right: var(--space-2);
     white-space: pre;
   }
 
@@ -498,62 +498,62 @@ const total = String(paths.length).padStart(2, '0');
   .vig__line--add .vig__sign { color: var(--payout); }
 
   .vig__bubble {
-    margin-top: 12px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: var(--merged-tint);
-    font-size: 0.8125rem;
-    line-height: 1.45;
+    margin-top: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    background: var(--brand-tint);
+    font-size: var(--text-caption);
+    line-height: var(--leading-normal);
   }
 
   .vig__bubble-label {
     display: block;
     margin-bottom: 2px;
-    font-size: 0.6875rem;
+    font-size: var(--text-caption);
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
-    color: var(--merged);
+    color: var(--brand);
   }
 
   .vig__title {
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: var(--text-body);
     font-weight: 600;
   }
 
   .vig__ai {
-    margin-top: 8px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    background: var(--merged-tint);
-    font-size: 0.8125rem;
+    margin-top: var(--space-2);
+    padding: var(--space-2) var(--space-2);
+    border-radius: var(--radius-sm);
+    background: var(--brand-tint);
+    font-size: var(--text-caption);
     color: var(--ink);
   }
 
-  .vig__ai strong { color: var(--merged); }
+  .vig__ai strong { color: var(--brand); }
 
   .vig__posted {
-    margin-top: 10px;
+    margin-top: var(--space-2);
     display: flex;
     justify-content: space-between;
-    padding-block: 8px;
+    padding-block: var(--space-2);
     border-block: 1px solid var(--line);
     color: var(--ink-muted);
   }
 
   .vig__posted strong {
-    font-family: var(--font-code);
+    font-variant-numeric: tabular-nums;
     color: var(--ink);
   }
 
   .vig__counter {
-    margin-top: 10px;
+    margin-top: var(--space-2);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
-    font-size: 0.8125rem;
+    gap: var(--space-2);
+    font-size: var(--text-caption);
   }
 
   .vig__avatar {
@@ -562,9 +562,9 @@ const total = String(paths.length).padStart(2, '0');
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: var(--merged-tint);
-    color: var(--merged);
-    font-size: 0.6875rem;
+    background: var(--brand-tint);
+    color: var(--brand);
+    font-size: var(--text-caption);
     font-weight: 700;
   }
 
@@ -576,14 +576,14 @@ const total = String(paths.length).padStart(2, '0');
   .vig__chips {
     margin-left: auto;
     display: flex;
-    gap: 6px;
+    gap: var(--space-2);
   }
 
   .vig__chip {
-    padding: 3px 10px;
-    border-radius: 999px;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-pill);
     border: 1px solid var(--line);
-    font-size: 0.75rem;
+    font-size: var(--text-caption);
     font-weight: 600;
     color: var(--ink-muted);
   }
@@ -598,9 +598,9 @@ const total = String(paths.length).padStart(2, '0');
   .paths__track {
     position: relative;
     display: flex;
-    gap: 14px;
+    gap: var(--space-3);
     margin-inline: calc(-1 * var(--content-pad));
-    padding: 4px var(--content-pad);
+    padding: var(--space-1) var(--content-pad);
     scroll-padding-inline: var(--content-pad);
     overflow-x: auto;
     overscroll-behavior-x: contain;
@@ -611,7 +611,7 @@ const total = String(paths.length).padStart(2, '0');
   .paths__track::-webkit-scrollbar { display: none; }
 
   .paths__track:focus-visible {
-    outline: 3px solid var(--merged-tint);
+    outline: 3px solid var(--focus-ring-on-dark);
     outline-offset: -3px;
     border-radius: var(--radius-sm);
   }
@@ -630,7 +630,7 @@ const total = String(paths.length).padStart(2, '0');
     scroll-snap-align: start;
     display: flex;
     flex-direction: column;
-    padding: clamp(20px, 2.4vw, 32px);
+    padding: clamp(var(--space-5), 2.4vw, var(--space-6));
     background: var(--on-dark-surface);
     border: 1px solid var(--on-dark-line);
     border-radius: var(--radius-lg);
@@ -639,14 +639,14 @@ const total = String(paths.length).padStart(2, '0');
   .pcard__meta {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding-bottom: 18px;
+    gap: var(--space-3);
+    padding-bottom: var(--space-4);
     border-bottom: 1px solid var(--on-dark-line);
-    font-size: 0.875rem;
+    font-size: var(--text-small);
   }
 
   .pcard__num {
-    font-family: var(--font-code);
+    font-variant-numeric: tabular-nums;
     font-weight: 500;
     color: var(--surface);
   }
@@ -672,41 +672,41 @@ const total = String(paths.length).padStart(2, '0');
   }
 
   .pcard__title {
-    margin-top: 20px;
+    margin-top: var(--space-5);
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 1.9rem + 2.4vw, 4rem);
+    font-size: var(--text-h2);
     font-weight: 400;
-    line-height: 1;
-    letter-spacing: -0.02em;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
     color: var(--surface);
   }
 
   .pcard__quote {
-    margin-top: 20px;
+    margin-top: var(--space-5);
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 12px;
-    font-size: 1.0625rem;
-    line-height: 1.5;
+    gap: var(--space-3);
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-normal);
     color: var(--surface);
   }
 
-  /* Light violet: reads on all three path backgrounds (--merged was ~1.9:1). */
-  .pcard__mark { color: var(--merged-tint); margin-top: 2px; }
+  /* Light violet: reads on all three path backgrounds (--brand was ~1.9:1). */
+  .pcard__mark { color: var(--brand-tint); margin-top: 2px; }
 
   .pcard__who {
-    margin-top: 10px;
-    padding-left: 34px;
-    padding-bottom: 20px;
+    margin-top: var(--space-2);
+    padding-left: var(--space-6);
+    padding-bottom: var(--space-5);
     border-bottom: 1px solid var(--on-dark-line);
-    font-size: 0.8125rem;
+    font-size: var(--text-caption);
     color: var(--on-dark-muted);
   }
 
   .pcard__body {
-    margin-top: 20px;
-    font-size: 0.9375rem;
-    line-height: 1.55;
+    margin-top: var(--space-5);
+    font-size: var(--text-small);
+    line-height: var(--leading-normal);
     color: var(--on-dark-muted);
   }
 
@@ -714,7 +714,7 @@ const total = String(paths.length).padStart(2, '0');
   .paths__controls {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-4);
   }
 
   .paths__controls[hidden] { display: none; }
@@ -740,7 +740,7 @@ const total = String(paths.length).padStart(2, '0');
   .paths__segs {
     flex: 1;
     display: flex;
-    gap: 6px;
+    gap: var(--space-2);
   }
 
   /* Segments are created by the carousel script, hence :global(). */
@@ -761,17 +761,16 @@ const total = String(paths.length).padStart(2, '0');
     top: 50%;
     height: 3px;
     margin-top: -1.5px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--on-dark-control);
-    transition: background-color 300ms ease;
+    transition: background-color var(--dur-base) var(--ease-out);
   }
 
   .paths__segs :global(.paths__seg[aria-current='true'])::before { background: var(--surface); }
 
   .paths__counter {
     flex: none;
-    font-family: var(--font-code);
-    font-size: 0.875rem;
+    font-size: var(--text-small);
     font-variant-numeric: tabular-nums;
     color: var(--on-dark-muted);
   }
@@ -802,7 +801,7 @@ const total = String(paths.length).padStart(2, '0');
     .paths__intro {
       grid-column: content;
       grid-row: 1;
-      padding-block: clamp(80px, 8vw, 112px) 56px;
+      padding-block: clamp(var(--space-10), 8vw, 112px) var(--space-9);
     }
 
     .paths__bgs,
@@ -821,7 +820,7 @@ const total = String(paths.length).padStart(2, '0');
     .media,
     .pcard {
       grid-row: var(--row);
-      margin-block: 56px;
+      margin-block: var(--space-9);
     }
 
     .media { grid-column: 2; }
@@ -848,7 +847,7 @@ const total = String(paths.length).padStart(2, '0');
     .paths.is-pinned {
       height: 300vh; /* ~100vh of scrolling per path */
       --section-bg: var(--path-bg);
-      transition: background-color 600ms ease;
+      transition: background-color var(--dur-slower) var(--ease-out);
     }
 
     /* Pinned just below the sticky site header, filling the rest of the screen. */
@@ -870,7 +869,7 @@ const total = String(paths.length).padStart(2, '0');
       grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr) minmax(0, 1fr);
       grid-template-areas: 'intro media card';
       align-items: center;
-      gap: clamp(24px, 3vw, 48px);
+      gap: clamp(var(--space-5), 3vw, var(--space-8));
     }
 
     .is-pinned .paths__intro {
@@ -914,13 +913,13 @@ const total = String(paths.length).padStart(2, '0');
     }
 
     /* Card swap: outgoing pieces fade at once, incoming pieces stagger in (--d). */
-    .is-pinned .pcard { transition: opacity 400ms ease; }
+    .is-pinned .pcard { transition: opacity var(--dur-slow) var(--ease-out); }
     .is-pinned .pcard:not(.is-active) { opacity: 0; pointer-events: none; }
 
     .is-pinned .anim {
       transition:
-        opacity 350ms ease,
-        transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+        opacity var(--dur-slow) var(--ease-out),
+        transform var(--dur-slow) var(--ease-out);
     }
 
     .is-pinned .pcard.is-active .anim { transition-delay: var(--d, 0ms); }

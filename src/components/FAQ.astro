@@ -120,8 +120,7 @@ const faqs = [
 <style>
   .faq {
     --section-bg: var(--surface);
-    --ease: cubic-bezier(0.22, 1, 0.36, 1);
-    padding-block: clamp(64px, 10vw, 128px);
+    padding-block: var(--section-pad);
     color: var(--ink);
   }
 
@@ -135,24 +134,24 @@ const faqs = [
      on an ancestor would stop position: sticky from working. */
   .faq__panel {
     display: grid;
-    gap: 40px;
+    gap: var(--space-7);
     align-items: start;
-    padding: 24px;
-    border-radius: 24px;
+    padding: var(--space-5);
+    border-radius: var(--radius-xl);
     background: var(--canvas);
   }
 
   @media (min-width: 1024px) {
     .faq__panel {
       grid-template-columns: minmax(0, 40fr) minmax(0, 60fr);
-      gap: clamp(40px, 5vw, 80px);
-      padding: 72px;
-      border-radius: 32px;
+      gap: clamp(var(--space-7), 5vw, var(--space-10));
+      padding: var(--space-10);
+      border-radius: var(--radius-xl);
     }
   }
 
   @media (min-width: 768px) and (max-width: 1023.98px) {
-    .faq__panel { padding: 48px; border-radius: 28px; }
+    .faq__panel { padding: var(--space-8); border-radius: var(--radius-xl); }
   }
 
   /* ---------- Left: heading block ---------- */
@@ -164,25 +163,25 @@ const faqs = [
   .faq__title span { display: block; }
 
   .faq__lede {
-    margin-top: 16px;
-    font-size: 1.0625rem;
+    margin-top: var(--space-4);
+    font-size: var(--text-body-lg);
     color: var(--ink-muted);
   }
 
   .faq__link {
-    margin-top: 24px;
+    margin-top: var(--space-5);
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding-bottom: 3px;
+    gap: var(--space-2);
+    padding-bottom: var(--space-1);
     border-bottom: 1.5px solid currentColor;
-    font-size: 0.9375rem;
+    font-size: var(--text-small);
     font-weight: 600;
     color: var(--ink);
     text-decoration: none;
   }
 
-  .faq__link:hover { color: var(--merged); }
+  .faq__link:hover { color: var(--brand); }
 
   /* Desktop: the heading block sticks 96px from the top while its grid cell
      (as tall as the accordion) scrolls past, then leaves with the panel. */
@@ -209,8 +208,8 @@ const faqs = [
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    padding: 20px 0;
+    gap: var(--space-5);
+    padding: var(--space-5) 0;
     border: 0;
     background: none;
     text-align: left;
@@ -218,7 +217,7 @@ const faqs = [
   }
 
   @media (min-width: 1024px) {
-    .faq__button { padding-block: 28px; }
+    .faq__button { padding-block: var(--space-6); }
   }
 
   .faq__button:focus-visible {
@@ -228,13 +227,13 @@ const faqs = [
 
   .faq__q-text {
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: var(--text-h3);
     font-weight: 500;
-    line-height: 1.25;
+    line-height: var(--leading-snug);
   }
 
   @media (min-width: 1024px) {
-    .faq__q-text { font-size: 1.5rem; }
+    .faq__q-text { font-size: var(--text-h3); }
   }
 
   .faq__icon {
@@ -246,13 +245,13 @@ const faqs = [
     border: 1px solid var(--ink-muted);
     border-radius: var(--radius-sm);
     color: var(--ink);
-    transition: border-color 200ms var(--ease);
+    transition: border-color var(--dur-fast) var(--ease-out);
   }
 
-  .faq__icon svg { transition: transform 350ms var(--ease); }
+  .faq__icon svg { transition: transform var(--dur-slow) var(--ease-out); }
 
   .faq__button:hover .faq__icon,
-  .faq__button:focus-visible .faq__icon { border-color: var(--merged); }
+  .faq__button:focus-visible .faq__icon { border-color: var(--brand); }
 
   /* Plus turns into an X when the item is open. */
   .faq__button[aria-expanded='true'] .faq__icon svg { transform: rotate(45deg); }
@@ -269,14 +268,14 @@ const faqs = [
   }
 
   .faq__a-text {
-    max-width: 38rem;
-    padding-bottom: 24px;
-    line-height: 1.65;
+    max-width: var(--measure);
+    padding-bottom: var(--space-5);
+    line-height: var(--leading-normal);
     color: var(--ink-muted);
   }
 
   @media (min-width: 1024px) {
-    .faq__a-text { padding-bottom: 28px; }
+    .faq__a-text { padding-bottom: var(--space-6); }
   }
 
   /* Enhanced (JS ran): closed answers collapse to a 0fr row, open ones grow
@@ -284,23 +283,23 @@ const faqs = [
   .is-enhanced .faq__a {
     grid-template-rows: 0fr;
     visibility: hidden;
-    transition: grid-template-rows 350ms var(--ease), visibility 0s linear 350ms;
+    transition: grid-template-rows var(--dur-slow) var(--ease-out), visibility 0s linear var(--dur-slow);
   }
 
   .is-enhanced .faq__a.is-open {
     grid-template-rows: 1fr;
     visibility: visible;
-    transition: grid-template-rows 350ms var(--ease), visibility 0s;
+    transition: grid-template-rows var(--dur-slow) var(--ease-out), visibility 0s;
   }
 
   .is-enhanced .faq__a-text {
     opacity: 0;
-    transition: opacity 200ms var(--ease);
+    transition: opacity var(--dur-fast) var(--ease-out);
   }
 
   .is-enhanced .faq__a.is-open .faq__a-text {
     opacity: 1;
-    transition: opacity 300ms var(--ease) 100ms;
+    transition: opacity var(--dur-base) var(--ease-out) 100ms;
   }
 
   .is-instant *,

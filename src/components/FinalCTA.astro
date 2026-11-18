@@ -62,11 +62,11 @@ const n = i;
         <p class="cta__sub cta__reveal">$250 average bounty. About 5 minutes from merge to payout.</p>
 
         <div class="cta__actions cta__reveal">
-          <a class="cta__btn cta__btn--primary" href="#bounties">
+          <a class="btn btn--on-dark btn--lg" href="#bounties">
             Find a bounty
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
           </a>
-          <a class="cta__btn cta__btn--secondary" href="#paths">Post a bounty</a>
+          <a class="btn btn--outline-on-dark btn--lg" href="#paths">Post a bounty</a>
         </div>
       </div>
     </div>
@@ -150,9 +150,8 @@ const n = i;
 <style>
   .cta {
     --section-bg: var(--surface);
-    --ease: cubic-bezier(0.22, 1, 0.36, 1);
     --frame-inset: 16px;
-    padding-block: clamp(48px, 8vw, 112px);
+    padding-block: clamp(var(--space-8), 8vw, 112px);
   }
 
   .cta__inner {
@@ -169,7 +168,7 @@ const n = i;
     min-height: 480px;
     display: flex;
     align-items: flex-end; /* mobile: content at the bottom */
-    border-radius: 24px;
+    border-radius: var(--radius-xl);
     /* Gradient fallback (also sits under the photo). */
     background:
       radial-gradient(120% 90% at 15% 20%, var(--path-grow-bg), transparent 60%),
@@ -183,7 +182,7 @@ const n = i;
     .cta__panel {
       min-height: 560px;
       align-items: center; /* desktop: vertically centred */
-      border-radius: 32px;
+      border-radius: var(--radius-xl);
     }
   }
 
@@ -241,10 +240,10 @@ const n = i;
     font-family: var(--font-display);
     font-size: clamp(6rem, 22vw, 19rem);
     font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.04em;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
     white-space: nowrap;
-    color: color-mix(in srgb, var(--surface) 6%, transparent);
+    color: var(--on-dark-watermark);
     pointer-events: none;
     user-select: none;
   }
@@ -253,13 +252,13 @@ const n = i;
   .cta__frame {
     position: absolute;
     inset: var(--frame-inset);
-    border: 1px solid color-mix(in srgb, var(--surface) 35%, transparent);
-    border-radius: 16px;
+    border: 1px solid var(--on-dark-frame);
+    border-radius: var(--radius-md);
     pointer-events: none;
   }
 
   @media (min-width: 768px) {
-    .cta__frame { border-radius: 20px; }
+    .cta__frame { border-radius: var(--radius-lg); }
   }
 
   /* 5. Content: inside the frame. Mobile full width; desktop the right 55%. */
@@ -267,14 +266,14 @@ const n = i;
     position: relative;
     container-type: inline-size; /* the heading sizes itself to this column */
     width: 100%;
-    padding: calc(var(--frame-inset) + 24px);
+    padding: calc(var(--frame-inset) + var(--space-5));
   }
 
   @media (min-width: 1024px) {
     .cta__content {
       width: 55%;
       margin-left: 45%;
-      padding: calc(var(--frame-inset) + 40px) calc(var(--frame-inset) + 48px) calc(var(--frame-inset) + 40px) 0;
+      padding: calc(var(--frame-inset) + var(--space-7)) calc(var(--frame-inset) + var(--space-8)) calc(var(--frame-inset) + var(--space-7)) 0;
     }
   }
 
@@ -291,10 +290,10 @@ const n = i;
     font-family: var(--font-display);
     /* The spec's size, capped at 11.5% of the content column (cqi) so each
        line ("Your next merge" / "could pay today.") always fits on one row. */
-    font-size: min(clamp(2.25rem, 1.2rem + 5vw, 5.25rem), 11.5cqi);
+    font-size: min(var(--text-display), 11.5cqi);
     font-weight: 400; /* the lightest weight loaded */
-    line-height: 1.05;
-    letter-spacing: -0.03em;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
     color: var(--surface);
     text-wrap: initial;
   }
@@ -318,63 +317,29 @@ const n = i;
 
   /* ---------- Supporting line + buttons ---------- */
   .cta__sub {
-    margin-top: 24px;
-    max-width: 32rem;
-    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
-    line-height: 1.4;
-    color: color-mix(in srgb, var(--surface) 85%, transparent);
+    margin-top: var(--space-5);
+    max-width: var(--measure-narrow);
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-normal);
+    color: var(--on-dark-strong);
   }
 
   .cta__actions {
-    margin-top: 32px;
+    margin-top: var(--space-6);
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .cta__btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 52px;
-    padding: 0 24px;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    text-decoration: none;
-    transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
-  }
-
-  .cta__btn--primary {
-    background: var(--surface);
-    color: var(--ink);
-  }
-
-  .cta__btn--primary:hover {
-    background: var(--merged-tint);
-    color: var(--ink);
-  }
-
-  .cta__btn--secondary {
-    border: 1px solid color-mix(in srgb, var(--surface) 60%, transparent);
-    color: var(--surface);
-  }
-
-  .cta__btn--secondary:hover {
-    border-color: var(--surface);
-    background: color-mix(in srgb, var(--surface) 10%, transparent);
-    color: var(--surface);
+    gap: var(--space-3);
   }
 
   /* White focus ring, clearly visible on the dark panel. */
-  .cta__btn:focus-visible {
-    outline: 3px solid var(--surface);
+  .cta__actions .btn:focus-visible {
+    outline: 3px solid var(--focus-ring-on-dark);
     outline-offset: 3px;
   }
 
   @media (max-width: 479.98px) {
     .cta__actions { flex-direction: column; }
-    .cta__btn { width: 100%; }
+    .cta__actions .btn { width: 100%; }
   }
 
   /* One-time reveal: hidden start state only with JS; opacity + transform only,
@@ -382,7 +347,7 @@ const n = i;
   :global(.js) .cta__reveal {
     opacity: 0;
     transform: translateY(16px);
-    transition: opacity 500ms var(--ease), transform 500ms var(--ease);
+    transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
   }
 
   :global(.js) .cta__actions.cta__reveal { transition-delay: 120ms; }
