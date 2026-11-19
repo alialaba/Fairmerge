@@ -1,6 +1,6 @@
 # Fairmerge in Webflow: build guide
 
-How to rebuild **Hero, WaysToEarn, Paths and BountyBoard** from the Astro site in Webflow, using Client-First naming.
+How to rebuild **Hero, WaysToEarn, Paths, BountyBoard, HowItWorks and FAQ** from the Astro site in Webflow, using Client-First naming.
 
 The Astro source is the reference. When something here is unclear, open the matching file in `src/components/` and `src/styles/global.css`.
 
@@ -12,6 +12,8 @@ The Astro source is the reference. When something here is unclear, open the matc
 - [Part 2.2: WaysToEarn](#part-22-waystoearn)
 - [Part 2.3: Paths](#part-23-paths)
 - [Part 2.4: BountyBoard](#part-24-bountyboard)
+- [Part 2.5: HowItWorks](#part-25-howitworks)
+- [Part 2.6: FAQ](#part-26-faq)
 - [Final pass (whole page)](#final-pass-whole-page)
 
 ---
@@ -237,7 +239,10 @@ Body
       ├─ section_hero
       ├─ section_ways
       ├─ section_paths
-      └─ section_board
+      ├─ section_board
+      ├─ (section_contributors: not covered in this guide yet)
+      ├─ section_hiw
+      └─ section_faq
 ```
 
 Every section follows the Client-First pattern:
@@ -807,7 +812,7 @@ The Designer holds the **accordion** look, the base for every breakpoint. The De
 | `ways_panel-chip` | Inline-flex · Align center · Gap space-2 · Padding space-1 space-3 · Border 1px line · Radius radius-pill · Background surface · Size text-small. The green dot is the embed CSS's `::before` |
 | `ways_cta` | Combo on `button is-primary` (default 48px size). Layout only: Align self stretch. The arrow inside is a `button_icon` |
 | `ways_langs` | Margin top `clamp(32px, 4vw, 48px)` · Grid, 2 columns `auto 1fr` · Align center · Gap space-4 |
-| `ways_langs-label` | Size text-caption · Weight 600 · Letter spacing 0.06em · Uppercase · Colour ink-muted |
+| `ways_langs-label` | Size text-caption · Weight 600 · Letter spacing tracking-wide · Uppercase · Colour ink-muted |
 | `ways_lang-list` | Flex, no wrap · Gap space-2 · No list style · Padding space-1 |
 | `ways_lang` | Inline-flex · Align center · Min height 36px · Padding 0 space-3 · Border 1px line · Radius radius-pill · Background surface · Size text-small · Colour ink · No underline · No wrap. **Hover:** Border and colour brand |
 
@@ -1201,7 +1206,7 @@ vig                                    vig                                    vi
 | `vig_line` + `is-add` | Background payout-tint |
 | `vig_sign` | Text align center · Colour ink-muted (`is-add` → payout) |
 | `vig_bubble` | Margin top space-3 · Padding space-2 space-3 · Radius radius-sm · Background brand-tint · Size text-caption · Line height leading-normal |
-| `vig_bubble-label` | Block · Margin bottom 2px · Size text-caption · Weight 600 · Letter spacing 0.06em · Uppercase · Colour brand |
+| `vig_bubble-label` | Block · Margin bottom 2px · Size text-caption · Weight 600 · Letter spacing tracking-wide · Uppercase · Colour brand |
 | `vig_title` | Font font-display · Size text-body · Weight 600 |
 | `vig_ai` | Margin top space-2 · Padding space-2 space-2 · Radius radius-sm · Background brand-tint · Size text-caption |
 | `vig_ai-strong` | Colour brand |
@@ -1747,9 +1752,9 @@ section_board (Section, id: bounties)                     [aria-labelledby, data
 | `board_title` | Weight 600 |
 | `board_title-line` | Display block |
 | `board_lede` | Margin top space-4 · Max width measure-narrow · Size text-body-lg · Colour ink-muted |
-| `board_filters` | Margin top `clamp(32px, 4vw, 48px)` · Grid, 2 columns auto auto · Justify start · Column gap space-8 · Row gap space-4 |
+| `board_filters` | Margin top gap-section-head · Grid, 2 columns auto auto · Justify start · Column gap space-8 · Row gap space-4 |
 | `board_filter` | Grid · Gap space-2 · Min width 0 |
-| `board_filter-label` | Size text-caption · Weight 600 · Letter spacing 0.06em · Uppercase · Colour ink-muted |
+| `board_filter-label` | Size text-caption · Weight 600 · Letter spacing tracking-wide · Uppercase · Colour ink-muted |
 | `board_chips` | Flex, wrap · Gap space-2 · Padding space-2 0 (room for focus rings) |
 | `board_list-wrapper` | Margin top `clamp(24px, 3vw, 36px)` · Padding top 8px |
 | `board_list` | Grid, 3 columns · Gap `clamp(14px, 1.6vw, 24px)` (fallback 24px) |
@@ -2177,11 +2182,1004 @@ The "Claim bounty" link's accessible name is "Claim bounty" followed by the boun
 
 ---
 
+## Part 2.5: HowItWorks
+
+**Background:** payout-tint, with the content in a white (surface) panel.
+
+- Four steps from open issue to payout: post a bounty → ship a pull request → AI review → merged and paid.
+- Left: a decorative "stage" that swaps one small UI card per step. Right: the step list.
+- Each step has a thin progress line that fills over 5 seconds, then the next step starts. After step 4 it holds for 1.5 seconds and loops.
+- The timer runs only while the section is on screen, and pauses on hover, on keyboard focus, and with the pause button. Clicking a step stops it for good.
+- Not scroll-pinned. No load or scroll reveal.
+
+**Webflow vs native:** Webflow Tabs can't do a timed progress line that pauses on hover and focus, and their tab links aren't real `<button>`s. So the step list and the stage live in Code Embeds, and one script drives both. The header and the panel are native elements.
+
+### Element tree
+
+```
+section_hiw (Section, id: how-it-works)                [aria-labelledby, data-hiw]
+└─ padding-global
+   └─ container-large
+      └─ padding-section-large
+         └─ hiw_component (Div)                        ← the white panel
+            ├─ hiw_header (Div, tag: header)
+            │  ├─ hiw_title (H2, id: hiw-title): "From open issue to paid, in four steps"
+            │  └─ hiw_lede (Paragraph)
+            ├─ hiw_grid (Div, Grid)                     [data-comp]
+            │  ├─ hiw_stage-embed (Code Embed: the stage, decorative)
+            │  └─ hiw_side (Div)
+            │     └─ hiw_steps-embed (Code Embed: step list + pause button)
+            └─ hiw_script (Code Embed: CSS + script; see "Custom code")
+```
+
+`hiw_script` must be the **last child** of `hiw_component`, so the stage and the steps exist when the script runs.
+
+### Styles per breakpoint
+
+Only the native elements are styled in the Style panel. Everything inside the embeds is styled by the CSS in `hiw_script`.
+
+**Desktop (base)**
+
+| Class | Styles |
+|---|---|
+| `section_hiw` | Background payout-tint · Colour ink |
+| `hiw_component` | Background surface · Radius radius-lg · Padding `clamp(24px, 5vw, 64px)` (fallback 64px) |
+| `hiw_header` | Max width measure · Margin left/right auto · Text align center |
+| `hiw_title` | Weight 600 (size comes from All H2: text-h1) |
+| `hiw_lede` | Margin top space-4 · Size text-body-lg · Colour ink-muted |
+| `hiw_grid` | Margin top gap-section-head · Grid, 2 columns `45fr 55fr` · Align items center · Column gap `clamp(40px, 5vw, 80px)` (fallback 64px) |
+| `hiw_grid` > children | Min width 0 (so the diff's long code lines can't widen a column). Set it on `hiw_side` here; the embed wrappers get it from the CSS |
+
+**Tablet**
+
+| Class | Changes |
+|---|---|
+| `hiw_component` | Padding space-8 |
+| `hiw_grid` | 1 column · Row gap `clamp(32px, 4vw, 40px)` (fallback 40px) |
+
+**Mobile landscape**
+
+| Class | Changes |
+|---|---|
+| `hiw_component` | Padding space-7 |
+| `hiw_grid` | Row gap space-6 |
+
+**Mobile portrait**
+
+| Class | Changes |
+|---|---|
+| `hiw_component` | Padding space-5 |
+
+### Content
+
+| # | Step title | Description | Tile colour |
+|---|---|---|---|
+| 1 | Post a bounty | A maintainer turns an issue into a bounty. AI reads the issue and suggests a fair price based on its complexity. | brand |
+| 2 | Ship a pull request | Claim a bounty that matches your expertise. It's reserved for you while you work. Use any tools you like, AI included: you're accountable for the PR. | brand |
+| 3 | AI reviews it | Within minutes, the review checks your PR against the bounty's requirements and runs the project's tests. If anything's missing, it tells you exactly what. | brand |
+| 4 | Merged and paid | The maintainer's merge is the final check. Your payout goes out via PayPal right away, wherever you are. | payout |
+
+- **Lede:** No proposals, no invoices, no waiting 30 days. Just merged code and a payout.
+- **Stage cards (sample demo content):** the same fictional bounty as the hero image: `openarm/motion-planner`, "Fix arm jitter near joint limits", AI range $800–$1,050, posted at $900, PR #482 by `amara-o`.
+
+The step texts appear twice in the embeds: once in the stage's label pill and once in the step list. Change both when you edit a title.
+
+### Custom code
+
+**1. `hiw_stage-embed`** (first child of `hiw_grid`). The whole stage is `aria-hidden`: everything it shows is also in the step list as real text.
+
+```html
+<div class="hiw_stage" aria-hidden="true" data-stage data-active="0">
+  <div class="hiw_glow"></div>
+
+  <!-- Label pill: slides between left and right; its text crossfades. -->
+  <div class="hiw_pill">
+    <span class="hiw_pill-texts">
+      <span class="hiw_pill-text is-active" data-pill-text>Post a bounty</span>
+      <span class="hiw_pill-text" data-pill-text>Ship a pull request</span>
+      <span class="hiw_pill-text" data-pill-text>AI reviews it</span>
+      <span class="hiw_pill-text" data-pill-text>Merged and paid</span>
+    </span>
+    <svg class="hiw_arrow" viewBox="0 0 48 40" width="48" height="40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M6 4c4 18 16 28 34 30"/><path d="M33 28l7 6-8 3"/></svg>
+  </div>
+
+  <!-- Step 1: the bounty card -->
+  <div class="hiw_card is-active" data-card>
+    <div class="ui">
+      <p class="ui_repo"><code>openarm/motion-planner</code></p>
+      <p class="ui_title">Fix arm jitter near joint limits</p>
+      <p class="ui_ai">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" focusable="false"><path d="M8 1.5l1.6 4.1 4.1 1.6-4.1 1.6L8 12.9 6.4 8.8 2.3 7.2l4.1-1.6z"/></svg>
+        AI suggested: <strong>$800–$1,050</strong>
+      </p>
+      <div class="ui_row"><span>Bounty posted</span><strong class="ui_price">$900</strong></div>
+    </div>
+  </div>
+
+  <!-- Step 2: the code diff -->
+  <div class="hiw_card" data-card>
+    <div class="ui is-flush">
+      <div class="ui_diff-head">
+        <span class="ui_opened">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" focusable="false"><circle cx="4.5" cy="3.5" r="1.75"/><circle cx="4.5" cy="12.5" r="1.75"/><circle cx="11.5" cy="12.5" r="1.75"/><path d="M4.5 5.25v5.5M11.5 10.75V7a2 2 0 0 0-2-2H7.5"/></svg>
+          PR #482 opened
+        </span>
+        <span><span class="ui_add">+3</span> <span class="ui_del">−2</span></span>
+      </div>
+      <p class="ui_file"><code>src/control/ik_solver.cpp</code></p>
+      <div class="ui_diff">
+        <div class="ui_line is-del"><span class="ui_num">88</span><span class="ui_sign">−</span><code>  q_cmd = ik.solve(target);</code></div>
+        <div class="ui_line is-del"><span class="ui_num">89</span><span class="ui_sign">−</span><code>  arm.send(q_cmd);</code></div>
+        <div class="ui_line is-add"><span class="ui_num">88</span><span class="ui_sign">+</span><code>  q_cmd = ik.solve(target, limits);</code></div>
+        <div class="ui_line is-add"><span class="ui_num">89</span><span class="ui_sign">+</span><code>  q_cmd = smooth(q_prev, q_cmd, 0.2);</code></div>
+        <div class="ui_line is-add"><span class="ui_num">90</span><span class="ui_sign">+</span><code>  arm.send(clamp(q_cmd, limits));</code></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: the PR card while the AI review runs (ticks draw in one by one) -->
+  <div class="hiw_card" data-card>
+    <div class="ui">
+      <div class="ui_top">
+        <span class="ui_badge" data-badge>
+          <span class="ui_badge-review">In review</span>
+          <span class="ui_badge-merged">Merged</span>
+        </span>
+        <span class="ui_muted"><code>PR #482</code></span>
+      </div>
+      <p class="ui_title">Fix arm jitter near joint limits</p>
+      <p class="ui_author"><span class="ui_avatar">A</span><code>amara-o</code> into main</p>
+      <div class="ui_review">
+        <p class="ui_review-title">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" focusable="false"><path d="M8 1.5l1.6 4.1 4.1 1.6-4.1 1.6L8 12.9 6.4 8.8 2.3 7.2l4.1-1.6z"/></svg>
+          AI review
+        </p>
+        <ul class="ui_checks">
+          <li class="ui_check" data-check><span class="ui_box"><svg viewBox="0 0 16 16" width="11" height="11" focusable="false"><path d="M3.5 8.5l3 3 6-7" pathLength="1"/></svg></span>Meets bounty requirements</li>
+          <li class="ui_check" data-check><span class="ui_box"><svg viewBox="0 0 16 16" width="11" height="11" focusable="false"><path d="M3.5 8.5l3 3 6-7" pathLength="1"/></svg></span>Simulation tests pass</li>
+          <li class="ui_check" data-check><span class="ui_box"><svg viewBox="0 0 16 16" width="11" height="11" focusable="false"><path d="M3.5 8.5l3 3 6-7" pathLength="1"/></svg></span>No safety regressions</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: the same PR card, merged, with the payout toast -->
+  <div class="hiw_card" data-card>
+    <div class="ui">
+      <div class="ui_top">
+        <span class="ui_badge" data-badge>
+          <span class="ui_badge-review">In review</span>
+          <span class="ui_badge-merged">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" focusable="false"><circle cx="4.5" cy="3.5" r="1.75"/><circle cx="4.5" cy="12.5" r="1.75"/><circle cx="11.5" cy="8" r="1.75"/><path d="M4.5 5.25v5.5M4.5 5.25c0 2.4 2 2.75 5.25 2.75"/></svg>
+            Merged
+          </span>
+        </span>
+        <span class="ui_muted"><code>PR #482</code></span>
+      </div>
+      <p class="ui_title">Fix arm jitter near joint limits</p>
+      <p class="ui_author"><span class="ui_avatar">A</span><code>amara-o</code> into main</p>
+      <div class="ui_review">
+        <p class="ui_review-title">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" focusable="false"><path d="M8 1.5l1.6 4.1 4.1 1.6-4.1 1.6L8 12.9 6.4 8.8 2.3 7.2l4.1-1.6z"/></svg>
+          AI review
+        </p>
+        <ul class="ui_checks">
+          <li class="ui_check is-done"><span class="ui_box"><svg viewBox="0 0 16 16" width="11" height="11" focusable="false"><path d="M3.5 8.5l3 3 6-7" pathLength="1"/></svg></span>Meets bounty requirements</li>
+          <li class="ui_check is-done"><span class="ui_box"><svg viewBox="0 0 16 16" width="11" height="11" focusable="false"><path d="M3.5 8.5l3 3 6-7" pathLength="1"/></svg></span>Simulation tests pass</li>
+          <li class="ui_check is-done"><span class="ui_box"><svg viewBox="0 0 16 16" width="11" height="11" focusable="false"><path d="M3.5 8.5l3 3 6-7" pathLength="1"/></svg></span>No safety regressions</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ui_toast" data-toast>
+      <span class="ui_toast-icon"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M8 12.5v-9M4 7.5l4-4 4 4"/></svg></span>
+      <span><span class="ui_toast-amount" data-amount="900">+$900.00</span> sent via PayPal</span>
+    </div>
+  </div>
+</div>
+```
+
+**2. `hiw_steps-embed`** (inside `hiw_side`). Real `<button>`s, so every step is reachable with the keyboard. `is-brand` / `is-payout` picks the colour of the active step's tile.
+
+```html
+<ol class="hiw_steps" role="list" data-steps>
+  <li>
+    <button type="button" class="hiw_step is-brand is-active" aria-current="step" data-step>
+      <span class="hiw_track" aria-hidden="true"><span class="hiw_fill" data-fill></span></span>
+      <span class="hiw_tile" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></span>
+      <span class="hiw_text">
+        <span class="hiw_step-title">Post a bounty</span>
+        <span class="hiw_step-desc">A maintainer turns an issue into a bounty. AI reads the issue and suggests a fair price based on its complexity.</span>
+      </span>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="hiw_step is-brand" data-step>
+      <span class="hiw_track" aria-hidden="true"><span class="hiw_fill" data-fill></span></span>
+      <span class="hiw_tile" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M6 8.5v7M18 15.5V9a3 3 0 0 0-3-3h-4M13 3.5 10.5 6 13 8.5"/></svg></span>
+      <span class="hiw_text">
+        <span class="hiw_step-title">Ship a pull request</span>
+        <span class="hiw_step-desc">Claim a bounty that matches your expertise. It’s reserved for you while you work. Use any tools you like, AI included: you’re accountable for the PR.</span>
+      </span>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="hiw_step is-brand" data-step>
+      <span class="hiw_track" aria-hidden="true"><span class="hiw_fill" data-fill></span></span>
+      <span class="hiw_tile" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M10 3l1.6 3.9L15.5 8.5l-3.9 1.6L10 14l-1.6-3.9L4.5 8.5l3.9-1.6z"/><path d="M14 18l2.2 2.2L21 15.5"/></svg></span>
+      <span class="hiw_text">
+        <span class="hiw_step-title">AI reviews it</span>
+        <span class="hiw_step-desc">Within minutes, the review checks your PR against the bounty’s requirements and runs the project’s tests. If anything’s missing, it tells you exactly what.</span>
+      </span>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="hiw_step is-payout" data-step>
+      <span class="hiw_track" aria-hidden="true"><span class="hiw_fill" data-fill></span></span>
+      <span class="hiw_tile" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="8.5"/><path d="M14.6 9.4c-.5-.9-1.5-1.4-2.6-1.4-1.4 0-2.5.8-2.5 2s1.1 1.6 2.5 1.9 2.5.8 2.5 2-1.1 2.1-2.5 2.1c-1.1 0-2.1-.5-2.6-1.4M12 6.5V8M12 16v1.5"/></svg></span>
+      <span class="hiw_text">
+        <span class="hiw_step-title">Merged and paid</span>
+        <span class="hiw_step-desc">The maintainer’s merge is the final check. Your payout goes out via PayPal right away, wherever you are.</span>
+      </span>
+    </button>
+  </li>
+</ol>
+
+<!-- Pause/play for the timer. Hidden until the script shows it (and for good with reduced motion). -->
+<button class="hiw_toggle" type="button" aria-pressed="false" data-toggle hidden>
+  <svg class="hiw_icon-pause" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M5.5 3.5v9M10.5 3.5v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  <svg class="hiw_icon-play" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M5 3.2v9.6L12.5 8z" fill="currentColor"/></svg>
+  <span class="sr-only">Pause step animation</span>
+</button>
+```
+
+**3. `hiw_script`** (last child of `hiw_component`).
+
+The CSS starts with a **token bridge**: it maps short names like `--brand` to your Webflow Variables (with the hex values as fallbacks), so the rest of the CSS reads like the Astro source. Shadow and motion tokens come straight from the global CSS (Part 1.6). If your Variables have different CSS names, change them in the bridge only.
+
+```html
+<style>
+/* ---------- Token bridge: Webflow Variables -> short names ---------- */
+.section_hiw {
+  --ink: var(--colors--ink, #14162B);
+  --ink-soft: var(--colors--ink-soft, rgba(20, 22, 43, 0.82));
+  --ink-muted: var(--colors--ink-muted, #5A5F7A);
+  --canvas: var(--colors--canvas, #F6F7FB);
+  --surface: var(--colors--surface, #FFFFFF);
+  --line: var(--colors--line, #DADDEA);
+  --brand: var(--colors--brand, #0E6B47);
+  --brand-tint: var(--colors--brand-tint, #E3F1EA);
+  --payout: var(--colors--payout, #0E6B47);
+  --payout-tint: var(--colors--payout-tint, #E6F4EC);
+  --removed: var(--colors--removed, #B42318);
+  --removed-tint: var(--colors--removed-tint, #FBEAEA);
+  --font-display: var(--typography--font-display, 'Bricolage Grotesque', sans-serif);
+  --font-code: var(--typography--font-code, 'IBM Plex Mono', monospace);
+  --text-caption: var(--typography--text-caption, 0.75rem);
+  --text-small: var(--typography--text-small, 0.875rem);
+  --text-body: var(--typography--text-body, 1rem);
+  --text-h3: var(--typography--text-h3, 1.5rem);
+  --space-1: var(--spacing--space-1, 4px);
+  --space-2: var(--spacing--space-2, 8px);
+  --space-3: var(--spacing--space-3, 12px);
+  --space-4: var(--spacing--space-4, 16px);
+  --space-6: var(--spacing--space-6, 32px);
+  --radius-xs: var(--radius--radius-xs, 4px);
+  --radius-sm: var(--radius--radius-sm, 8px);
+  --radius-md: var(--radius--radius-md, 12px);
+  --radius-lg: var(--radius--radius-lg, 20px);
+  --radius-pill: var(--radius--radius-pill, 999px);
+}
+
+.hiw_grid > .w-embed { min-width: 0; }
+
+/* ---------- Stage: fixed size, cards stacked on top of each other ---------- */
+.hiw_stage {
+  position: relative;
+  container-type: inline-size;  /* lets the pill measure the stage width (cqw) */
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 372px;            /* the tallest card (PR + checklist + toast) must fit on phones */
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+  overflow: hidden;
+}
+@media (min-width: 992px) { .hiw_stage { aspect-ratio: auto; height: 460px; } }
+
+.hiw_glow {
+  position: absolute; width: 70%; aspect-ratio: 1; left: 15%; top: 22%;
+  border-radius: 50%; background: var(--payout-tint); filter: blur(32px);
+}
+
+.hiw_card {
+  position: absolute;
+  inset: 60px 0 28px;           /* room for the pill above and the toast below */
+  margin: auto;
+  width: min(94%, 380px);
+  height: fit-content;
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);  /* waiting: a little low and small */
+  pointer-events: none;
+}
+.hiw_card.is-active {
+  opacity: 1; transform: none;
+  transition: opacity var(--dur-slow) var(--ease-out) 80ms, transform var(--dur-slow) var(--ease-out) 80ms;
+}
+.hiw_card.is-leaving {
+  opacity: 0; transform: translateY(-8px);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+/* ---------- Label pill ---------- */
+.hiw_pill {
+  --x: 6cqw;
+  position: absolute; top: 16px; left: 0; z-index: 2;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--brand); color: var(--surface);
+  font-size: var(--text-caption); font-weight: 600; white-space: nowrap;
+  transform: translateX(var(--x));
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+/* Steps 2 and 4 move it right: 94% of the stage minus the pill's own width. */
+.hiw_stage[data-active='1'] .hiw_pill,
+.hiw_stage[data-active='3'] .hiw_pill { --x: calc(94cqw - 100%); }
+.hiw_pill-texts { display: grid; }  /* all labels share one cell: the pill fits the longest */
+.hiw_pill-text { grid-area: 1 / 1; opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
+.hiw_pill-text.is-active { opacity: 1; }
+.hiw_arrow {
+  position: absolute; top: calc(100% - 4px); left: 40%;
+  color: var(--brand);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.hiw_stage[data-active='1'] .hiw_arrow,
+.hiw_stage[data-active='3'] .hiw_arrow { transform: scaleX(-1); }
+
+/* ---------- UI cards ---------- */
+.ui {
+  padding: var(--space-4);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+  font-size: var(--text-caption); color: var(--ink);
+  box-shadow: var(--shadow-lg);
+}
+.ui.is-flush { padding: 0; overflow: hidden; }
+.ui code { font-family: var(--font-code); font-size: var(--text-caption); }
+.ui_repo, .ui_muted { color: var(--ink-muted); }
+.ui_title {
+  margin-top: var(--space-2);
+  font-family: var(--font-display); font-size: var(--text-body); font-weight: 600; line-height: 1.25;
+}
+.ui_ai {
+  margin-top: var(--space-3);
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2); border-radius: var(--radius-sm); background: var(--brand-tint);
+}
+.ui_ai svg, .ui_ai strong { color: var(--brand); }
+.ui_row {
+  margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; align-items: center; color: var(--ink-muted);
+}
+.ui_price { font-family: var(--font-display); font-size: var(--text-h3); color: var(--ink); }
+
+.ui_diff-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--space-2) var(--space-3);
+  background: var(--canvas); border-bottom: 1px solid var(--line);
+}
+.ui_opened { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; }
+.ui_opened svg, .ui_add { color: var(--payout); }
+.ui_add, .ui_del { font-weight: 600; }
+.ui_del { color: var(--removed); }
+.ui_file { padding: var(--space-2) var(--space-3) var(--space-1); color: var(--ink-muted); }
+.ui_diff { padding: var(--space-1) 0 var(--space-2); line-height: 1.8; }
+.ui_line { display: grid; grid-template-columns: 2.6em 1.4em minmax(0, 1fr); padding-right: var(--space-2); white-space: pre; }
+.ui_line code { overflow: hidden; }
+.ui_num { padding-right: 0.5em; text-align: right; color: var(--ink-muted); font-family: var(--font-code); }
+.ui_sign { text-align: center; }
+.ui_line.is-del { background: var(--removed-tint); }
+.ui_line.is-del .ui_sign { color: var(--removed); }
+.ui_line.is-add { background: var(--payout-tint); }
+.ui_line.is-add .ui_sign { color: var(--payout); }
+
+.ui_top { display: flex; justify-content: space-between; align-items: center; }
+/* Badge: "In review" by default; .is-merged swaps to the green "Merged" state. */
+.ui_badge {
+  display: inline-grid;
+  padding: var(--space-1) var(--space-2); border-radius: var(--radius-pill);
+  background: var(--canvas); box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--ink-muted); font-weight: 600;
+  transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+}
+.ui_badge > span {
+  grid-area: 1 / 1; display: inline-flex; align-items: center; gap: var(--space-1);
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.ui_badge-merged { opacity: 0; }
+.ui_badge.is-merged { background: var(--brand); box-shadow: none; color: var(--surface); }
+.ui_badge.is-merged .ui_badge-review { opacity: 0; }
+.ui_badge.is-merged .ui_badge-merged { opacity: 1; }
+
+.ui_author { margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); }
+.ui_author code { color: var(--ink); font-weight: 500; }
+.ui_avatar {
+  display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--brand-tint); color: var(--brand); font-weight: 700;
+}
+.ui_review { margin-top: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--line); }
+.ui_review-title {
+  display: flex; align-items: center; gap: var(--space-1);
+  font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted);
+}
+.ui_review-title svg { color: var(--brand); }
+.ui_checks { list-style: none; margin: var(--space-2) 0 0; padding: 0; display: grid; gap: var(--space-2); }
+.ui_check { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); transition: color var(--dur-base) var(--ease-out); }
+.ui_box {
+  display: grid; place-items: center; width: 17px; height: 17px; border-radius: 50%;
+  background: var(--canvas); box-shadow: inset 0 0 0 1.5px var(--line); color: var(--payout);
+  transition: background-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+}
+/* The tick is "drawn": the stroke is one dash as long as the path, pushed fully out of view. */
+.ui_box path {
+  fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--dur-slow) var(--ease-out);
+}
+.ui_check.is-done { color: var(--ink); }
+.ui_check.is-done .ui_box { background: var(--payout-tint); box-shadow: none; }
+.ui_check.is-done .ui_box path { stroke-dashoffset: 0; }
+
+.ui_toast {
+  position: absolute; right: 12px; bottom: -18px;
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-pill);
+  font-size: var(--text-caption); white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  opacity: 0; transform: translateY(16px);
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+}
+.ui_toast.is-shown { opacity: 1; transform: none; }
+.ui_toast-icon {
+  display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--payout); color: var(--surface);
+}
+.ui_toast-amount {
+  display: inline-block; min-width: 7.5ch;
+  font-weight: 600; font-variant-numeric: tabular-nums; color: var(--payout);
+}
+
+/* ---------- Step list ---------- */
+.hiw_steps { list-style: none; margin: 0; padding: 0; }
+.hiw_step {
+  width: 100%; min-height: 56px;
+  display: grid; grid-template-columns: 2px 44px minmax(0, 1fr); gap: var(--space-4); align-items: start;
+  padding: 0; border: 0; background: none; text-align: left; color: inherit; font: inherit; cursor: pointer;
+}
+.hiw_step.is-active { cursor: default; }
+.hiw_step:focus-visible { outline-offset: 4px; border-radius: var(--radius-sm); }
+
+/* Track: the step's own 2px line. Fill: scaled from the top by the script (the timer). */
+.hiw_track {
+  position: relative; align-self: stretch; margin-block: var(--space-1);
+  background: var(--line); border-radius: var(--radius-xs); overflow: hidden;
+}
+.hiw_fill {
+  position: absolute; inset: 0; background: var(--ink);
+  transform: scaleY(0); transform-origin: top;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.hiw_steps.is-resetting .hiw_fill { opacity: 0; }  /* loop restart: all lines fade out first */
+
+.hiw_tile {
+  display: grid; place-items: center; width: 44px; height: 44px; margin-block: var(--space-1);
+  border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--line); color: var(--ink-muted);
+  transition: background-color var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+.hiw_text { display: grid; gap: var(--space-2); padding-block: var(--space-3) var(--space-6); }
+.hiw_step-title {
+  font-family: var(--font-display); font-size: var(--text-h3); font-weight: 500; line-height: 1.25;
+  color: var(--ink-muted); transition: color var(--dur-base) var(--ease-out);
+}
+.hiw_step-desc {
+  font-size: var(--text-small); line-height: 1.55;
+  color: var(--ink-muted); transition: color var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) { .hiw_step:not(.is-active):hover .hiw_step-title { color: var(--ink); } }
+.hiw_step.is-done .hiw_tile { background: var(--canvas); border-color: var(--canvas); color: var(--ink); }
+.hiw_step.is-active .hiw_step-title { color: var(--ink); }
+.hiw_step.is-active .hiw_step-desc { color: var(--ink-soft); }
+.hiw_step.is-brand.is-active .hiw_tile { background: var(--brand-tint); border-color: var(--brand-tint); color: var(--brand); }
+.hiw_step.is-payout.is-active .hiw_tile { background: var(--payout-tint); border-color: var(--payout-tint); color: var(--payout); }
+
+/* ---------- Pause / play ---------- */
+.hiw_toggle {
+  margin: var(--space-1) 0 0 var(--space-4);  /* under the tiles */
+  display: grid; place-items: center; width: 36px; height: 36px; padding: 0;
+  border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.hiw_toggle:hover { background: var(--canvas); }
+.hiw_icon-play { display: none; }
+.hiw_toggle[aria-pressed='true'] .hiw_icon-play { display: block; }
+.hiw_toggle[aria-pressed='true'] .hiw_icon-pause { display: none; }
+</style>
+
+<script>
+(() => {
+  const section = document.querySelector('[data-hiw]');
+  if (!section) return;
+
+  const comp = section.querySelector('[data-comp]');
+  const stage = section.querySelector('[data-stage]');
+  const stepsList = section.querySelector('[data-steps]');
+  const buttons = [...section.querySelectorAll('[data-step]')];
+  const fills = [...section.querySelectorAll('[data-fill]')];
+  const cards = [...section.querySelectorAll('[data-card]')];
+  const pillTexts = [...section.querySelectorAll('[data-pill-text]')];
+  const toggle = section.querySelector('[data-toggle]');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+  const STEP_MS = 5000;  // how long each step's line takes to fill
+  const HOLD_MS = 1500;  // pause after step 4 before looping
+  const RESET_MS = 250;  // = --dur-base: all lines fade out before the loop restarts
+  const count = buttons.length;
+
+  let active = 0;
+  let phase = 'step';    // 'step' | 'hold' | 'reset'
+  let elapsed = 0;       // ms spent in the current phase; survives pauses
+  let lastTime = null;
+  let raf = null;
+  let visualTimers = [];
+
+  // Reasons the timer may not run. It runs only when all are false.
+  let stopped = false;     // the user clicked a step: auto-advance is off for good
+  let userPaused = false;  // pause/play button
+  let hovering = false;
+  let focusWithin = false;
+  let inView = false;
+
+  const setFill = (i, amount) => { fills[i].style.transform = `scaleY(${amount})`; };
+
+  // ---------- Step state (list + stage) ----------
+  function setActive(i) {
+    const prev = active;
+    active = i;
+    buttons.forEach((b, n) => {
+      b.classList.toggle('is-active', n === i);
+      b.classList.toggle('is-done', n < i);
+      if (n === i) b.setAttribute('aria-current', 'step');
+      else b.removeAttribute('aria-current');
+      setFill(n, n < i ? 1 : 0);  // finished steps stay full, later ones empty
+    });
+    pillTexts.forEach((t, n) => t.classList.toggle('is-active', n === i));
+    stage.dataset.active = String(i);  // moves the pill (CSS)
+    if (prev !== i) swapCard(prev, i);
+    playVisual(i);
+  }
+
+  // The outgoing card fades up (--dur-fast); the incoming one rises in (CSS).
+  function swapCard(from, to) {
+    const out = cards[from];
+    out.classList.remove('is-active');
+    out.classList.add('is-leaving');
+    setTimeout(() => out.classList.remove('is-leaving'), 220);  // a little longer than --dur-fast
+    cards[to].classList.add('is-active');
+  }
+
+  // ---------- Per-step card animations ----------
+  function playVisual(i) {
+    visualTimers.forEach(clearTimeout);
+    visualTimers = [];
+    const card = cards[i];
+    const later = (ms, fn) => visualTimers.push(setTimeout(fn, ms));
+    const reduce = reduceMotion.matches;
+
+    if (i === 2) {  // AI review: ticks draw in one by one
+      const checks = [...card.querySelectorAll('[data-check]')];
+      checks.forEach((c) => c.classList.toggle('is-done', reduce));
+      if (!reduce) checks.forEach((c, n) => later(400 + n * 500, () => c.classList.add('is-done')));
+    }
+
+    if (i === 3) {  // Merged: badge flips, toast slides in, amount counts up
+      const badge = card.querySelector('[data-badge]');
+      const toast = card.querySelector('[data-toast]');
+      const amount = card.querySelector('[data-amount]');
+      const target = Number(amount.dataset.amount);
+      const format = (n) => '+$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      if (reduce) {
+        badge.classList.add('is-merged');
+        toast.classList.add('is-shown');
+        amount.textContent = format(target);
+        return;
+      }
+      badge.classList.remove('is-merged');
+      toast.classList.remove('is-shown');
+      amount.textContent = format(0);
+      later(350, () => badge.classList.add('is-merged'));
+      later(850, () => {
+        toast.classList.add('is-shown');
+        const start = performance.now();
+        const step = (now) => {
+          const t = Math.min((now - start) / 900, 1);
+          amount.textContent = format(target * (1 - Math.pow(1 - t, 3)));  // ease-out
+          if (t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    }
+  }
+
+  // ---------- The timer: requestAnimationFrame + elapsed time ----------
+  const running = () =>
+    !stopped && !userPaused && !hovering && !focusWithin && inView && !document.hidden && !reduceMotion.matches;
+
+  function tick(now) {
+    // Count only the time since the last frame. After a pause lastTime is null,
+    // so paused time is never counted: the line continues where it stopped.
+    if (lastTime !== null) elapsed += now - lastTime;
+    lastTime = now;
+
+    if (phase === 'step') {
+      const progress = Math.min(elapsed / STEP_MS, 1);
+      setFill(active, progress);
+      if (progress >= 1) {
+        elapsed = 0;
+        if (active < count - 1) setActive(active + 1);
+        else phase = 'hold';
+      }
+    } else if (phase === 'hold' && elapsed >= HOLD_MS) {
+      phase = 'reset';
+      elapsed = 0;
+      stepsList.classList.add('is-resetting');
+    } else if (phase === 'reset' && elapsed >= RESET_MS) {
+      stepsList.classList.remove('is-resetting');
+      phase = 'step';
+      elapsed = 0;
+      setActive(0);
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
+  // Start or stop the loop whenever one of the reasons changes.
+  function sync() {
+    if (running() && raf === null) {
+      lastTime = null;
+      raf = requestAnimationFrame(tick);
+    } else if (!running() && raf !== null) {
+      cancelAnimationFrame(raf);
+      raf = null;
+    }
+    toggle.setAttribute('aria-pressed', String(userPaused));
+  }
+
+  // ---------- User control ----------
+  buttons.forEach((b, i) => b.addEventListener('click', () => {
+    stopped = true;          // the user chose a step: no more auto-advance
+    toggle.hidden = true;    // nothing left to pause
+    stepsList.classList.remove('is-resetting');
+    phase = 'step';
+    elapsed = 0;
+    if (i !== active) setActive(i);
+    setFill(i, 1);
+    sync();
+  }));
+
+  toggle.addEventListener('click', () => { userPaused = !userPaused; sync(); });
+
+  comp.addEventListener('pointerenter', () => { hovering = true; sync(); });
+  comp.addEventListener('pointerleave', () => { hovering = false; sync(); });
+  comp.addEventListener('focusin', () => { focusWithin = true; sync(); });
+  comp.addEventListener('focusout', (e) => {
+    if (!comp.contains(e.relatedTarget)) { focusWithin = false; sync(); }
+  });
+  document.addEventListener('visibilitychange', sync);
+
+  // Run only while at least 40% of the section is on screen.
+  new IntersectionObserver(([entry]) => {
+    inView = entry.intersectionRatio >= 0.4;
+    sync();
+  }, { threshold: [0, 0.4, 0.6, 1] }).observe(section);
+
+  // ---------- Reduced motion: no timer; active line full; cards show their end state ----------
+  function applyMotion() {
+    if (reduceMotion.matches) {
+      toggle.hidden = true;
+      setFill(active, 1);
+      playVisual(active);
+    } else if (!stopped) {
+      toggle.hidden = false;
+    }
+    sync();
+  }
+
+  setActive(0);
+  applyMotion();
+  reduceMotion.addEventListener('change', applyMotion);
+})();
+</script>
+```
+
+**How the timer works, in plain language.** Each step's line is a 2px bar scaled from 0 to full height (`scaleY`). Every animation frame, the script adds the time since the last frame to a counter and sets the line to "counter ÷ 5 seconds". When the line is full, the next step starts. When the timer is paused (hover, focus, the pause button, the section leaving the screen, or the browser tab hidden), the script simply stops counting. When it resumes, the line continues from where it was instead of restarting. Clicking a step means "I want to read this one", so auto-advance stops for good.
+
+### Interactions
+
+None native. All motion is CSS transitions switched by the script, and the global reduced-motion CSS (Part 1.6) makes them instant. With reduced motion the script also turns the timer off: the active line shows full, the cards show their final state (all ticks, Merged, +$900.00), and the pause button stays hidden.
+
+### Accessibility
+
+| Element | Attribute | Value |
+|---|---|---|
+| section_hiw | `aria-labelledby` | `hiw-title` |
+| section_hiw | `data-hiw` | `true` |
+| hiw_title | ID | `hiw-title` |
+| hiw_header | Tag (Element settings) | `header` |
+| hiw_grid | `data-comp` | `true` |
+
+Inside the embeds (already in the code above): the stage is `aria-hidden="true"`; the steps are an ordered list of real buttons; the current step has `aria-current="step"`; the pause button has `aria-pressed` and a screen-reader label.
+
+### Checklist
+
+- [ ] Scroll the section into view: step 1's line fills over 5 seconds, then step 2 starts and the stage card swaps. After step 4 everything holds for 1.5 seconds, the lines fade out, and it loops.
+- [ ] The pill slides left and right between steps, and its arrow flips.
+- [ ] Step 3: the three ticks draw in one after another. Step 4: the badge turns green "Merged", the toast slides in and the amount counts up to +$900.00.
+- [ ] The active step's tile is green (steps 1 to 3) or payout green (step 4); finished steps have a light grey tile.
+- [ ] Hovering the section, or tabbing into it, pauses the line; leaving resumes it from the same point. The pause button toggles, and its label is announced.
+- [ ] Clicking a step shows it complete and stops the timer for good; the pause button disappears.
+- [ ] Reduced motion: no timer, no pause button, the active line is full, and cards show their final state.
+- [ ] 1440: stage left, steps right, vertically centred. 768 and 375: stage above the list; the tallest card (step 4 with the toast) fits; no horizontal page scroll.
+- [ ] Screen reader: the stage is skipped; each step reads as a button with its title and description.
+
+---
+
+## Part 2.6: FAQ
+
+**Background:** surface, with the content in a large canvas panel.
+
+- Desktop: a heading block on the left that stays in view (sticky) while the questions scroll past on the right.
+- Tablet and smaller: the heading block sits above the questions.
+- An accordion: the first answer starts open, and several can be open at once. Each question is a real `<button>`.
+- **Works without JavaScript:** every answer is visible until the script runs. The script then collapses all but the first, before the page is first drawn, so nothing flashes.
+
+**Webflow vs native:** Webflow's Dropdown and Tabs elements don't produce real buttons with `aria-expanded`, and Webflow has no accessible accordion element. So each question and answer comes from a CMS item through a small Code Embed, and one script handles opening and closing.
+
+### CMS Collection: "FAQs"
+
+**CMS panel → Create collection → "FAQs"** (singular item name "FAQ").
+
+| Field | Webflow type | Required | Notes |
+|---|---|---|---|
+| Name | Plain text (built-in) | ✓ | The question |
+| Slug | Slug (built-in) | ✓ | Builds the IDs that connect each question to its answer |
+| Answer | Plain text (multi-line off) | ✓ | One short paragraph |
+| Sort order | Number | ✓ | Controls the order |
+
+**Items** (fee, claim-window and dispute details are placeholder demo policies, not final terms):
+
+| Sort | Name | Answer |
+|---|---|---|
+| 1 | How and when do I get paid? | As soon as the maintainer merges your pull request, your payout goes out via PayPal. Most arrive within minutes. You always see the bounty amount before you start. |
+| 2 | Can I use AI tools to write my PR? | Yes, including coding agents like Claude Code or Codex. You claim the bounty, so you're accountable for the pull request. The review checks whether it solves the issue and meets the bounty's requirements, not how it was written. Understanding the problem is what gets you merged. |
+| 3 | How does the AI review work? | It reads your pull request against the bounty's requirements, runs the project's tests, and flags obvious security problems. If something is missing, it tells you exactly what. The maintainer always makes the final decision to merge. |
+| 4 | How many people can work on a bounty? | One at a time. When you claim a bounty, it's reserved for you for 72 hours, and the maintainer can extend it. Nobody does the same work for nothing, and maintainers review one pull request instead of ten. If a claim goes quiet, the bounty reopens. |
+| 5 | What if my PR isn't merged? | You get specific reasons, and you can push fixes as many times as you need. If your PR meets every requirement and still isn't merged, you can open a dispute and a person will review it. |
+| 6 | Can I negotiate the bounty price? | Yes. Every bounty shows an AI fair-price range based on the issue's complexity. If you think the work is bigger than the price, send a counter-offer before you start. |
+| 7 | Can I work from anywhere? | Yes, anywhere PayPal can send payouts. Check that PayPal supports receiving money in your country before you claim a bounty. |
+| 8 | Do I need a resume or portfolio? | No. Your merged pull requests are your track record, and every one is public on your profile. |
+| 9 | What does it cost? | Posting a bounty is free. Maintainers pay a 10% platform fee on top of the bounty, charged only when they merge. Contributors keep 100% of the bounty. |
+
+### Element tree
+
+```
+section_faq (Section, id: faq)                          [aria-labelledby]
+└─ padding-global
+   └─ container-large
+      └─ padding-section-large
+         └─ faq_component (Div, Grid)                   ← the canvas panel
+            ├─ faq_intro (Div)                          ← sticky on Desktop
+            │  ├─ faq_title (H2, id: faq-title)
+            │  │  ├─ faq_title-line (Text Span): "Questions developers ask"
+            │  │  └─ faq_title-line (Text Span): "before their first PR"
+            │  ├─ faq_lede (Paragraph): "Straight answers. No fine print."
+            │  └─ faq_link (Link Block → Help Center)
+            │     ├─ Text Block: "More answers in the Help Center"
+            │     └─ Code Embed: arrow icon
+            └─ faq_list (Div)                           [data-faq]
+               ├─ faq_collection (Collection List Wrapper → FAQs)
+               │  └─ faq_collection-list (Collection List)
+               │     └─ faq_item (Collection Item)
+               │        └─ faq_item-embed (Code Embed with CMS fields: question + answer)
+               └─ faq_script (Code Embed: CSS + script; see "Custom code")
+```
+
+**Collection List settings:** Sort by Sort order, ascending. No limit.
+
+`faq_script` must be the **last child** of `faq_list`, right after the Collection List. That way it runs as soon as the questions exist, before the browser draws the page.
+
+**Arrow icon** for `faq_link` (Code Embed):
+
+```html
+<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+```
+
+### Styles per breakpoint
+
+**Desktop (base)**
+
+| Class | Styles |
+|---|---|
+| `section_faq` | Background surface · Colour ink |
+| `faq_component` | Background canvas · Radius radius-xl · Padding space-10 · Grid, 2 columns `40fr 60fr` · Column gap `clamp(40px, 5vw, 80px)` (fallback 64px) · Align items start |
+| `faq_intro` | **Position sticky, top 96px** (the 72px Desktop header + space-5) · Align self start · Min width 0 |
+| `faq_title` | Weight 600 · Colour ink (size comes from All H2: text-h1) |
+| `faq_title-line` | Display block |
+| `faq_lede` | Margin top space-4 · Size text-body-lg · Colour ink-muted |
+| `faq_link` | Margin top space-5 · Inline-flex · Align center · Gap space-2 · Padding bottom space-1 · Border bottom 1.5px solid, colour: currentColor (type it in the colour field) · Size text-small · Weight 600 · Colour ink · No underline. **Hover:** Colour brand |
+| `faq_list` | Border top 1px line · Min width 0 |
+| `faq_item` | Border bottom 1px line |
+
+**Why sticky works here:** `position: sticky` only works if no ancestor has `overflow` set to hidden, scroll or auto. Leave Overflow at its default (visible) on `section_faq`, the Client-First wrappers and `faq_component`. The panel's rounded corners still look right because nothing in it overflows.
+
+**Tablet**
+
+| Class | Changes |
+|---|---|
+| `faq_component` | 1 column · Row gap space-7 · Padding space-8 |
+| `faq_intro` | Position static |
+
+**Mobile landscape**
+
+| Class | Changes |
+|---|---|
+| `faq_component` | Padding space-6 |
+
+**Mobile portrait**
+
+| Class | Changes |
+|---|---|
+| `faq_component` | Padding space-5 |
+
+### Custom code
+
+**1. `faq_item-embed`** (inside each Collection Item). Wherever you see `{{Field}}`, click **"+ Add Field"** and insert that CMS field. Don't type the braces yourself.
+
+Every answer starts open (`aria-expanded="true"`, `is-open`). That's the no-JavaScript state.
+
+```html
+<h3 class="faq_q">
+  <button type="button" class="faq_button" id="faq-q-{{Slug}}" aria-expanded="true" aria-controls="faq-a-{{Slug}}" data-faq-button>
+    <span class="faq_q-text">{{Name}}</span>
+    <span class="faq_icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" focusable="false"><path d="M12 5v14M5 12h14"/></svg>
+    </span>
+  </button>
+</h3>
+<div class="faq_a is-open" id="faq-a-{{Slug}}" role="region" aria-labelledby="faq-q-{{Slug}}" data-faq-panel>
+  <div class="faq_a-clip">
+    <p class="faq_a-text">{{Answer}}</p>
+  </div>
+</div>
+```
+
+**2. `faq_script`** (last child of `faq_list`).
+
+```html
+<style>
+/* ---------- Token bridge: Webflow Variables -> short names ---------- */
+.section_faq {
+  --ink: var(--colors--ink, #14162B);
+  --ink-muted: var(--colors--ink-muted, #5A5F7A);
+  --brand: var(--colors--brand, #0E6B47);
+  --font-display: var(--typography--font-display, 'Bricolage Grotesque', sans-serif);
+  --text-h3: var(--typography--text-h3, 1.5rem);
+  --space-5: var(--spacing--space-5, 24px);
+  --space-6: var(--spacing--space-6, 32px);
+  --measure: var(--spacing--measure, 40rem);
+  --radius-sm: var(--radius--radius-sm, 8px);
+}
+
+/* ---------- Question ---------- */
+.faq_q { margin: 0; font: inherit; }
+.faq_button {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-5);
+  padding: var(--space-5) 0;
+  border: 0; background: none; text-align: left; color: var(--ink); font: inherit; cursor: pointer;
+}
+@media (min-width: 992px) { .faq_button { padding-block: var(--space-6); } }
+.faq_button:focus-visible { outline-offset: 2px; border-radius: var(--radius-sm); }
+.faq_q-text { font-family: var(--font-display); font-size: var(--text-h3); font-weight: 500; line-height: 1.25; }
+
+.faq_icon {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px;
+  border: 1px solid var(--ink-muted); border-radius: var(--radius-sm); color: var(--ink);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.faq_icon svg { transition: transform var(--dur-slow) var(--ease-out); }
+.faq_button:hover .faq_icon,
+.faq_button:focus-visible .faq_icon { border-color: var(--brand); }
+.faq_button[aria-expanded='true'] .faq_icon svg { transform: rotate(45deg); }  /* plus turns into an X */
+
+/* ---------- Answer ---------- */
+.faq_a { display: grid; grid-template-rows: 1fr; }  /* open: the no-JS state */
+.faq_a-clip { min-height: 0; overflow: hidden; }
+.faq_a-text { max-width: var(--measure); margin: 0; padding-bottom: var(--space-5); line-height: 1.55; color: var(--ink-muted); }
+@media (min-width: 992px) { .faq_a-text { padding-bottom: var(--space-6); } }
+
+/* After the script runs: closed answers shrink to a 0fr row, open ones grow to 1fr.
+   The text fades in slightly after the height starts opening. */
+.is-enhanced .faq_a {
+  grid-template-rows: 0fr; visibility: hidden;
+  transition: grid-template-rows var(--dur-slow) var(--ease-out), visibility 0s linear var(--dur-slow);
+}
+.is-enhanced .faq_a.is-open {
+  grid-template-rows: 1fr; visibility: visible;
+  transition: grid-template-rows var(--dur-slow) var(--ease-out), visibility 0s;
+}
+.is-enhanced .faq_a-text { opacity: 0; transition: opacity var(--dur-fast) var(--ease-out); }
+.is-enhanced .faq_a.is-open .faq_a-text { opacity: 1; transition: opacity var(--dur-base) var(--ease-out) 100ms; }
+
+.is-instant *, .is-instant *::before { transition: none !important; }
+</style>
+
+<script>
+(() => {
+  const list = document.querySelector('#faq [data-faq]');
+  if (!list) return;
+  const buttons = [...list.querySelectorAll('[data-faq-button]')];
+  const panels = buttons.map((b) => document.getElementById(b.getAttribute('aria-controls')));
+
+  // Open or close item i. Closed answers are inert: not focusable, not read out.
+  const setOpen = (i, open) => {
+    buttons[i].setAttribute('aria-expanded', String(open));
+    panels[i].classList.toggle('is-open', open);
+    panels[i].inert = !open;
+  };
+
+  // From here on the collapsing styles apply. Start with the first item open.
+  // .is-instant skips the animation for this first setup.
+  list.classList.add('is-enhanced', 'is-instant');
+  buttons.forEach((_, i) => setOpen(i, i === 0));
+  requestAnimationFrame(() => requestAnimationFrame(() => list.classList.remove('is-instant')));
+
+  // Each item toggles on its own; several can be open at once.
+  buttons.forEach((b, i) => b.addEventListener('click', () => setOpen(i, b.getAttribute('aria-expanded') !== 'true')));
+})();
+</script>
+```
+
+**How the accordion opens smoothly, in plain language.** Browsers can't animate `height` to "auto". Instead, each answer is a one-row grid. A row of `0fr` takes no space, and a row of `1fr` takes exactly as much as the answer needs. The browser *can* animate between those two, so the answer grows to its real height without the script measuring anything. The inner `faq_a-clip` hides the text while the row is still smaller than the text.
+
+### Interactions
+
+None native. The height and fade are CSS transitions, made instant by the global reduced-motion CSS (Part 1.6).
+
+### Accessibility
+
+| Element | Attribute | Value |
+|---|---|---|
+| section_faq | ID | `faq` |
+| section_faq | `aria-labelledby` | `faq-title` |
+| faq_title | ID | `faq-title` |
+| faq_list | `data-faq` | `true` |
+
+Inside the embed (already in the code above): each question is an `h3` containing a real button with `aria-expanded` and `aria-controls`; each answer is a `region` labelled by its question. Closed answers are `inert`, so the keyboard and screen readers skip them.
+
+### Checklist
+
+- [ ] On load, only the first answer is open, with no flash of all nine open.
+- [ ] Click a question: its answer grows smoothly and the plus turns into an X. Several can be open at once.
+- [ ] Tab: focus moves from question to question and skips closed answers. Enter and Space toggle.
+- [ ] Disable JavaScript (DevTools → Settings → Debugger) and reload: every answer is visible.
+- [ ] 1440: the heading block stays in view while the questions scroll, sitting just below the header, and leaves with the panel. 768 and 375: heading above the questions, nothing sticky.
+- [ ] Reduced motion: answers open and close instantly.
+- [ ] Screen reader: each question is announced as a heading and a button with its expanded or collapsed state.
+
+---
+
 ## Final pass (whole page)
 
-- [ ] Section order on the page: Hero, WaysToEarn, Paths, BountyBoard (then the remaining sections, built later).
+- [ ] Section order on the page: Hero, WaysToEarn, Paths, BountyBoard, Contributors (not in this guide yet), HowItWorks, FAQ, then FinalCTA (built later).
 - [ ] Every colour in the Style panel is a Variable; no raw hex values in the Designer.
 - [ ] Lighthouse accessibility score ≥ 95; no contrast warnings. The Astro build passed WCAG AA with these exact tokens.
 - [ ] "Payouts via PayPal" wording is used, and no PayPal brand colours appear.
-- [ ] Only the hero has a load animation; no other section fades in on scroll.
+- [ ] Only the hero has a load animation; no other section fades in on scroll. HowItWorks' timer and the FAQ accordion are the only other motion in these sections, and both respect reduced motion.
 - [ ] Test once with the keyboard only, and once with VoiceOver or NVDA, at Desktop and Mobile portrait.
