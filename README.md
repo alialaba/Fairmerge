@@ -42,8 +42,8 @@ This uses Playwright and your installed Google Chrome to screenshot the composit
 | 4 | **Bounty Board** | Language and difficulty filters that combine, with a fade-out/fade-in transition and a live result count; an inline counter-offer form with validation and focus management; a scroll-snap carousel on mobile |
 | 5 | **Contributors** | Quote-led cards in a carousel with page dots, built on a reusable carousel module (`src/scripts/carousel.js`, shared with Paths). Shows 3, 2 or 1 cards per view depending on screen width |
 | 6 | **How It Works** | An auto-advancing four-step list. Each step's progress line is a timer driven by `requestAnimationFrame`, so it pauses and resumes in place. Auto-advance runs only while the section is in view, pauses on hover and focus, and stops after a click; each step swaps a matching UI card with no layout shift |
-| 7 | **FAQ** | Placeholder (not built yet) |
-| 8 | **Final CTA** | Placeholder (not built yet) |
+| 7 | **FAQ** | A heading that sticks with pure CSS (`position: sticky`) while an accordion scrolls past; several answers can be open at once; height animated with `grid-template-rows`; every answer stays visible if JavaScript fails |
+| 8 | **Final CTA** | A scroll-linked heading: one `--progress` variable lights the letters one by one through CSS `calc()` and `clamp()`, in both scroll directions. The supporting line and buttons reveal once; everything is visible without JS or with reduced motion |
 
 Across the page:
 
