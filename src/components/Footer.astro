@@ -113,17 +113,17 @@ const socials = [
 
 <style>
   .footer {
-    --muted: color-mix(in srgb, var(--surface) 70%, transparent);
-    --divider: color-mix(in srgb, var(--surface) 12%, transparent);
+    --muted: var(--on-dark-muted);
+    --divider: var(--on-dark-line);
     position: relative;
     overflow: clip; /* clips the watermark without creating a scroll container */
-    padding: 56px 0 24px;
+    padding: var(--space-9) 0 var(--space-5);
     background: var(--ink);
     color: var(--surface);
   }
 
   @media (min-width: 1024px) {
-    .footer { padding: 80px 0 32px; }
+    .footer { padding: var(--space-10) 0 var(--space-6); }
   }
 
   .footer__inner {
@@ -136,9 +136,9 @@ const socials = [
 
   /* Light focus ring that stands out on --ink. */
   .footer :global(a:focus-visible) {
-    outline: 3px solid var(--merged-tint);
+    outline: 3px solid var(--focus-ring-on-dark);
     outline-offset: 3px;
-    border-radius: 4px;
+    border-radius: var(--radius-xs);
   }
 
   /* ---------- Top area ----------
@@ -146,28 +146,28 @@ const socials = [
      Desktop: brand 35% | columns 65% in one row. */
   .footer__top {
     display: grid;
-    gap: 40px;
+    gap: var(--space-7);
   }
 
   @media (min-width: 1024px) {
     .footer__top {
       grid-template-columns: minmax(0, 35fr) minmax(0, 65fr);
-      gap: 48px;
+      gap: var(--space-8);
     }
   }
 
   .footer__tagline {
-    margin-top: 16px;
+    margin-top: var(--space-4);
     max-width: 22rem;
     color: var(--muted);
   }
 
   .footer__socials {
     list-style: none;
-    margin: 20px 0 0 -10px; /* aligns the icons' glyphs with the text edge */
+    margin: var(--space-5) 0 0 calc(-1 * var(--space-2)); /* aligns the icons' glyphs with the text edge */
     padding: 0;
     display: flex;
-    gap: 4px;
+    gap: var(--space-1);
   }
 
   .footer__social {
@@ -177,45 +177,45 @@ const socials = [
     height: 44px;
     border-radius: var(--radius-sm);
     color: var(--muted);
-    transition: color 200ms ease, background-color 200ms ease;
+    transition: color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
   }
 
   .footer__social:hover,
   .footer__social:focus-visible {
     color: var(--surface);
-    background: color-mix(in srgb, var(--surface) 8%, transparent);
+    background: var(--on-dark-hover);
   }
 
   /* Link columns: 2 x 2 below 1024px, 4 across on desktop. */
   .footer__nav {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 28px 16px;
+    gap: var(--space-6) var(--space-4);
   }
 
   @media (min-width: 768px) {
-    .footer__nav { gap: 40px 32px; }
+    .footer__nav { gap: var(--space-7) var(--space-6); }
   }
 
   @media (min-width: 1024px) {
     .footer__nav {
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 32px;
+      gap: var(--space-6);
     }
   }
 
   .footer__heading {
     font-family: var(--font-body);
-    font-size: 0.875rem;
+    font-size: var(--text-small);
     font-weight: 600;
     letter-spacing: 0;
-    line-height: 1.4;
+    line-height: var(--leading-normal);
     color: var(--surface);
   }
 
   .footer__list {
     list-style: none;
-    margin: 8px 0 0;
+    margin: var(--space-2) 0 0;
     padding: 0;
   }
 
@@ -232,7 +232,7 @@ const socials = [
     background-repeat: no-repeat;
     background-position: 0 calc(50% + 0.75em);
     background-size: 0% 1px;
-    transition: color 200ms ease, background-size 200ms ease;
+    transition: color var(--dur-fast) var(--ease-out), background-size var(--dur-fast) var(--ease-out);
   }
 
   @media (min-width: 1024px) {
@@ -249,21 +249,21 @@ const socials = [
 
   /* ---------- Bottom bar ---------- */
   .footer__bottom {
-    margin-top: 48px;
-    padding-top: 20px;
+    margin-top: var(--space-8);
+    padding-top: var(--space-5);
     border-top: 1px solid var(--divider);
     display: grid;
-    gap: 12px;
-    font-size: 0.875rem;
+    gap: var(--space-3);
+    font-size: var(--text-small);
     color: var(--muted);
   }
 
   @media (min-width: 1024px) {
     .footer__bottom {
-      margin-top: 72px;
+      margin-top: var(--space-10);
       grid-template-columns: minmax(0, 1fr) auto auto;
       align-items: center;
-      gap: 32px;
+      gap: var(--space-6);
     }
   }
 
@@ -275,7 +275,7 @@ const socials = [
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0 20px;
+    gap: 0 var(--space-5);
   }
 
   /* ---------- Watermark ---------- */
@@ -287,14 +287,14 @@ const socials = [
     font-family: var(--font-display);
     font-size: clamp(5rem, 18vw, 16rem);
     font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.04em;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
     white-space: nowrap;
-    color: color-mix(in srgb, var(--surface) 4%, transparent);
+    color: var(--on-dark-watermark);
     pointer-events: none;
     user-select: none;
   }
 
   /* Room at the bottom so the watermark doesn't sit on the bottom bar. */
-  .footer__inner { padding-bottom: clamp(48px, 11vw, 160px); }
+  .footer__inner { padding-bottom: clamp(var(--space-8), 11vw, 160px); }
 </style>

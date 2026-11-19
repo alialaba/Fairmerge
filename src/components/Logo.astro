@@ -22,7 +22,7 @@ const { theme = 'light', class: className } = Astro.props;
   .logo {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
     min-height: 44px; /* comfortable tap target */
     text-decoration: none;
     border-radius: var(--radius-sm);
@@ -30,18 +30,18 @@ const { theme = 'light', class: className } = Astro.props;
 
   .logo__mark {
     flex: none;
-    color: var(--merged);
+    color: var(--brand);
   }
 
   .logo__word {
     font-family: var(--font-display);
-    font-size: 1.375rem;
+    font-size: var(--text-h3);
     font-weight: 600;
-    line-height: 1;
-    letter-spacing: -0.02em;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
     color: var(--ink);
   }
 
   .logo--dark .logo__word { color: var(--surface); }
-  .logo--dark .logo__mark { color: var(--merged-tint); } /* violet would be too dark on --ink */
+  .logo--dark .logo__mark { color: var(--brand-tint); } /* brand green would be too dark on --ink */
 </style>

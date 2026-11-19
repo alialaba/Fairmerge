@@ -198,7 +198,7 @@ const canvases = (['desktop', 'mobile'] as const).map((key) => ({ key, v: versio
     width: var(--pill-w);
     height: var(--pill-h);
     border-radius: 999px;
-    background: var(--hero-shape-violet);
+    background: var(--brand-soft);
   }
 
   /* Large circle, bottom-right corner of the canvas. */
@@ -208,7 +208,7 @@ const canvases = (['desktop', 'mobile'] as const).map((key) => ({ key, v: versio
     width: var(--circle);
     height: var(--circle);
     border-radius: 50%;
-    background: var(--hero-shape-green);
+    background: var(--accent-tint);
   }
 
   .frame {
@@ -226,7 +226,7 @@ const canvases = (['desktop', 'mobile'] as const).map((key) => ({ key, v: versio
      transform: scale, zoom lays the text out again at the bigger size, so it
      stays sharp in the screenshot. */
   .frame {
-    background: linear-gradient(165deg, var(--surface) 10%, var(--merged-tint));
+    background: linear-gradient(165deg, var(--surface) 10%, var(--brand-tint));
   }
 
   .scene {
@@ -304,7 +304,7 @@ const canvases = (['desktop', 'mobile'] as const).map((key) => ({ key, v: versio
     gap: 5px;
     padding: 3px 9px;
     border-radius: 999px;
-    background: var(--merged);
+    background: var(--brand);
     color: var(--surface);
     font-size: 11px;
     font-weight: 600;
@@ -335,8 +335,8 @@ const canvases = (['desktop', 'mobile'] as const).map((key) => ({ key, v: versio
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: var(--merged-tint);
-    color: var(--merged);
+    background: var(--brand-tint);
+    color: var(--brand);
     font-family: var(--font-display);
     font-size: 9.5px;
     font-weight: 700;
@@ -357,7 +357,7 @@ const canvases = (['desktop', 'mobile'] as const).map((key) => ({ key, v: versio
     color: var(--ink-muted);
   }
 
-  .pr__review-title svg { color: var(--merged); }
+  .pr__review-title svg { color: var(--brand); }
 
   .checks { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 7px; }
 
@@ -412,7 +412,7 @@ const canvases = (['desktop', 'mobile'] as const).map((key) => ({ key, v: versio
   [data-version='mobile'] .pr { top: 9%; }
   [data-version='mobile'] .toast { right: 6%; bottom: 5%; }
 
-  .toast__amount { font-family: var(--font-code); font-weight: 600; color: var(--payout); }
+  .toast__amount { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--payout); }
 
   /* Glass stat card. */
   .card {
@@ -422,7 +422,7 @@ const canvases = (['desktop', 'mobile'] as const).map((key) => ({ key, v: versio
     gap: 8px;
     padding: var(--pad);
     border-radius: var(--radius);
-    background: var(--glass-surface);
+    background: var(--surface-frosted);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     border: 1px solid var(--line);
@@ -437,7 +437,7 @@ const canvases = (['desktop', 'mobile'] as const).map((key) => ({ key, v: versio
     font-size: var(--num);
     line-height: 1;
     letter-spacing: -0.02em;
-    color: var(--merged);
+    color: var(--brand);
     white-space: nowrap;
   }
 

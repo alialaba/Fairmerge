@@ -114,9 +114,9 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
         </h2>
         <p class="board__lede">Real issues from robotics, space, and AI agent projects. Paid on merge, via PayPal.</p>
       </div>
-      <a class="bbtn bbtn--outline" href="#">
+      <a class="btn btn--secondary btn--lg" href="#">
         See all 24 bounties
-        <Icon name="arrow-right" size={18} class="bbtn__arrow" />
+        <Icon name="arrow-right" size={18} class="btn__arrow" />
       </a>
     </header>
 
@@ -175,9 +175,9 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
                 <span class="bcard__amount">{usd(b.price)}</span>
                 <span class="bcard__paid">paid on merge</span>
               </p>
-              <a class="bbtn bbtn--primary bbtn--sm" href="#">
+              <a class="btn btn--primary btn--sm" href="#">
                 Claim bounty<span class="visually-hidden">: {b.title}</span>
-                <Icon name="arrow-right" size={16} class="bbtn__arrow" />
+                <Icon name="arrow-right" size={16} class="btn__arrow" />
               </a>
             </div>
 
@@ -220,7 +220,7 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
                     Above the AI fair range. Maintainers accept these less often.
                   </p>
                   <div class="offer__actions">
-                    <button type="submit" class="bbtn bbtn--primary bbtn--sm">Send offer</button>
+                    <button type="submit" class="btn btn--primary btn--sm">Send offer</button>
                     <button type="button" class="offer__cancel" data-offer-cancel>Cancel</button>
                   </div>
                 </form>
@@ -237,13 +237,13 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
   <div class="board__inner">
     <div class="board__empty" hidden data-empty>
       <p>No bounties match these filters yet.</p>
-      <button type="button" class="bbtn bbtn--outline bbtn--sm" data-clear>Clear filters</button>
+      <button type="button" class="btn btn--secondary btn--sm" data-clear>Clear filters</button>
     </div>
 
     <div class="board__cta">
-      <a class="bbtn bbtn--primary" href="#">
+      <a class="btn btn--primary btn--lg" href="#">
         See all open bounties
-        <Icon name="arrow-right" size={18} class="bbtn__arrow" />
+        <Icon name="arrow-right" size={18} class="btn__arrow" />
       </a>
     </div>
   </div>
@@ -457,7 +457,7 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
     --section-bg: var(--canvas);
     --edge: max(var(--content-pad), calc((100% - var(--content-width)) / 2 + var(--content-pad)));
     --gap: clamp(14px, 1.6vw, 24px);
-    padding-block: clamp(64px, 10vw, 128px);
+    padding-block: var(--section-pad);
     color: var(--ink);
   }
 
@@ -470,7 +470,7 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
   /* ---------- Header ---------- */
   .board__head {
     display: grid;
-    gap: 24px;
+    gap: var(--space-5);
     justify-items: start;
   }
 
@@ -482,76 +482,29 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
   .board__title span { display: block; }
 
   .board__lede {
-    margin-top: 16px;
-    max-width: 34rem;
-    font-size: 1.0625rem;
+    margin-top: var(--space-4);
+    max-width: var(--measure-narrow);
+    font-size: var(--text-body-lg);
     color: var(--ink-muted);
   }
 
-  /* ---------- Buttons ---------- */
-  .bbtn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 52px;
-    padding: 0 24px;
-    border: 0;
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
-    font-weight: 600;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: background-color 160ms ease, color 160ms ease;
-  }
-
-  .bbtn--sm {
-    min-height: 44px;
-    padding: 0 18px;
-    font-size: 0.9375rem;
-  }
-
-  .bbtn--primary {
-    background: var(--merged);
-    color: var(--surface);
-  }
-
-  .bbtn--primary:hover {
-    background: var(--merged-hover);
-    color: var(--surface);
-  }
-
-  .bbtn--outline {
-    background: transparent;
-    color: var(--ink);
-    box-shadow: inset 0 0 0 1.5px var(--ink);
-  }
-
-  .bbtn--outline:hover {
-    background: var(--ink);
-    color: var(--surface);
-  }
-
-  .bbtn :global(.bbtn__arrow) { transition: transform 160ms ease; }
-  .bbtn:hover :global(.bbtn__arrow) { transform: translateX(3px); }
-
   /* ---------- Filters ---------- */
   .board__filters {
-    margin-top: clamp(32px, 4vw, 48px);
+    margin-top: var(--gap-section-head);
     display: grid;
-    gap: 16px;
+    gap: var(--space-4);
   }
 
   .filter {
     display: grid;
-    gap: 8px;
+    gap: var(--space-2);
     min-width: 0;
   }
 
   .filter__label {
-    font-size: 0.8125rem;
+    font-size: var(--text-caption);
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
     color: var(--ink-muted);
   }
@@ -561,9 +514,9 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
      room for focus rings. */
   .filter__chips {
     display: flex;
-    gap: 8px;
+    gap: var(--space-2);
     margin-inline: calc(var(--content-pad) * -1);
-    padding: 6px var(--content-pad);
+    padding: var(--space-2) var(--content-pad);
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -573,17 +526,17 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
   .chip {
     flex: none;
     min-height: 40px;
-    padding: 0 16px;
+    padding: 0 var(--space-4);
     border: 1px solid var(--ink-muted);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--surface);
     color: var(--ink);
-    font-size: 0.9375rem;
+    font-size: var(--text-small);
     font-weight: 500;
-    transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+    transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
   }
 
-  .chip:hover { border-color: var(--merged); color: var(--merged); }
+  .chip:hover { border-color: var(--brand); color: var(--brand); }
 
   .chip[aria-pressed='true'] {
     background: var(--ink);
@@ -609,15 +562,15 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
     .board__filters {
       grid-template-columns: auto auto;
       justify-content: start;
-      column-gap: 48px;
+      column-gap: var(--space-8);
     }
   }
 
   /* ---------- Cards: carousel (< 1024px) ---------- */
   .board__track {
     container-type: inline-size;
-    margin-top: clamp(24px, 3vw, 36px);
-    padding: 8px var(--edge) 16px;
+    margin-top: clamp(var(--space-5), 3vw, var(--space-7));
+    padding: var(--space-2) var(--edge) var(--space-4);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
@@ -628,7 +581,7 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
   .board__track::-webkit-scrollbar { display: none; }
 
   .board__track:focus-visible {
-    outline: 3px solid var(--merged);
+    outline: 3px solid var(--focus-ring);
     outline-offset: -3px;
     border-radius: var(--radius-sm);
   }
@@ -646,7 +599,7 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
     flex: 0 0 85cqi; /* ~85% of the visible row: the next card peeks in */
     display: flex;
     scroll-snap-align: start;
-    transition: opacity 200ms ease, transform 200ms ease;
+    transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
   }
 
   .board__item[hidden] { display: none; }
@@ -666,7 +619,7 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
     .board__track {
       max-width: var(--content-width);
       margin-inline: auto;
-      padding: 8px var(--content-pad) 0;
+      padding: var(--space-2) var(--content-pad) 0;
       overflow: visible;
       scroll-snap-type: none;
     }
@@ -688,7 +641,7 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    padding: clamp(22px, 2.2vw, 30px);
+    padding: clamp(var(--space-5), 2.2vw, var(--space-6));
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
@@ -701,64 +654,65 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--space-2);
   }
 
   .tag {
-    padding: 2px 10px;
+    padding: 2px var(--space-2);
     border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 0.8125rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-caption);
     color: var(--ink-muted);
   }
 
-  /* Domain tag: tinted so robotics / space / AI agents reads first. */
+  /* Domain tag: the bounty's highlight badge, in amber so robotics / space /
+     AI agents reads first. Amber is for highlights only; text is --accent-ink. */
   .tag--domain {
-    border-color: var(--merged-tint);
-    background: var(--merged-tint);
-    color: var(--merged-hover);
+    border-color: var(--accent-tint);
+    background: var(--accent-tint);
+    color: var(--accent-ink);
     font-weight: 600;
   }
 
   .bcard__repo {
-    margin-top: 18px;
+    margin-top: var(--space-4);
     font-family: var(--font-code);
-    font-size: 0.8125rem;
+    font-size: var(--text-caption);
     color: var(--ink-muted);
   }
 
   .bcard__title {
-    margin-top: 6px;
-    font-size: clamp(1.25rem, 1.1rem + 0.45vw, 1.5rem);
+    margin-top: var(--space-2);
+    font-size: var(--text-h3);
     font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-tight);
   }
 
   /* Two lines max; the full text stays in the HTML for screen readers. */
   .bcard__desc {
-    margin-top: 10px;
+    margin-top: var(--space-2);
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     overflow: hidden;
-    font-size: 0.9375rem;
-    line-height: 1.5;
+    font-size: var(--text-small);
+    line-height: var(--leading-normal);
     color: var(--ink-muted);
   }
 
   .bcard__meta {
-    margin-top: 16px;
-    gap: 18px;
-    font-size: 0.875rem;
+    margin-top: var(--space-4);
+    gap: var(--space-4);
+    font-size: var(--text-small);
     color: var(--ink);
   }
 
   .bcard__meta li {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-2);
   }
 
   .bcard__meta :global(svg) { color: var(--ink-muted); }
@@ -767,43 +721,43 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
      equal-height cards no matter how long the text above is. */
   .bcard__foot {
     margin-top: auto;
-    padding-top: 20px;
+    padding-top: var(--space-5);
     border-top: 1px solid var(--line);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: var(--space-3);
     flex-wrap: wrap;
   }
 
-  .bcard__meta { margin-bottom: 24px; }
+  .bcard__meta { margin-bottom: var(--space-5); }
 
   .bcard__price {
     display: grid;
-    line-height: 1.1;
+    line-height: var(--leading-tight);
   }
 
   .bcard__amount {
     font-family: var(--font-display);
-    font-size: 2rem;
+    font-size: var(--text-h2);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: var(--tracking-tight);
     color: var(--ink);
   }
 
   .bcard__paid {
-    margin-top: 4px;
-    font-size: 0.8125rem;
+    margin-top: var(--space-1);
+    font-size: var(--text-caption);
     font-weight: 600;
     color: var(--payout);
   }
 
   .bcard__counter,
   .offer__cancel {
-    padding: 8px 0;
+    padding: var(--space-2) 0;
     border: 0;
     background: none;
-    font-size: 0.875rem;
+    font-size: var(--text-small);
     font-weight: 500;
     color: var(--ink-muted);
     text-decoration: none;
@@ -812,7 +766,7 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
 
   .bcard__counter {
     align-self: flex-start;
-    margin-top: 10px;
+    margin-top: var(--space-2);
   }
 
   .bcard__counter:hover,
@@ -830,13 +784,13 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
     display: grid;
     grid-template-rows: 0fr;
     visibility: hidden;
-    transition: grid-template-rows 260ms ease, visibility 0s linear 260ms;
+    transition: grid-template-rows var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base);
   }
 
   .offer.is-open {
     grid-template-rows: 1fr;
     visibility: visible;
-    transition: grid-template-rows 260ms ease, visibility 0s;
+    transition: grid-template-rows var(--dur-base) var(--ease-out), visibility 0s;
   }
 
   .offer[hidden] { display: none; }
@@ -846,25 +800,25 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
   .offer__clip {
     min-height: 0;
     overflow: hidden;
-    margin: -6px;
-    padding: 6px;
+    margin: calc(-1 * var(--space-2));
+    padding: var(--space-2);
   }
 
   .offer__form {
-    margin-top: 8px;
-    padding: 16px;
+    margin-top: var(--space-2);
+    padding: var(--space-4);
     border-radius: var(--radius-sm);
     background: var(--canvas);
   }
 
   .offer__label {
     display: block;
-    font-size: 0.875rem;
+    font-size: var(--text-small);
     font-weight: 600;
   }
 
   .offer__field {
-    margin-top: 6px;
+    margin-top: var(--space-2);
     display: flex;
     align-items: center;
     border: 1px solid var(--ink-muted);
@@ -873,12 +827,12 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
   }
 
   .offer__field:focus-within {
-    outline: 3px solid var(--merged);
+    outline: 3px solid var(--focus-ring);
     outline-offset: 2px;
   }
 
   .offer__prefix {
-    padding-left: 12px;
+    padding-left: var(--space-3);
     font-weight: 600;
     color: var(--ink-muted);
   }
@@ -887,10 +841,10 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
     flex: 1;
     min-width: 0;
     min-height: 44px;
-    padding: 0 12px 0 4px;
+    padding: 0 var(--space-3) 0 var(--space-1);
     border: 0;
     background: transparent;
-    font-size: 1rem;
+    font-size: var(--text-body);
     font-variant-numeric: tabular-nums;
   }
 
@@ -903,9 +857,9 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
   .offer__hint,
   .offer__error,
   .offer__note {
-    margin-top: 8px;
-    font-size: 0.8125rem;
-    line-height: 1.45;
+    margin-top: var(--space-2);
+    font-size: var(--text-caption);
+    line-height: var(--leading-normal);
   }
 
   .offer__hint { color: var(--ink-muted); }
@@ -913,15 +867,15 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
   .offer__note { color: var(--ink); }
 
   .offer__actions {
-    margin-top: 14px;
+    margin-top: var(--space-3);
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-4);
   }
 
   .offer__sent {
-    margin-top: 12px;
-    font-size: 0.875rem;
+    margin-top: var(--space-3);
+    font-size: var(--text-small);
     font-weight: 600;
     color: var(--payout);
   }
@@ -930,11 +884,11 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
 
   /* ---------- Empty state + bottom CTA ---------- */
   .board__empty {
-    margin-top: 8px;
-    padding: 32px;
+    margin-top: var(--space-2);
+    padding: var(--space-6);
     display: grid;
     justify-items: center;
-    gap: 16px;
+    gap: var(--space-4);
     text-align: center;
     border: 1.5px dashed var(--ink-muted);
     border-radius: var(--radius-lg);
@@ -944,13 +898,13 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
   .board__empty[hidden] { display: none; }
 
   .board__cta {
-    margin-top: clamp(28px, 4vw, 48px);
+    margin-top: clamp(var(--space-6), 4vw, var(--space-8));
     display: flex;
     justify-content: center;
   }
 
   @media (max-width: 1023.98px) {
-    .board__cta .bbtn { width: 100%; }
+    .board__cta .btn { width: 100%; }
   }
 
   /* Desktop card alignment. Kept last so it overrides the base card layout. */

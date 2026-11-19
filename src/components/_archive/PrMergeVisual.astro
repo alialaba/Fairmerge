@@ -62,7 +62,7 @@ const payoutAmount = 350;
               <svg viewBox="0 0 16 16" width="14" height="14"><circle cx="8" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"></circle></svg>
               In review
             </span>
-            <span class="badge__label badge__label--merged">
+            <span class="badge__label badge__label--brand">
               <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
                 <circle cx="4.5" cy="3.5" r="1.75"></circle>
                 <circle cx="4.5" cy="12.5" r="1.75"></circle>
@@ -199,7 +199,7 @@ const payoutAmount = 350;
     width: 80%;
     top: -8%;
     right: -12%;
-    background: var(--merged-tint);
+    background: var(--brand-tint);
     border-radius: 42% 58% 62% 38% / 45% 40% 60% 55%;
   }
 
@@ -325,8 +325,8 @@ const payoutAmount = 350;
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: var(--merged-tint);
-    color: var(--merged);
+    background: var(--brand-tint);
+    color: var(--brand);
     font-family: var(--font-display);
     font-size: 0.75rem;
     font-weight: 700;
@@ -349,7 +349,7 @@ const payoutAmount = 350;
     color: var(--ink-muted);
   }
 
-  .pr__review-title svg { color: var(--merged); }
+  .pr__review-title svg { color: var(--brand); }
 
   .checks {
     list-style: none;
@@ -400,7 +400,7 @@ const payoutAmount = 350;
     border-radius: 999px;
     font-size: 0.8125rem;
     font-weight: 600;
-    background: var(--merged);
+    background: var(--brand);
     color: var(--surface);
     transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
   }
@@ -549,7 +549,7 @@ const payoutAmount = 350;
   }
 
   .is-sequencing .badge:not(.is-done) .badge__label--review { display: inline-flex; }
-  .is-sequencing .badge:not(.is-done) .badge__label--merged { display: none; }
+  .is-sequencing .badge:not(.is-done) .badge__label--brand { display: none; }
   .is-sequencing .badge.is-done { animation: badge-pulse 420ms ease-out; }
 
   .is-sequencing .toast:not(.is-done) {
