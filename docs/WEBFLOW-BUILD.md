@@ -56,68 +56,145 @@ Do this once, before building any section.
 
 ### 1.1 Variables
 
-Go to **Variables panel** (the "Variables" icon in the left bar) → create these collections.
+Go to **Variables panel** (the "Variables" icon in the left bar) → create these collections. Names match the tokens in `src/styles/global.css`, so a value in the Astro code like `var(--space-4)` maps to the variable **space-4** here.
+
+Token names describe roles, not colours (`brand`, not `green`), so the palette can change later without renaming anything.
 
 **Collection: Colors**
 
 | Variable | Value | Used for |
 |---|---|---|
-| ink | `#14162B` | Main text, dark buttons, FinalCTA |
+| ink | `#14162B` | Main text, FinalCTA panel, footer |
+| ink-soft | `rgba(20,22,43,0.82)` | Emphasised secondary text |
 | ink-muted | `#5A5F7A` | Secondary text, input borders |
-| canvas | `#F6F7FB` | Page background, Hero, BountyBoard, FAQ |
+| canvas | `#F6F7FB` | Page background, Hero, BountyBoard, FAQ panel |
 | surface | `#FFFFFF` | Cards, text on dark |
+| surface-frosted | `rgba(255,255,255,0.85)` | Header after scrolling |
 | line | `#DADDEA` | Borders, dividers |
-| brand | `#0E6B47` | Primary brand, merged state, CTAs, focus ring |
-| brand-hover | `#0A5537` | Button hover, domain tag text |
+| ink-overlay | `rgba(20,22,43,0.06)` | Icon-button hover on light backgrounds |
+| scrim | `rgba(20,22,43,0.4)` | Backdrop behind the mobile menu |
+| brand | `#0E6B47` | Brand, merged state, primary buttons, links, focus ring |
+| brand-hover | `#0A5537` | Button and link hover |
 | brand-tint | `#E3F1EA` | WaysToEarn background, tints, focus ring on dark |
 | brand-soft | `#BFE3CF` | Hero decorative shape |
-| accent | `#F2A93B` | Bounty highlights and badges only. Text on it is always ink |
-| accent-tint | `#FCEFD6` | Highlight backgrounds, hero decorative shape |
+| accent | `#F2A93B` | Bounty highlights and badges only. Text on it is always ink, never white |
+| accent-tint | `#FCEFD6` | Badge backgrounds (bounty domain tag), hero decorative shape |
 | accent-ink | `#6B4206` | Text on accent-tint |
 | payout | `#0E6B47` | "paid on merge", payout amounts (same as brand) |
 | payout-tint | `#E6F4EC` | Added diff lines, HowItWorks background |
-| removed | `#B42318` | Errors |
+| removed | `#B42318` | Errors, rejected, removed lines |
 | removed-tint | `#FBEAEA` | Removed diff lines |
 | path-earn-bg | `#0B3B2C` | Paths: Earn |
 | path-grow-bg | `#102F3A` | Paths: Grow |
-| path-ship-bg | `#3A2A0E` | Paths: Ship |
-| on-dark-surface | `rgba(255,255,255,0.06)` | Translucent cards on Paths |
-| on-dark-line | `rgba(255,255,255,0.12)` | Borders on Paths |
-| on-dark-muted | `rgba(255,255,255,0.72)` | Muted text on Paths |
+| path-ship-bg | `#3A2A0E` | Paths: Ship, FinalCTA overlay |
+| on-dark-watermark | `rgba(255,255,255,0.05)` | Footer and FinalCTA watermark |
+| on-dark-surface | `rgba(255,255,255,0.06)` | Translucent cards on dark |
+| on-dark-hover | `rgba(255,255,255,0.1)` | Hover on dark |
+| on-dark-line | `rgba(255,255,255,0.12)` | Borders on dark |
+| on-dark-frame | `rgba(255,255,255,0.35)` | Thin frames on dark |
 | on-dark-control | `rgba(255,255,255,0.4)` | Inactive carousel segments (3:1 contrast) |
+| on-dark-border | `rgba(255,255,255,0.6)` | Outline buttons on dark |
+| on-dark-muted | `rgba(255,255,255,0.72)` | Muted text on dark |
+| on-dark-strong | `rgba(255,255,255,0.85)` | Strong secondary text on dark |
+
+Colour meanings: **green** = brand, merged and money. **Amber** = bounty highlights only. **Red** = errors. Focus rings use **brand** on light backgrounds and **brand-tint** on dark ones.
 
 The hero image is exported as a finished file (shapes in brand-soft and accent-tint), so you upload it rather than rebuild it.
 
 **Collection: Typography**
 
-| Variable | Type | Value |
-|---|---|---|
-| font-display | Font family | Bricolage Grotesque (fallback: Helvetica Neue, Arial, sans-serif) |
-| font-body | Font family | IBM Plex Sans (fallback: Helvetica Neue, Arial, sans-serif) |
-| font-code | Font family | IBM Plex Mono (fallback: Menlo, monospace) |
-| size-h1 | Size | `clamp(2.5rem, 6vw, 4.5rem)` |
-| size-h2 | Size | `clamp(2rem, 4.5vw, 3.25rem)` |
-| size-h3 | Size | `clamp(1.25rem, 2.5vw, 1.625rem)` |
+| Variable | Type | Value | Use |
+|---|---|---|---|
+| font-display | Font family | Bricolage Grotesque (fallback: Helvetica Neue, Arial, sans-serif) | Headings, big numbers |
+| font-body | Font family | IBM Plex Sans (fallback: Helvetica Neue, Arial, sans-serif) | Everything else, including prices and counters |
+| font-code | Font family | IBM Plex Mono (fallback: Menlo, monospace) | Code, repo names, file paths, handles only |
+| text-display | Size | `clamp(2.5rem, 1.5rem + 4vw, 4.5rem)` | Hero and FinalCTA headings (40 → 72px) |
+| text-h1 | Size | `clamp(2rem, 1.4rem + 2.6vw, 3.25rem)` | Section titles (32 → 52px) |
+| text-h2 | Size | `clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem)` | Panel titles, big card words, prices (24 → 36px) |
+| text-h3 | Size | `clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem)` | Card titles, questions, labels (20 → 24px) |
+| text-body-lg | Size | `clamp(1.0625rem, 1rem + 0.3vw, 1.25rem)` | Ledes, quotes (17 → 20px) |
+| text-body | Size | `1rem` | Body, buttons (16px) |
+| text-small | Size | `0.875rem` | Secondary text, chips, nav (14px) |
+| text-caption | Size | `0.75rem` | Meta, eyebrows, badges (12px) |
+| leading-tight | Number | `1.05` | Display and section headings |
+| leading-snug | Number | `1.25` | Smaller headings, buttons, UI |
+| leading-normal | Number | `1.55` | Body text |
+| leading-code | Number | `1.8` | Diff and code lines |
+| tracking-tight | Size | `-0.02em` | Headings |
+| tracking-wide | Size | `0.06em` | Uppercase eyebrows |
+
+Numbers (prices, payouts, counters) use **font-body** with tabular figures, so the digits line up. Add the `is-tabular` combo class (Part 1.5) to them.
+
+If your Designer has no Number variable type, type the line heights directly on each class.
 
 **Collection: Spacing**
 
-| Variable | Type | Value | Fallback if `clamp()` isn't accepted |
-|---|---|---|---|
-| content-width | Size | `1240px` | |
-| content-pad | Size | `clamp(16px, 4vw, 56px)` | Desktop 48px · Tablet 32px · Mobile L 24px · Mobile P 16px |
-| section-pad | Size | `clamp(64px, 10vw, 128px)` | Desktop 112px · Tablet 88px · Mobile L 72px · Mobile P 64px |
+| Variable | Type | Value |
+|---|---|---|
+| space-1 | Size | `4px` |
+| space-2 | Size | `8px` |
+| space-3 | Size | `12px` |
+| space-4 | Size | `16px` |
+| space-5 | Size | `24px` |
+| space-6 | Size | `32px` |
+| space-7 | Size | `40px` |
+| space-8 | Size | `48px` |
+| space-9 | Size | `64px` |
+| space-10 | Size | `80px` |
+| section-pad | Size | `clamp(4rem, 2.4rem + 6.8vw, 8rem)` (64 → 128px) |
+| gap-section-head | Size | `clamp(32px, 4vw, 48px)` (space below a section's header) |
+| content-width | Size | `1240px` |
+| content-pad | Size | `clamp(16px, 4vw, 56px)` |
+| measure-narrow | Size | `32rem` (ledes, short intros) |
+| measure | Size | `40rem` (longer text blocks) |
+| measure-wide | Size | `48rem` |
+
+Every padding, margin and gap in this guide is one of the space variables. When a section lists "Padding space-2 space-3", pick **space-2** for top/bottom and **space-3** for left/right.
 
 **Collection: Radius**
 
-| Variable | Value |
-|---|---|
-| radius-sm | `8px` |
-| radius-lg | `20px` |
-| radius-pill | `999px` |
+| Variable | Value | Use |
+|---|---|---|
+| radius-xs | `4px` | Tiny marks, code highlights |
+| radius-sm | `8px` | Buttons, inputs, small cards |
+| radius-md | `12px` | Cards inside cards, vignettes |
+| radius-lg | `20px` | Cards |
+| radius-xl | `clamp(24px, 3vw, 32px)` | Large section panels (HowItWorks, FAQ, FinalCTA) |
+| radius-pill | `999px` | Chips, tags, round buttons |
 
-**About the fallbacks:** variables hold one value for all breakpoints. If a size variable won't take `clamp()`, store the Desktop fallback in the variable. Then on each class that uses it, type the smaller value directly at Tablet and Mobile.
+**Shadows and motion (not variables).** Webflow Variables can't hold shadows or easing curves. They're defined as CSS custom properties in the global CSS (Part 1.6) for code embeds, and typed into the Style panel by value:
+
+| Token | Value | Use |
+|---|---|---|
+| shadow-sm | `0 2px 6px rgba(20,22,43,0.06)` | Chips, small raised elements |
+| shadow-md | `0 16px 32px -20px rgba(20,22,43,0.4)` | Cards on hover, floating cards |
+| shadow-lg | `0 24px 48px -28px rgba(20,22,43,0.45)` | Large floating UI cards |
+| dur-fast | `160ms` | Hover colours, underlines, arrow nudge |
+| dur-base | `250ms` | State changes, small reveals |
+| dur-slow | `400ms` | Panels, cards, accordions |
+| dur-slower | `600ms` | Background colour fades |
+| ease-out | `cubic-bezier(0.22, 1, 0.36, 1)` | Everything entering or growing (the default) |
+| ease-in | `cubic-bezier(0.4, 0, 1, 1)` | Things leaving or shrinking |
+
+In a Style panel transition or an Interaction, choose **Custom (cubic-bezier)** and enter the ease-out curve `0.22, 1, 0.36, 1` instead of Webflow's preset "ease". In code embeds, write `var(--dur-fast) var(--ease-out)`.
+
+**Value fallbacks per breakpoint** (only if a Size variable won't accept `clamp()`; store the Desktop value in the variable and type the others directly on the class at each breakpoint):
+
+| Variable | Desktop | Tablet | Mobile L | Mobile P |
+|---|---|---|---|---|
+| text-display | 4.5rem | 4rem | 3.375rem | 2.5rem |
+| text-h1 | 3.25rem | 3rem | 2.625rem | 2rem |
+| text-h2 | 2.25rem | 1.9375rem | 1.75rem | 1.5rem |
+| text-h3 | 1.5rem | 1.375rem | 1.3125rem | 1.25rem |
+| text-body-lg | 1.25rem | 1.1875rem | 1.125rem | 1.0625rem |
+| section-pad | 128px | 104px | 88px | 64px |
+| gap-section-head | 48px | 40px | 32px | 32px |
+| content-pad | 48px | 32px | 24px | 16px |
+| radius-xl | 32px | 30px | 24px | 24px |
 
 **Why one variable per section background instead of `--section-bg`:** in Astro, `.section` reads `--section-bg` so every section changes colour in one place. In Webflow you get the same result by picking a Colors variable as each section's Background. Changing the variable updates every section that uses it.
+
+**Only tokens.** Every colour, size, spacing, radius, shadow and timing on the site comes from this list. If you need a value that isn't here, add a variable rather than typing a one-off.
 
 ### 1.2 Fonts
 
@@ -127,9 +204,9 @@ Go to **Site settings → Fonts → Google Fonts**, then add:
 |---|---|
 | Bricolage Grotesque | 400, 500, 600, 700 |
 | IBM Plex Sans | 400, 500, 600 |
-| IBM Plex Mono | 400, 500, 600 |
+| IBM Plex Mono | 400, 500 |
 
-- **IBM Plex Mono 600:** the Astro site only loads 400 and 500, so the browser fakes the bold for the payout amounts. Webflow lets you load the real 600.
+- **Headings use weight 600.** 700 is only for prices, the "fairmerge" watermark and avatar initials.
 - **Bricolage's optical sizing:** Astro loads Bricolage as a variable font with an `opsz` axis. Webflow's Google Fonts picker loads static weights, so very large headings will look slightly less tight than on the Astro site. That's acceptable. For an exact match, upload the variable font file under **Custom fonts** instead.
 
 ### 1.3 Base styles
@@ -138,24 +215,17 @@ Select the **Body (All Pages)** tag in the Style panel's selector field, then se
 
 | Tag | Styles |
 |---|---|
-| Body (All Pages) | Font: font-body · Size 16px · Line height 1.6 · Colour: ink · Background: canvas |
-| All H1–H4 | Font: font-display · Weight 700 · Line height 1.1 · Margin 0 |
-| All H1 | Size: size-h1 · Letter spacing −0.02em |
-| All H2 | Size: size-h2 · Letter spacing −0.015em |
-| All H3 | Size: size-h3 |
-| All H4 | Size 1.25rem |
+| Body (All Pages) | Font: font-body · Size: text-body · Line height: leading-normal · Colour: ink · Background: canvas |
+| All H1–H4 | Font: font-display · Weight 600 · Line height: leading-tight · Margin 0 |
+| All H1 | Size: text-display · Letter spacing: tracking-tight |
+| All H2 | Size: text-h1 · Letter spacing: tracking-tight |
+| All H3, All H4 | Size: text-h3 · Line height: leading-snug |
 | All Paragraphs | Margin 0 |
 | All Links | Colour: brand · Hover state: brand-hover · Underline offset: see Part 1.6 |
 
+Note the shift: an **H2** (section title) uses **text-h1**, because there's one H1 per page and section titles take the next size down from the hero. H3s that need to be big (the Paths card words) get **text-h2** on their own class.
+
 `text-wrap: balance` on headings, `text-wrap: pretty` on paragraphs and `text-underline-offset` go into the global CSS (Part 1.6). Add them in **Style panel → Custom properties** instead if your Designer shows that section.
-
-**Heading fallbacks** (only if the size variables hold a single px value):
-
-| | Desktop | Tablet | Mobile L | Mobile P |
-|---|---|---|---|---|
-| H1 | 4.5rem | 3.5rem | 2.75rem | 2.5rem |
-| H2 | 3.25rem | 2.5rem | 2.25rem | 2rem |
-| H3 | 1.625rem | 1.5rem | 1.375rem | 1.25rem |
 
 ### 1.4 Page structure (Client-First)
 
@@ -187,16 +257,23 @@ section_[name] (Section)
 | `padding-global` | Padding left/right: content-pad |
 | `container-large` | Max width `1128px` (= 1240 − 2 × 56, the content width at full size) · Margin left/right auto · Width 100% |
 | `padding-section-large` | Padding top/bottom: section-pad |
-| `button` | Display inline-flex · Align center · Justify center · Gap 8px · Min height 52px · Padding 0 24px · Radius radius-sm · Background brand · Colour surface · Weight 600 · Size 1rem · No underline · Transition: background-colour 160ms ease, colour 160ms ease. **Hover:** Background brand-hover |
-| `button` + `is-secondary` | Background transparent · Colour ink · Box shadow inset 0 0 0 1.5px ink. **Hover:** Background ink · Colour surface |
-| `button` + `is-small` | Min height 44px · Padding 0 18px · Size 0.9375rem |
-| `button_icon` | The arrow inside a button. Width/height 18px · Transition transform 160ms ease. Parent hover moves it: add a hover Interaction (Move X 3px, 160ms), or the global CSS rule |
-| `tag` | Padding 2px 10px · Border 1px line · Radius radius-pill · Size 0.8125rem · Colour ink-muted |
-| `tag` + `is-domain` | Background brand-tint · Border colour brand-tint · Colour brand-hover · Weight 600 |
-| `card` | Background surface · Border 1px line · Radius radius-lg · Padding `clamp(22px, 2.2vw, 30px)` (fallback: Desktop 28px, Mobile 22px) |
+| `button` | Display inline-flex · Align center · Justify center · Gap space-2 · Min height 48px · Padding 0 space-5 · Radius radius-sm · Font font-body · Size text-body · Weight 600 · Line height leading-snug · No underline · No wrap · Background transparent · Transition: background-colour, colour and box-shadow, dur-fast, ease-out |
+| `button` + `is-primary` | Background brand · Colour surface. **Hover:** Background brand-hover · Colour surface. The main action on light backgrounds |
+| `button` + `is-secondary` | Colour ink · Box shadow inset 0 0 0 1.5px ink. **Hover:** Background ink · Colour surface |
+| `button` + `is-on-dark` | Background surface · Colour ink. **Hover:** Background brand-tint. The main action on a dark panel (FinalCTA) |
+| `button` + `is-outline-on-dark` | Colour surface · Box shadow inset 0 0 0 1px on-dark-border. **Hover:** Background on-dark-hover · Box shadow inset 0 0 0 1px surface |
+| `button` + `is-small` | Min height 40px · Padding 0 space-4 · Size text-small. Header buttons, buttons inside cards |
+| `button` + `is-large` | Min height 52px. Hero, BountyBoard and FinalCTA calls to action |
+| `button_icon` | The arrow inside a button. Width/height 18px (16px in `is-small`) · Transition transform dur-fast ease-out. The global CSS moves it 4px right when the button is hovered |
+| `tag` | Padding 2px space-2 · Border 1px line · Radius radius-pill · Size text-caption · Colour ink-muted |
+| `tag` + `is-domain` | The bounty's highlight badge. Background accent-tint · Border colour accent-tint · Colour accent-ink · Weight 600 |
+| `card` | Background surface · Border 1px line · Radius radius-lg · Padding space-5 (Desktop space-6) |
 | `chip` | Built by script in BountyBoard, styled in its embed (Part 2.4). WaysToEarn's chips are `ways_panel-chip` and `ways_lang` |
+| `is-tabular` | Combo class for numbers (prices, payouts, counters): tabular figures (rule in Part 1.6) |
 | `sr-only` | Visually hidden text that screen readers still read (rules in Part 1.6) |
 | `link-stretched` | Makes a link's click area cover its whole card (rules in Part 1.6) |
+
+Every button is `button` plus one colour combo class, plus a size combo class if it isn't the default 48px. Section classes only add layout (full width on mobile, alignment); they never set button colours.
 
 **Why `container-large` is 1128px and not 1240px:** in Astro, `--content-width` is the outer width *including* padding. Client-First puts the padding on `padding-global`, outside the container, so the container's max width is the inner width.
 
@@ -206,7 +283,21 @@ Put this in **Site settings → Custom code → Head code**, or in the `global-s
 
 ```html
 <style>
-/* 1. Keyboard focus ring on everything (Webflow can't style :focus-visible globally). */
+/* 0. Tokens Webflow Variables can't hold: shadows and motion. */
+:root {
+  --shadow-sm: 0 2px 6px rgba(20, 22, 43, 0.06);
+  --shadow-md: 0 16px 32px -20px rgba(20, 22, 43, 0.4);
+  --shadow-lg: 0 24px 48px -28px rgba(20, 22, 43, 0.45);
+  --dur-fast: 160ms;
+  --dur-base: 250ms;
+  --dur-slow: 400ms;
+  --dur-slower: 600ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* 1. Keyboard focus ring on everything (Webflow can't style :focus-visible globally).
+      brand on light backgrounds, brand-tint on dark ones. */
 :focus-visible { outline: 3px solid var(--colors--brand, #0E6B47); outline-offset: 3px; }
 .section_paths :focus-visible { outline-color: var(--colors--brand-tint, #E3F1EA); }
 
@@ -223,6 +314,7 @@ Put this in **Site settings → Custom code → Head code**, or in the `global-s
 h1, h2, h3, h4 { text-wrap: balance; }
 p { text-wrap: pretty; }
 a { text-underline-offset: 0.2em; }
+.is-tabular { font-variant-numeric: tabular-nums; }
 
 /* 5. Stretched link: the link's ::after covers the nearest positioned parent (the card). */
 .link-stretched::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
@@ -230,7 +322,7 @@ a { text-underline-offset: 0.2em; }
 .link-stretched:focus-visible::after { outline: 3px solid var(--colors--brand, #0E6B47); outline-offset: 3px; }
 
 /* 6. Button arrow nudge on hover. */
-.button:hover .button_icon { transform: translateX(3px); }
+.button:hover .button_icon { transform: translateX(4px); }
 
 /* 7. Hide scrollbars on horizontal scroll rows (they still scroll). */
 .ways_lang-list, .board_list-wrapper, .paths_card-list, .board_chips { scrollbar-width: none; }
@@ -273,10 +365,10 @@ section_hero (Section, id: hero)                         [Custom attr: aria-labe
          │  ├─ hero_title (Heading H1, id: hero-title)    [data-reveal]
          │  ├─ hero_lede (Paragraph)                      [data-reveal]
          │  └─ hero_button-group (Div)                    [data-reveal]
-         │     ├─ button (Link Block → #bounties)
+         │     ├─ button is-primary is-large (Link Block → #bounties)
          │     │  ├─ Text: "Find a bounty"
          │     │  └─ button_icon (Code Embed: arrow SVG)
-         │     └─ button is-secondary (Link Block → #paths)
+         │     └─ button is-secondary is-large (Link Block → #paths)
          │        └─ Text: "Post a bounty"
          ├─ hero_visual (Div)
          │  └─ hero_picture (Code Embed: <picture>, see "Image")
@@ -336,19 +428,19 @@ Give the first slide the combo class `is-active`.
 |---|---|
 | `section_hero` | Background canvas · Min height `100svh` (fallback `100vh`) · Display flex · Align center · Padding top/bottom `clamp(20px, 4.5svh, 64px)` (fallback 40px) · Overflow clip |
 | `hero_component` | Grid, 2 columns `1.05fr 1fr`, 2 rows auto · Column gap `clamp(32px, 5vw, 80px)` (fallback 56px) · Row gap `clamp(20px, 4svh, 40px)` (fallback 32px) · Align content center. Place `hero_content` at col 1 row 1, `hero_quote` at col 1 row 2, and `hero_visual` at col 2 spanning rows 1–2 (Grid child settings → Manual) |
-| `hero_title` | Size `clamp(2.5rem, min(4.6vw, 8.4svh), 4.5rem)` (fallback 4rem) · Line height 1.02 · Max width 14ch · Colour ink |
-| `hero_lede` | Margin top `clamp(12px, 2.4svh, 24px)` · Max width 38rem · Size `clamp(1.0625rem, 1rem + 0.3vw, 1.25rem)` (fallback 1.1875rem) · Colour ink-muted |
-| `hero_button-group` | Margin top `clamp(18px, 3.6svh, 36px)` · Flex, wrap · Gap 12px |
+| `hero_title` | Size `min(var(--typography--text-display), 8.4svh)`: text-display, capped so it fits short screens (fallback 4rem) · Line height leading-tight · Max width 14ch · Colour ink |
+| `hero_lede` | Margin top `clamp(12px, 2.4svh, 24px)` · Max width measure · Size text-body-lg · Colour ink-muted |
+| `hero_button-group` | Margin top `clamp(18px, 3.6svh, 36px)` · Flex, wrap · Gap space-3 |
 | `hero_visual` | Flex · Justify center · Align self center |
-| `hero_quote` | Max width 34rem · Padding 20px 22px 16px · Background surface · Border 1px line · Radius radius-lg |
+| `hero_quote` | Max width measure-narrow · Padding space-5 space-5 space-4 · Background surface · Border 1px line · Radius radius-lg |
 | `hero_quote-slides` | Grid, 1 column. Put **all three slides in row 1 / col 1** (Manual) so they overlap and the card keeps the tallest slide's height |
 | `hero_quote-slide` | Opacity 0 (the slide transitions are in the embed CSS) |
 | `hero_quote-slide` + `is-active` | Opacity 1 |
-| `hero_quote-text` | Size 1rem · Line height 1.55 · Colour ink · No border, padding 0, margin 0 (Webflow styles Block Quote by default) |
-| `hero_quote-person` | Margin top 14px · Flex · Align center · Gap 10px |
-| `hero_avatar` | 36 × 36px · Radius 50% · Grid, centred · Background brand-tint · Colour brand · Font font-display 700 · Size 0.9375rem |
-| `hero_quote-name` | Weight 600 · Size 0.9375rem · Line height 1.3 · Colour ink |
-| `hero_quote-meta` | Size 0.8125rem · Colour ink-muted |
+| `hero_quote-text` | Size text-body · Line height leading-normal · Colour ink · No border, padding 0, margin 0 (Webflow styles Block Quote by default) |
+| `hero_quote-person` | Margin top space-3 · Flex · Align center · Gap space-2 |
+| `hero_avatar` | 36 × 36px · Radius 50% · Grid, centred · Background brand-tint · Colour brand · Font font-display · Weight 700 · Size text-small |
+| `hero_quote-name` | Weight 600 · Size text-small · Line height leading-snug · Colour ink |
+| `hero_quote-meta` | Size text-caption · Colour ink-muted |
 
 **Tablet**
 
@@ -356,7 +448,7 @@ Give the first slide the combo class `is-active`.
 |---|---|
 | `section_hero` | Min height auto · Padding top/bottom `clamp(40px, 7vw, 88px)` (fallback 64px) |
 | `hero_component` | 1 column · Row gap `clamp(40px, 8vw, 56px)` (fallback 48px). Children: content row 1, visual row 2 |
-| `hero_title` | Size `clamp(2rem, 1.2rem + 4vw, 4.75rem)` (fallback 3.5rem) · Line height 1.05 |
+| `hero_title` | Size text-display · Line height leading-tight |
 | `hero_lede` | Margin top `clamp(16px, 2.5vw, 24px)` |
 | `hero_button-group` | Margin top `clamp(24px, 3.5vw, 36px)` |
 | `hero_quote` | **Display none.** Astro also hides it below 900px. A hidden carousel stops rotating: the script checks |
@@ -398,11 +490,11 @@ Avatar letters: A, L, P.
 | # | Target (Element: select it) | Action | Values |
 |---|---|---|---|
 | 1 | hero_title, hero_lede, hero_button-group | Opacity + Move | Opacity 0 %, Move Y 14px. Tick **Set as initial state** |
-| 2 | hero_title | Opacity + Move | → 100 %, Y 0 · 420ms · delay 0 |
-| 3 | hero_lede | Opacity + Move | → 100 %, Y 0 · 420ms · delay 80ms |
-| 4 | hero_button-group | Opacity + Move | → 100 %, Y 0 · 420ms · delay 160ms |
+| 2 | hero_title | Opacity + Move | → 100 %, Y 0 · 400ms (dur-slow) · delay 0 |
+| 3 | hero_lede | Opacity + Move | → 100 %, Y 0 · 400ms · delay 80ms |
+| 4 | hero_button-group | Opacity + Move | → 100 %, Y 0 · 400ms · delay 160ms |
 
-- **Easing:** Custom `cubic-bezier(0.2, 0.7, 0.2, 1)` if your Interactions panel has custom bezier, otherwise **Out Cubic**.
+- **Easing:** the shared ease-out curve, Custom `cubic-bezier(0.22, 1, 0.36, 1)`, if your Interactions panel has custom bezier, otherwise **Out Quart** (the closest preset).
 - **Why `data-reveal`:** "Set as initial state" hides the elements with inline styles before the animation runs. The global reduced-motion CSS uses `[data-reveal]` to force them visible again, so reduced-motion users never see them hidden.
 
 **Testimonial carousel: native Slider vs custom embed.**
@@ -432,8 +524,8 @@ Put one Code Embed `hero_quote-controls` as the last child of `hero_quote`. The 
 
 <style>
   /* Slides: fade, and become invisible to screen readers once faded out. */
-  .hero_quote-slide { visibility: hidden; transition: opacity 400ms ease, visibility 0s linear 400ms; }
-  .hero_quote-slide.is-active { visibility: visible; transition: opacity 400ms ease, visibility 0s; }
+  .hero_quote-slide { visibility: hidden; transition: opacity var(--dur-slow) var(--ease-out), visibility 0s linear var(--dur-slow); }
+  .hero_quote-slide.is-active { visibility: visible; transition: opacity var(--dur-slow) var(--ease-out), visibility 0s; }
 
   .hero_quote-controls { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--colors--line, #DADDEA);
     display: flex; align-items: center; justify-content: space-between; }
@@ -450,7 +542,7 @@ Put one Code Embed `hero_quote-controls` as the last child of `hero_quote`. The 
   .hero_quote-dot { display: grid; place-items: center; width: 28px; height: 28px; padding: 0;
     border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
   .hero_quote-dot::before { content: ''; width: 8px; height: 8px; border-radius: 999px;
-    background: var(--colors--ink-muted, #5A5F7A); transition: width 200ms ease, background-color 200ms ease; }
+    background: var(--colors--ink-muted, #5A5F7A); transition: width var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out); }
   .hero_quote-dot[aria-current="true"]::before { width: 20px; background: var(--colors--brand, #0E6B47); }
 </style>
 
@@ -596,7 +688,7 @@ section_ways (Section, id: ways-to-earn)                    [aria-labelledby = w
             │  │              │  ├─ ways_panel-desc (Paragraph)       [data-anim]
             │  │              │  ├─ ways_panel-chips (List)           [data-anim]
             │  │              │  │  └─ ways_panel-chip (List Item) × 4
-            │  │              │  └─ ways_cta (Link Block → #bounties) [data-anim]
+            │  │              │  └─ button is-primary + ways_cta (Link Block → #bounties) [data-anim]
             │  │              │     ├─ Text: "View bug-fix bounties"
             │  │              │     └─ arrow embed
             │  │              └─ ways_visual (Div)                   [aria-hidden = true]
@@ -679,16 +771,16 @@ vig is-card                      vig is-card
 
 | Class | Styles |
 |---|---|
-| `vig` + `is-card` | Max width 440px · Padding 18px 20px · Radius radius-lg · Shadow 0 24px 48px −28px rgba(20,22,43,0.4) · Size 0.875rem |
-| `vig_meta`, `vig_text` | Colour ink-muted · Size 0.8125rem |
-| `vig_pr-meta` | Margin top 14px · Padding top 12px · Border top 1px line · Flex · Space between |
-| `vig_tests` | No list style · Padding 6px 0 0 |
-| `vig_test` | Flex · Align center · Gap 10px · Padding 6px 0 |
+| `vig` + `is-card` | Max width 440px · Padding space-4 space-5 · Radius radius-lg · Shadow 0 24px 48px −28px rgba(20,22,43,0.4) · Size text-small |
+| `vig_meta`, `vig_text` | Colour ink-muted · Size text-caption |
+| `vig_pr-meta` | Margin top space-3 · Padding top 12px · Border top 1px line · Flex · Space between |
+| `vig_tests` | No list style · Padding space-2 0 0 |
+| `vig_test` | Flex · Align center · Gap space-2 · Padding space-2 0 |
 | `vig_check` | 18 × 18px · Radius 50% · Grid centred · Background payout-tint · Colour payout |
-| `vig_result` | Margin top 8px · Padding top 10px · Border top 1px line |
-| `vig_code`, `vig_codeline` | Margin top 12px · Padding 10px 12px · Radius 8px · Background canvas · Font font-code 0.8125rem · White space pre · Overflow hidden |
-| `vig_comment` | Margin top 12px · Padding 12px · Border 1px line · Radius 10px |
-| `vig_badge` | Margin left auto · Inline-flex · Gap 4px · Padding 2px 8px · Radius pill · Background payout-tint · Colour payout · Size 0.75rem · Weight 600 |
+| `vig_result` | Margin top space-2 · Padding top 10px · Border top 1px line |
+| `vig_code`, `vig_codeline` | Margin top space-3 · Padding space-2 space-3 · Radius radius-sm · Background canvas · Font font-code 0.8125rem · White space pre · Overflow hidden |
+| `vig_comment` | Margin top space-3 · Padding space-3 · Border 1px line · Radius radius-sm |
+| `vig_badge` | Margin left auto · Inline-flex · Gap space-1 · Padding 2px space-2 · Radius radius-pill · Background payout-tint · Colour payout · Size text-caption · Weight 600 |
 
 ### Styles per breakpoint
 
@@ -699,25 +791,25 @@ The Designer holds the **accordion** look, the base for every breakpoint. The De
 | Class | Styles |
 |---|---|
 | `section_ways` | Background brand-tint |
-| `ways_header` | Grid, 2 columns `1fr auto` · Gap 20px · Align end · Padding bottom `clamp(32px, 4vw, 48px)` · Border bottom 1px line |
-| `ways_title` | Size `clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem)` (fallback 4.5rem) · Weight 600 · Line height 1 · Letter spacing −0.025em |
+| `ways_header` | Grid, 2 columns `1fr auto` · Gap space-5 · Align end · Padding bottom `clamp(32px, 4vw, 48px)` · Border bottom 1px line |
+| `ways_title` | Size text-h1 · Weight 600 · Line height leading-tight · Letter spacing tracking-tight |
 | `ways_title-line` | Display block |
-| `ways_intro` | Max width 30rem · Justify self end · Text align right · Colour ink-muted |
-| `ways_browse` | Margin top 16px · Inline-flex · Gap 6px · Padding bottom 3px · Border bottom 1.5px solid ink · Weight 600 · Size 0.9375rem · Colour ink · No underline. **Hover:** colour brand |
+| `ways_intro` | Max width measure-narrow · Justify self end · Text align right · Colour ink-muted |
+| `ways_browse` | Margin top space-4 · Inline-flex · Gap space-2 · Padding bottom 3px · Border bottom 1.5px solid ink · Weight 600 · Size text-small · Colour ink · No underline. **Hover:** colour brand |
 | `ways_item` | Border bottom 1px line |
 | `ways_panel` | Grid, 1 row (the embed CSS animates its row) |
-| `ways_panel-clip` | Min height 0 · Overflow hidden · Margin 0 −6px · Padding 0 6px (keeps focus rings visible) |
-| `ways_panel-body` | Grid, 1 column · Gap 24px · Padding 4px 0 28px |
-| `ways_panel-text` | Flex vertical · Align start · Gap 16px |
+| `ways_panel-clip` | Min height 0 · Overflow hidden · Margin 0 −6px · Padding 0 space-2 (keeps focus rings visible) |
+| `ways_panel-body` | Grid, 1 column · Gap space-5 · Padding space-1 0 space-6 |
+| `ways_panel-text` | Flex vertical · Align start · Gap space-4 |
 | `ways_panel-title` | Display none (shown on Desktop by the embed CSS) |
-| `ways_panel-desc` | Max width 32rem · Colour ink-muted |
-| `ways_panel-chips` | Flex, wrap · Gap 8px · No list style · Padding 0 |
-| `ways_panel-chip` | Inline-flex · Align center · Gap 8px · Padding 5px 12px · Border 1px line · Radius pill · Background surface · Size 0.875rem. The green dot is the embed CSS's `::before` |
-| `ways_cta` | Inline-flex · Centre · Gap 8px · Min height 48px · Padding 0 24px · Radius radius-sm · Background brand · Colour surface · Weight 600 · No underline · Align self stretch. **Hover:** Background brand-hover |
-| `ways_langs` | Margin top `clamp(32px, 4vw, 48px)` · Grid, 2 columns `auto 1fr` · Align center · Gap 16px |
-| `ways_langs-label` | Size 0.8125rem · Weight 600 · Letter spacing 0.06em · Uppercase · Colour ink-muted |
-| `ways_lang-list` | Flex, no wrap · Gap 8px · No list style · Padding 4px |
-| `ways_lang` | Inline-flex · Align center · Min height 36px · Padding 0 14px · Border 1px line · Radius pill · Background surface · Size 0.875rem · Colour ink · No underline · No wrap. **Hover:** Border and colour brand |
+| `ways_panel-desc` | Max width measure-narrow · Colour ink-muted |
+| `ways_panel-chips` | Flex, wrap · Gap space-2 · No list style · Padding 0 |
+| `ways_panel-chip` | Inline-flex · Align center · Gap space-2 · Padding space-1 space-3 · Border 1px line · Radius radius-pill · Background surface · Size text-small. The green dot is the embed CSS's `::before` |
+| `ways_cta` | Combo on `button is-primary` (default 48px size). Layout only: Align self stretch. The arrow inside is a `button_icon` |
+| `ways_langs` | Margin top `clamp(32px, 4vw, 48px)` · Grid, 2 columns `auto 1fr` · Align center · Gap space-4 |
+| `ways_langs-label` | Size text-caption · Weight 600 · Letter spacing 0.06em · Uppercase · Colour ink-muted |
+| `ways_lang-list` | Flex, no wrap · Gap space-2 · No list style · Padding space-1 |
+| `ways_lang` | Inline-flex · Align center · Min height 36px · Padding 0 space-3 · Border 1px line · Radius radius-pill · Background surface · Size text-small · Colour ink · No underline · No wrap. **Hover:** Border and colour brand |
 
 **Tablet**
 
@@ -731,14 +823,14 @@ The Designer holds the **accordion** look, the base for every breakpoint. The De
 
 | Class | Changes |
 |---|---|
-| `ways_langs` | 1 column · Gap 12px |
-| `ways_lang-list` | No wrap · Overflow: scroll horizontally · Margin left/right −24px · Padding 4px 24px (one sideways-scrolling row) |
+| `ways_langs` | 1 column · Gap space-3 |
+| `ways_lang-list` | No wrap · Overflow: scroll horizontally · Margin left/right −24px · Padding space-1 space-5 (one sideways-scrolling row) |
 
 **Mobile portrait**
 
 | Class | Changes |
 |---|---|
-| `ways_lang-list` | Margin left/right −16px · Padding 4px 16px |
+| `ways_lang-list` | Margin left/right −16px · Padding space-1 space-4 |
 
 ### Content
 
@@ -763,10 +855,10 @@ None native. Everything is a CSS transition triggered by classes the script togg
 
 | Effect | How |
 |---|---|
-| Centre-out line | `::after` with `scaleX(0)` → `scaleX(1)` and `transform-origin: center`; 400ms ease-out to grow, 250ms to shrink |
+| Centre-out line | `::after` with `scaleX(0)` → `scaleX(1)` and `transform-origin: center`; dur-slow ease-out to grow, dur-base ease-in to shrink |
 | Hover preview | Inactive tab hover: `scaleX(0.3)` at 40% opacity |
-| Desktop panel swap | Old panel fades in 150ms; new panel's pieces rise 12px and fade in over 300ms, staggered 50ms; the visual scales from 0.96 |
-| Accordion height | `grid-template-rows: 0fr` → `1fr` over 300ms; the chevron rotates 180° |
+| Desktop panel swap | Old panel fades out over dur-fast; new panel's pieces rise 12px and fade in over dur-base, staggered 50ms; the visual scales from 0.96 |
+| Accordion height | `grid-template-rows: 0fr` → `1fr` over dur-base; the chevron rotates 180° |
 | Reduced motion | The global CSS (Part 1.6) cuts every transition to 0.01ms, so all of this becomes instant |
 
 **Why not Interactions:** the active state is decided by the script, and so are the rules ("can't close", keyboard, ARIA). Class-driven CSS transitions keep the motion and the state in one place, and they respect reduced motion through the global CSS automatically.
@@ -779,11 +871,11 @@ None native. Everything is a CSS transition triggered by classes the script togg
 .ways_h { margin: 0; font: inherit; }
 .ways_tab { position: relative; width: 100%; min-height: 56px; display: flex; align-items: center; gap: 14px;
   padding: 16px 0; border: 0; background: none; text-align: left; cursor: pointer;
-  font-family: var(--typography--font-display, 'Bricolage Grotesque', sans-serif); font-size: 1.25rem; font-weight: 500;
-  color: var(--colors--ink-muted, #5A5F7A); transition: color 160ms ease; }
+  font-family: var(--typography--font-display, 'Bricolage Grotesque', sans-serif); font-size: var(--typography--text-h3, 1.25rem); font-weight: 500;
+  color: var(--colors--ink-muted, #5A5F7A); transition: color var(--dur-fast) var(--ease-out); }
 .ways_tab.is-active { color: var(--colors--ink, #14162B); cursor: default; } /* can't be closed: don't look clickable */
 .ways_icon { flex: none; display: grid; color: var(--colors--brand, #0E6B47); }
-.ways_chevron { flex: none; margin-left: auto; color: var(--colors--ink-muted, #5A5F7A); transition: transform 300ms ease; }
+.ways_chevron { flex: none; margin-left: auto; color: var(--colors--ink-muted, #5A5F7A); transition: transform var(--dur-base) var(--ease-out); }
 .ways_tab.is-active .ways_chevron { transform: rotate(180deg); }
 .ways_tab:focus-visible { outline-offset: -3px; border-radius: 8px; }
 
@@ -791,8 +883,8 @@ None native. Everything is a CSS transition triggered by classes the script togg
    transform-origin: center makes it grow (and shrink) from the middle. */
 .ways_tab::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
   background: var(--colors--brand, #0E6B47); transform: scaleX(0); transform-origin: center;
-  transition: transform 250ms ease-in, opacity 250ms ease-in; }
-.ways_tab.is-active::after { transform: scaleX(1); opacity: 1; transition: transform 400ms cubic-bezier(.2,.7,.2,1); }
+  transition: transform var(--dur-base) var(--ease-in), opacity var(--dur-base) var(--ease-in); }
+.ways_tab.is-active::after { transform: scaleX(1); opacity: 1; transition: transform var(--dur-slow) var(--ease-out); }
 @media (hover: hover) {
   .ways_tab:not(.is-active):hover { color: var(--colors--ink, #14162B); }
   .ways_tab:not(.is-active):hover::after { transform: scaleX(0.3); opacity: 0.4; }
@@ -803,9 +895,9 @@ None native. Everything is a CSS transition triggered by classes the script togg
 
 /* ---------- Accordion: height via grid rows 0fr -> 1fr ---------- */
 .is-accordion .ways_panel { grid-template-rows: 0fr; visibility: hidden;
-  transition: grid-template-rows 300ms ease, visibility 0s linear 300ms; }
+  transition: grid-template-rows var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base); }
 .is-accordion .ways_panel.is-open { grid-template-rows: 1fr; visibility: visible;
-  transition: grid-template-rows 300ms ease, visibility 0s; }
+  transition: grid-template-rows var(--dur-base) var(--ease-out), visibility 0s; }
 .ways_panels:empty { display: none; }
 .is-instant, .is-instant *, .is-instant *::after { transition: none !important; } /* first frame / layout switch */
 
@@ -814,25 +906,25 @@ None native. Everything is a CSS transition triggered by classes the script togg
   .ways_tabs.is-tabs { display: grid; grid-template-columns: 28% minmax(0, 1fr); }
   .is-tabs .ways_list { border-right: 1px solid var(--colors--line, #DADDEA); }
   .is-tabs .ways_item:last-child { border-bottom: 0; }
-  .is-tabs .ways_tab { padding: 28px 24px 28px 0; font-size: 1.5rem; }
+  .is-tabs .ways_tab { padding: 28px 24px 28px 0; font-size: var(--typography--text-h3, 1.25rem); }
   .is-tabs .ways_chevron { display: none; }
   .is-tabs .ways_panels { display: grid; align-items: center; padding: 40px 0 40px clamp(32px, 4vw, 64px); }
-  .is-tabs .ways_panel { grid-area: 1 / 1; transition: opacity 150ms ease; }  /* panels share one cell */
+  .is-tabs .ways_panel { grid-area: 1 / 1; transition: opacity var(--dur-fast) var(--ease-out); }  /* panels share one cell */
   .is-tabs .ways_panel.is-leaving { opacity: 0; }
   .is-tabs .ways_panel-body { grid-template-columns: minmax(0, 1fr) minmax(0, .95fr); align-items: center;
     gap: clamp(32px, 4vw, 56px); padding: 4px 0; }
   .is-tabs .ways_panel-text { gap: 20px; }
   .is-tabs .ways_panel-title { display: block; font-family: var(--typography--font-display, 'Bricolage Grotesque', sans-serif);
-    font-size: clamp(2.5rem, 3.4vw, 3rem); font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; }
+    font-size: var(--typography--text-h2, 2.25rem); font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; }
   .is-tabs .ways_cta { align-self: flex-start; }
   .is-tabs .vig.is-card { margin-left: auto; }
 
   /* Incoming panel: pieces rise 12px and fade in, staggered by --d; visual scales from .96. */
-  .is-tabs [data-anim] { transition: opacity 300ms ease, transform 300ms cubic-bezier(.2,.7,.2,1); }
+  .is-tabs [data-anim] { transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out); }
   .is-tabs [data-anim]:nth-child(2) { transition-delay: 50ms; }
   .is-tabs [data-anim]:nth-child(3) { transition-delay: 100ms; }
   .is-tabs [data-anim]:nth-child(4) { transition-delay: 150ms; }
-  .is-tabs .ways_visual { transition: opacity 300ms ease 100ms, transform 300ms cubic-bezier(.2,.7,.2,1) 100ms; }
+  .is-tabs .ways_visual { transition: opacity var(--dur-base) var(--ease-out) 100ms, transform var(--dur-base) var(--ease-out) 100ms; }
   .is-tabs .ways_panel.is-entering [data-anim] { opacity: 0; transform: translateY(12px); transition: none; }
   .is-tabs .ways_panel.is-entering .ways_visual { opacity: 0; transform: scale(.96); transition: none; }
 }
@@ -917,7 +1009,7 @@ None native. Everything is a CSS transition triggered by classes the script togg
       incoming.hidden = false;
       void incoming.offsetWidth;                        // apply it before removing it
       incoming.classList.remove('is-entering');         // transitions run
-    }, 150);
+    }, 160); // = --dur-fast, the old panel's fade-out
   }
 
   // ---------- Activate item i: the open item never closes ----------
@@ -1095,30 +1187,30 @@ vig                                    vig                                    vi
 
 | Class | Styles |
 |---|---|
-| `vig` | Padding 14px 16px · Background surface · Radius 12px · Colour ink · Size 0.875rem · Shadow 0 20px 40px −24px rgba(20,22,43,0.8) |
-| `vig_head` | Flex · Space between · Align center · Gap 12px · Padding bottom 10px · Border bottom 1px line · Weight 600 |
-| `vig_head` + `is-code` | Font font-code · Weight 500 · Size 0.8125rem · Colour ink-muted |
-| `vig_tag` | Padding 2px 8px · Radius pill · Background canvas · Size 0.75rem · Weight 500 · Colour ink-muted |
+| `vig` | Padding space-3 space-4 · Background surface · Radius radius-md · Colour ink · Size text-small · Shadow 0 20px 40px −24px rgba(20,22,43,0.8) |
+| `vig_head` | Flex · Space between · Align center · Gap space-3 · Padding bottom 10px · Border bottom 1px line · Weight 600 |
+| `vig_head` + `is-code` | Font font-code · Weight 500 · Size text-caption · Colour ink-muted |
+| `vig_tag` | Padding 2px space-2 · Radius radius-pill · Background canvas · Size text-caption · Weight 500 · Colour ink-muted |
 | `vig_plus` | Colour payout |
 | `vig_rows` | No list style · Padding 0 · Margin 0 |
-| `vig_row` | Flex · Space between · Padding 10px 0 · Border bottom 1px line (last one: none; use the `:last-child` state in the selector menu) |
+| `vig_row` | Flex · Space between · Padding space-2 0 · Border bottom 1px line (last one: none; use the `:last-child` state in the selector menu) |
 | `vig_pr` | Colour ink-muted |
 | `vig_amount` | Font font-code · Weight 600 · Colour payout |
-| `vig_diff` | Margin top 10px · Font font-code · Size 0.8125rem · Line height 1.9 · Radius 6px · Overflow hidden |
+| `vig_diff` | Margin top space-2 · Font font-code · Size text-caption · Line height leading-code · Radius radius-sm · Overflow hidden |
 | `vig_line` | Grid, columns `1.6em 1fr` · Padding right 8px · White space pre |
 | `vig_line` + `is-add` | Background payout-tint |
 | `vig_sign` | Text align center · Colour ink-muted (`is-add` → payout) |
-| `vig_bubble` | Margin top 12px · Padding 10px 12px · Radius 10px · Background brand-tint · Size 0.8125rem · Line height 1.45 |
-| `vig_bubble-label` | Block · Margin bottom 2px · Size 0.6875rem · Weight 600 · Letter spacing 0.06em · Uppercase · Colour brand |
-| `vig_title` | Font font-display · Size 1rem · Weight 600 |
-| `vig_ai` | Margin top 8px · Padding 8px 10px · Radius 8px · Background brand-tint · Size 0.8125rem |
+| `vig_bubble` | Margin top space-3 · Padding space-2 space-3 · Radius radius-sm · Background brand-tint · Size text-caption · Line height leading-normal |
+| `vig_bubble-label` | Block · Margin bottom 2px · Size text-caption · Weight 600 · Letter spacing 0.06em · Uppercase · Colour brand |
+| `vig_title` | Font font-display · Size text-body · Weight 600 |
+| `vig_ai` | Margin top space-2 · Padding space-2 space-2 · Radius radius-sm · Background brand-tint · Size text-caption |
 | `vig_ai-strong` | Colour brand |
-| `vig_posted` | Margin top 10px · Flex · Space between · Padding 8px 0 · Border top and bottom 1px line · Colour ink-muted |
+| `vig_posted` | Margin top space-2 · Flex · Space between · Padding space-2 0 · Border top and bottom 1px line · Colour ink-muted |
 | `vig_posted-amount` | Font font-code · Weight 600 · Colour ink |
-| `vig_counter` | Margin top 10px · Flex, wrap · Align center · Gap 8px · Size 0.8125rem |
-| `vig_avatar` | 22 × 22px · Radius 50% · Grid centred · Background brand-tint · Colour brand · Size 0.6875rem · Weight 700 |
-| `vig_chips` | Margin left auto · Flex · Gap 6px |
-| `vig_chip` | Padding 3px 10px · Radius pill · Border 1px line · Size 0.75rem · Weight 600 · Colour ink-muted |
+| `vig_counter` | Margin top space-2 · Flex, wrap · Align center · Gap space-2 · Size text-caption |
+| `vig_avatar` | 22 × 22px · Radius 50% · Grid centred · Background brand-tint · Colour brand · Size text-caption · Weight 700 |
+| `vig_chips` | Margin left auto · Flex · Gap space-2 |
+| `vig_chip` | Padding space-1 space-2 · Radius radius-pill · Border 1px line · Size text-caption · Weight 600 · Colour ink-muted |
 | `vig_chip` + `is-accept` | Border transparent · Background payout-tint · Colour payout |
 
 **Grow diff lines** (`vig_sign` / `vig_code`):
@@ -1142,24 +1234,24 @@ vig                                    vig                                    vi
 | `paths_component` | Grid, 3 columns `0.85fr 1fr 1fr` · Gap `clamp(24px, 3vw, 48px)` (fallback 40px) · Align items center |
 | `paths_title` | Colour surface · Weight 600 |
 | `paths_title-line` | Display block |
-| `paths_lede` | Margin top 16px · Max width 28rem · Size 1.0625rem · Colour on-dark-muted |
+| `paths_lede` | Margin top space-4 · Max width measure-narrow · Size text-body-lg · Colour on-dark-muted |
 | `paths_bg-list` | Display none |
 | `paths_media-list` | Grid, 1 column. Set **every `paths_media` to row 1 / col 1** (Manual) so they stack |
-| `paths_media` | Flex vertical · Gap 20px · Padding `clamp(16px, 2vw, 24px)` · Background on-dark-surface · Border 1px on-dark-line · Radius radius-lg |
+| `paths_media` | Flex vertical · Gap space-5 · Padding `clamp(16px, 2vw, 24px)` · Background on-dark-surface · Border 1px on-dark-line · Radius radius-lg |
 | `paths_media-stage` | Flex grow 1 · Grid · Align center |
-| `paths_media-caption` | Font font-display · Size `clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem)` (fallback 1.5rem) · Weight 500 · Line height 1.2 · Colour surface |
-| `paths_media-sub` | Margin top 4px · Size 0.9375rem · Colour on-dark-muted |
+| `paths_media-caption` | Font font-display · Size text-h3 · Weight 500 · Line height leading-snug · Colour surface |
+| `paths_media-sub` | Margin top space-1 · Size text-small · Colour on-dark-muted |
 | `paths_card-list` | Grid, 1 column. Set **every `paths_card` to row 1 / col 1** (Manual) |
 | `paths_card` | Flex vertical · Padding `clamp(20px, 2.4vw, 32px)` (fallback 32px) · Background on-dark-surface · Border 1px on-dark-line · Radius radius-lg |
-| `paths_card-meta` | Flex · Align center · Gap 12px · Padding bottom 18px · Border bottom 1px on-dark-line · Size 0.875rem |
+| `paths_card-meta` | Flex · Align center · Gap space-3 · Padding bottom 18px · Border bottom 1px on-dark-line · Size text-small |
 | `paths_card-num` | Font font-code · Weight 500 |
 | `paths_line` | Position relative · Flex grow 1 · Height 1px · Overflow hidden · Background on-dark-line |
 | `paths_line-fill` | Position absolute, Full (inset 0) · Background surface · **Transform origin: left center** (Style panel → Transforms → settings) |
-| `paths_card-title` | Margin top 20px · Font font-display · Size `clamp(2.5rem, 1.9rem + 2.4vw, 4rem)` (fallback 4rem) · Weight 400 · Line height 1 · Letter spacing −0.02em |
-| `paths_card-quote` | Margin top 20px · Grid, columns `auto 1fr` · Gap 12px · Size 1.0625rem · Line height 1.5 · Padding 0 · Border none |
+| `paths_card-title` | Margin top space-5 · Font font-display · Size text-h2 · Weight 400 · Line height leading-tight · Letter spacing tracking-tight |
+| `paths_card-quote` | Margin top space-5 · Grid, columns `auto 1fr` · Gap space-3 · Size text-body-lg · Line height leading-normal · Padding 0 · Border none |
 | `paths_card-mark` | Colour brand-tint · Margin top 2px |
-| `paths_card-who` | Margin top 10px · Padding left 34px, bottom 20px · Border bottom 1px on-dark-line · Size 0.8125rem · Colour on-dark-muted |
-| `paths_card-body` | Margin top 20px · Size 0.9375rem · Line height 1.55 · Colour on-dark-muted |
+| `paths_card-who` | Margin top space-2 · Padding left 34px, bottom 20px · Border bottom 1px on-dark-line · Size text-caption · Colour on-dark-muted |
+| `paths_card-body` | Margin top space-5 · Size text-small · Line height leading-normal · Colour on-dark-muted |
 | `paths_controls` | No styles. Its bar starts with `hidden`, and the script shows it only below 992px |
 
 The Interaction sets every opacity and the line scale, so leave those at their defaults in the Style panel.
@@ -1173,7 +1265,7 @@ The Interaction sets every opacity and the line scale, so leave those at their d
 | `section_paths` | Height auto · Padding top/bottom `clamp(64px, 10vw, 112px)` (fallback 88px) |
 | `paths_pin` | Position static · Height auto · Display block · Overflow visible |
 | `paths_component` | 1 column · Gap `clamp(28px, 5vw, 40px)` (fallback 36px) |
-| `paths_card-list` | **Flex**, horizontal, no wrap · Gap 14px · Overflow: scroll horizontally · Margin left/right `-32px` · Padding 4px 32px (the negative margin lets the row run edge to edge) · Custom properties: `scroll-snap-type: x mandatory`, `scroll-padding-inline: 32px`, `overscroll-behavior-x: contain` |
+| `paths_card-list` | **Flex**, horizontal, no wrap · Gap space-3 · Overflow: scroll horizontally · Margin left/right `-32px` · Padding space-1 space-6 (the negative margin lets the row run edge to edge) · Custom properties: `scroll-snap-type: x mandatory`, `scroll-padding-inline: 32px`, `overscroll-behavior-x: contain` |
 | `paths_card` | Width `min(86%, 440px)` · Flex shrink 0 · Custom property `scroll-snap-align: start` |
 | `paths_card-title` | Size fallback 3rem |
 
@@ -1181,13 +1273,13 @@ The Interaction sets every opacity and the line scale, so leave those at their d
 
 | Class | Changes |
 |---|---|
-| `paths_card-list` | Margin left/right −24px · Padding 4px 24px · `scroll-padding-inline: 24px` |
+| `paths_card-list` | Margin left/right −24px · Padding space-1 space-5 · `scroll-padding-inline: 24px` |
 
 **Mobile portrait**
 
 | Class | Changes |
 |---|---|
-| `paths_card-list` | Margin left/right −16px · Padding 4px 16px · `scroll-padding-inline: 16px` |
+| `paths_card-list` | Margin left/right −16px · Padding space-1 space-4 · `scroll-padding-inline: 16px` |
 | `paths_card-title` | Size fallback 2.5rem |
 
 These margins and paddings equal `content-pad` at each breakpoint. If your content-pad variable holds the `clamp()`, use `calc(-1 * <variable>)` instead of fixed numbers.
@@ -1287,29 +1379,29 @@ One Code Embed `paths_controls`, placed as the **last child** of `paths_componen
 /* 28px-tall hit area, 3px visible bar. Inactive bars are 40% white (3:1 on all three backgrounds). */
 .paths_seg { position: relative; flex: 1; height: 28px; padding: 0; border: 0; background: transparent; cursor: pointer; }
 .paths_seg::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px;
-  border-radius: 999px; background: var(--colors--on-dark-control, rgba(255,255,255,.4)); transition: background-color 300ms ease; }
+  border-radius: 999px; background: var(--colors--on-dark-control, rgba(255,255,255,.4)); transition: background-color var(--dur-base) var(--ease-out); }
 .paths_seg[aria-current="true"]::before { background: var(--colors--surface, #FFF); }
 .paths_counter { flex: none; margin: 0; font-family: var(--typography--font-code, 'IBM Plex Mono', monospace);
-  font-size: 0.875rem; color: var(--colors--on-dark-muted, rgba(255,255,255,.72)); }
+  font-size: var(--typography--text-small, 0.875rem); color: var(--colors--on-dark-muted, rgba(255,255,255,.72)); }
 .paths_counter span { color: var(--colors--surface, #FFF); }
 
 /* ---------- Tablet & mobile carousel ----------
    !important beats any inline styles the desktop Interaction left behind
    (e.g. after resizing a desktop window down). */
 @media (max-width: 991px) {
-  .section_paths { transition: background-color 600ms ease;
+  .section_paths { transition: background-color var(--dur-slower) var(--ease-out);
     background-color: var(--colors--path-earn-bg, #0B3B2C) !important; }
   .section_paths[data-active="1"] { background-color: var(--colors--path-grow-bg, #102F3A) !important; }
   .section_paths[data-active="2"] { background-color: var(--colors--path-ship-bg, #3A2A0E) !important; }
 
   /* Only the active media card shows; it wipes in from the top. */
-  .paths_media { transition: opacity 400ms ease; }
+  .paths_media { transition: opacity var(--dur-slow) var(--ease-out); }
   .paths_media.is-active { opacity: 1 !important; }
   .paths_media:not(.is-active) { opacity: 0 !important; pointer-events: none; }
   .paths_media-stage { clip-path: inset(0 0 0 0 round 12px);
-    transition: opacity 500ms ease, transform 600ms cubic-bezier(.2,.7,.2,1), clip-path 600ms cubic-bezier(.2,.7,.2,1); }
+    transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slower) var(--ease-out), clip-path var(--dur-slower) var(--ease-out); }
   .paths_media:not(.is-active) .paths_media-stage { opacity: 0; transform: scale(.96); clip-path: inset(0 0 100% 0 round 12px); }
-  .paths_media-caption, .paths_media-sub { transition: opacity 400ms ease, transform 400ms ease; }
+  .paths_media-caption, .paths_media-sub { transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
   .paths_media.is-active .paths_media-caption { transition-delay: 250ms; }
   .paths_media.is-active .paths_media-sub { transition-delay: 370ms; }
   .paths_media:not(.is-active) .paths_media-caption,
@@ -1587,7 +1679,7 @@ section_board (Section, id: bounties)                     [aria-labelledby, data
             │  │  │  ├─ board_title-line (Text Span): "Open bounties,"
             │  │  │  └─ board_title-line (Text Span): "live now."
             │  │  └─ board_lede (Paragraph)
-            │  └─ button is-secondary (Link Block → #): "See all 24 bounties" + button_icon
+            │  └─ button is-secondary is-large (Link Block → #): "See all 24 bounties" + button_icon
             ├─ board_filters (Div, Grid)
             │  ├─ board_filter (Div)                       [role=group, aria-labelledby=filter-language]
             │  │  ├─ board_filter-label (Text Block, id: filter-language): "Language"
@@ -1622,7 +1714,7 @@ section_board (Section, id: bounties)                     [aria-labelledby, data
             │           │  │  │  ├─ Text Span: "$"
             │           │  │  │  └─ Text Span ← Price
             │           │  │  └─ board_card-paid (Text Block): "paid on merge"
-            │           │  └─ button is-small (Link Block ← Claim URL)
+            │           │  └─ button is-primary is-small (Link Block ← Claim URL)
             │           │     ├─ Text Block: "Claim bounty"
             │           │     ├─ sr-only (Text Block) ← Name
             │           │     └─ button_icon (Code Embed)
@@ -1631,7 +1723,7 @@ section_board (Section, id: bounties)                     [aria-labelledby, data
             │  ├─ Paragraph: "No bounties match these filters yet."
             │  └─ Code Embed: <button> Clear filters
             ├─ board_cta (Div)
-            │  └─ button (Link Block → #): "See all open bounties" + button_icon
+            │  └─ button is-primary is-large (Link Block → #): "See all open bounties" + button_icon
             └─ board_script (Code Embed: CSS + script; see "Custom code")
 ```
 
@@ -1651,29 +1743,29 @@ section_board (Section, id: bounties)                     [aria-labelledby, data
 | Class | Styles |
 |---|---|
 | `section_board` | Background canvas · Colour ink |
-| `board_header` | Grid, 2 columns `1fr auto` · Gap 24px · Align items end |
+| `board_header` | Grid, 2 columns `1fr auto` · Gap space-5 · Align items end |
 | `board_title` | Weight 600 |
 | `board_title-line` | Display block |
-| `board_lede` | Margin top 16px · Max width 34rem · Size 1.0625rem · Colour ink-muted |
-| `board_filters` | Margin top `clamp(32px, 4vw, 48px)` · Grid, 2 columns auto auto · Justify start · Column gap 48px · Row gap 16px |
-| `board_filter` | Grid · Gap 8px · Min width 0 |
-| `board_filter-label` | Size 0.8125rem · Weight 600 · Letter spacing 0.06em · Uppercase · Colour ink-muted |
-| `board_chips` | Flex, wrap · Gap 8px · Padding 6px 0 (room for focus rings) |
+| `board_lede` | Margin top space-4 · Max width measure-narrow · Size text-body-lg · Colour ink-muted |
+| `board_filters` | Margin top `clamp(32px, 4vw, 48px)` · Grid, 2 columns auto auto · Justify start · Column gap space-8 · Row gap space-4 |
+| `board_filter` | Grid · Gap space-2 · Min width 0 |
+| `board_filter-label` | Size text-caption · Weight 600 · Letter spacing 0.06em · Uppercase · Colour ink-muted |
+| `board_chips` | Flex, wrap · Gap space-2 · Padding space-2 0 (room for focus rings) |
 | `board_list-wrapper` | Margin top `clamp(24px, 3vw, 36px)` · Padding top 8px |
 | `board_list` | Grid, 3 columns · Gap `clamp(14px, 1.6vw, 24px)` (fallback 24px) |
 | `board_item` | (no styles; the embed CSS adds the filter fade) |
 | `board_card` | Position relative · Flex vertical · Height 100% · Padding `clamp(22px, 2.2vw, 30px)` · Background surface · Border 1px line · Radius radius-lg |
-| `board_card-tags` | Flex, wrap · Gap 6px · No list style · Padding 0 · Margin 0 |
-| `board_card-repo` | Margin top 18px · Font font-code · Size 0.8125rem · Colour ink-muted |
-| `board_card-title` | Margin top 6px · Size `clamp(1.25rem, 1.1rem + 0.45vw, 1.5rem)` (fallback 1.375rem) · Weight 600 · Line height 1.2 · Letter spacing −0.01em |
-| `board_card-desc` | Margin top 10px · Size 0.9375rem · Line height 1.5 · Colour ink-muted (2-line clamp in the embed CSS) |
-| `board_card-meta` | Margin top 16px, bottom 24px · Flex, wrap · Gap 18px · Size 0.875rem · No list style · Padding 0 |
-| `board_card-meta-item` | Inline-flex · Align center · Gap 6px (the icon colour comes from the embed CSS) |
-| `board_card-footer` | Margin top auto · Padding top 20px · Border top 1px line · Flex, wrap · Space between · Align center · Gap 12px |
-| `board_card-price` | Grid · Line height 1.1 |
-| `board_card-amount` | Font font-display · Size 2rem · Weight 700 · Letter spacing −0.02em · Colour ink |
-| `board_card-paid` | Margin top 4px · Size 0.8125rem · Weight 600 · Colour payout |
-| `board_empty` | Margin top 8px · Padding 32px · Grid, centred · Gap 16px · Text align center · Border 1.5px dashed ink-muted · Radius radius-lg · Colour ink-muted |
+| `board_card-tags` | Flex, wrap · Gap space-2 · No list style · Padding 0 · Margin 0 |
+| `board_card-repo` | Margin top space-4 · Font font-code · Size text-caption · Colour ink-muted |
+| `board_card-title` | Margin top space-2 · Size text-h3 · Weight 600 · Line height leading-snug · Letter spacing tracking-tight |
+| `board_card-desc` | Margin top space-2 · Size text-small · Line height leading-normal · Colour ink-muted (2-line clamp in the embed CSS) |
+| `board_card-meta` | Margin top space-4, bottom 24px · Flex, wrap · Gap space-4 · Size text-small · No list style · Padding 0 |
+| `board_card-meta-item` | Inline-flex · Align center · Gap space-2 (the icon colour comes from the embed CSS) |
+| `board_card-footer` | Margin top auto · Padding top 20px · Border top 1px line · Flex, wrap · Space between · Align center · Gap space-3 |
+| `board_card-price` | Grid · Line height leading-tight |
+| `board_card-amount` | Font font-display · Size text-h2 · Weight 700 · Letter spacing tracking-tight · Colour ink |
+| `board_card-paid` | Margin top space-1 · Size text-caption · Weight 600 · Colour payout |
+| `board_empty` | Margin top space-2 · Padding space-6 · Grid, centred · Gap space-4 · Text align center · Border 1.5px dashed ink-muted · Radius radius-lg · Colour ink-muted |
 | `board_cta` | Margin top `clamp(28px, 4vw, 48px)` · Flex · Justify center |
 
 **Tablet**
@@ -1682,7 +1774,7 @@ section_board (Section, id: bounties)                     [aria-labelledby, data
 |---|---|
 | `board_header` | 1 column · Justify items start |
 | `board_filters` | 1 column |
-| `board_list-wrapper` | Overflow: scroll horizontally · Margin left/right −32px · Padding 8px 32px 16px · Custom properties: `scroll-snap-type: x mandatory`, `scroll-padding-inline: 32px`, `overscroll-behavior-x: contain` |
+| `board_list-wrapper` | Overflow: scroll horizontally · Margin left/right −32px · Padding space-2 space-6 space-4 · Custom properties: `scroll-snap-type: x mandatory`, `scroll-padding-inline: 32px`, `overscroll-behavior-x: contain` |
 | `board_list` | **Flex**, horizontal, no wrap |
 | `board_item` | Width 45% · Flex shrink 0 · Display flex · Custom property `scroll-snap-align: start` |
 | `board_cta` > `button` | Width 100% |
@@ -1691,16 +1783,16 @@ section_board (Section, id: bounties)                     [aria-labelledby, data
 
 | Class | Changes |
 |---|---|
-| `board_chips` | No wrap · Overflow: scroll horizontally · Margin left/right −24px · Padding 6px 24px (one sideways-scrolling row of chips) |
-| `board_list-wrapper` | Margin left/right −24px · Padding 8px 24px 16px · `scroll-padding-inline: 24px` |
+| `board_chips` | No wrap · Overflow: scroll horizontally · Margin left/right −24px · Padding space-2 space-5 (one sideways-scrolling row of chips) |
+| `board_list-wrapper` | Margin left/right −24px · Padding space-2 space-5 space-4 · `scroll-padding-inline: 24px` |
 | `board_item` | Width 85% |
 
 **Mobile portrait**
 
 | Class | Changes |
 |---|---|
-| `board_chips` | Margin left/right −16px · Padding 6px 16px |
-| `board_list-wrapper` | Margin left/right −16px · Padding 8px 16px 16px · `scroll-padding-inline: 16px` |
+| `board_chips` | Margin left/right −16px · Padding space-2 space-4 |
+| `board_list-wrapper` | Margin left/right −16px · Padding space-2 space-4 space-4 · `scroll-padding-inline: 16px` |
 
 Astro switches the chips to one sideways-scrolling row below 768px, so in Webflow they wrap down to Tablet and scroll from Mobile landscape.
 
@@ -1775,7 +1867,7 @@ Add a Code Embed as the last child of `board_card`. In the embed editor, whereve
       <p class="board_offer-error" id="error-{{Slug}}" hidden data-offer-error>Enter an amount in dollars.</p>
       <p class="board_offer-note" id="note-{{Slug}}" hidden data-offer-note>Above the AI fair range. Maintainers accept these less often.</p>
       <div class="board_offer-actions">
-        <button type="submit" class="button is-small">Send offer</button>
+        <button type="submit" class="button is-primary is-small">Send offer</button>
         <button type="button" class="board_offer-cancel" data-offer-cancel>Cancel</button>
       </div>
     </form>
@@ -1793,21 +1885,21 @@ Add a Code Embed as the last child of `board_card`. In the embed editor, whereve
 <button type="button" class="button is-secondary is-small" data-clear>Clear filters</button>
 ```
 
-The `button` classes come from the Designer's styles, so they work inside embeds. Make sure at least one element on the page uses `button is-secondary` and `button is-small`, or Webflow may not publish those combo styles.
+The `button` classes come from the Designer's styles, so they work inside embeds. Make sure at least one element on the page uses `button is-primary is-small` and `button is-secondary is-small`, or Webflow may not publish those combo styles.
 
 ### Custom code (`board_script` embed, last in the section)
 
 ```html
 <style>
 /* Filter fade: matching cards fade back in, others fade and shrink out (the script adds .is-out). */
-.board_item { transition: opacity 200ms ease, transform 200ms ease; }
+.board_item { transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
 .board_item.is-out { opacity: 0; transform: scale(0.96); }
 
 /* Filter chips (built by the script). Pressed = dark fill. Border is ink-muted (3:1 for controls). */
 .chip { flex: none; min-height: 40px; padding: 0 16px; cursor: pointer;
   border: 1px solid var(--colors--ink-muted, #5A5F7A); border-radius: 999px;
   background: var(--colors--surface, #FFF); color: var(--colors--ink, #14162B);
-  font-family: inherit; font-size: 0.9375rem; font-weight: 500; transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease; }
+  font-family: inherit; font-size: var(--typography--text-small, 0.875rem); font-weight: 500; transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out); }
 .chip:hover { border-color: var(--colors--brand, #0E6B47); color: var(--colors--brand, #0E6B47); }
 .chip[aria-pressed="true"] { background: var(--colors--ink, #14162B); border-color: var(--colors--ink, #14162B); color: var(--colors--surface, #FFF); }
 
@@ -1827,7 +1919,7 @@ The `button` classes come from the Designer's styles, so they work inside embeds
 
 /* Counter-offer toggle. */
 .board_counter, .board_offer-cancel { padding: 8px 0; border: 0; background: none; cursor: pointer;
-  font-size: 0.875rem; font-weight: 500; color: var(--colors--ink-muted, #5A5F7A); text-underline-offset: 0.2em; }
+  font-size: var(--typography--text-small, 0.875rem); font-weight: 500; color: var(--colors--ink-muted, #5A5F7A); text-underline-offset: 0.2em; }
 .board_counter { margin-top: 10px; }
 .board_counter:hover, .board_offer-cancel:hover { color: var(--colors--ink, #14162B); text-decoration: underline; }
 .board_counter[aria-expanded="true"] { color: var(--colors--ink, #14162B); }
@@ -1836,25 +1928,25 @@ The `button` classes come from the Designer's styles, so they work inside embeds
    0fr (no height) to 1fr (content height). visibility:hidden while closed keeps
    the fields out of the tab order and away from screen readers. */
 .board_offer { display: grid; grid-template-rows: 0fr; visibility: hidden;
-  transition: grid-template-rows 260ms ease, visibility 0s linear 260ms; }
-.board_offer.is-open { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows 260ms ease, visibility 0s; }
+  transition: grid-template-rows var(--dur-base) var(--ease-out), visibility 0s linear 260ms; }
+.board_offer.is-open { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows var(--dur-base) var(--ease-out), visibility 0s; }
 .board_offer-clip { min-height: 0; overflow: hidden; margin: -6px; padding: 6px; } /* padding keeps focus rings visible */
 .board_offer-form { margin-top: 8px; padding: 16px; border-radius: 8px; background: var(--colors--canvas, #F6F7FB); }
-.board_offer-label { display: block; font-size: 0.875rem; font-weight: 600; }
+.board_offer-label { display: block; font-size: var(--typography--text-small, 0.875rem); font-weight: 600; }
 .board_offer-field { margin-top: 6px; display: flex; align-items: center; border-radius: 8px;
   border: 1px solid var(--colors--ink-muted, #5A5F7A); background: var(--colors--surface, #FFF); }
 .board_offer-field:focus-within { outline: 3px solid var(--colors--brand, #0E6B47); outline-offset: 2px; }
 .board_offer-field:has([aria-invalid="true"]) { border-color: var(--colors--removed, #B42318); }
 .board_offer-prefix { padding-left: 12px; font-weight: 600; color: var(--colors--ink-muted, #5A5F7A); }
 .board_offer-input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px 0 4px; border: 0; background: transparent;
-  font-size: 1rem; font-variant-numeric: tabular-nums; }
+  font-size: var(--typography--text-body, 1rem); font-variant-numeric: tabular-nums; }
 .board_offer-input:focus-visible { outline: none; } /* the field wrapper shows the ring */
 .board_offer-input[aria-invalid="true"] { color: var(--colors--removed, #B42318); }
-.board_offer-hint, .board_offer-error, .board_offer-note { margin: 8px 0 0; font-size: 0.8125rem; line-height: 1.45; }
+.board_offer-hint, .board_offer-error, .board_offer-note { margin: 8px 0 0; font-size: var(--typography--text-caption, 0.75rem); line-height: 1.45; }
 .board_offer-hint { color: var(--colors--ink-muted, #5A5F7A); }
 .board_offer-error { font-weight: 600; color: var(--colors--removed, #B42318); }
 .board_offer-actions { margin-top: 14px; display: flex; align-items: center; gap: 16px; }
-.board_offer-sent { margin-top: 12px; font-size: 0.875rem; font-weight: 600; color: var(--colors--payout, #0E6B47); }
+.board_offer-sent { margin-top: 12px; font-size: var(--typography--text-small, 0.875rem); font-weight: 600; color: var(--colors--payout, #0E6B47); }
 .board_offer-sent:focus { outline: none; }
 </style>
 
@@ -1869,7 +1961,7 @@ The `button` classes come from the Designer's styles, so they work inside embeds
   const clear = section.querySelector('[data-clear]');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const wide = matchMedia('(min-width: 992px)');
-  const FADE_MS = 200;
+  const FADE_MS = 200; // a little longer than --dur-fast (160ms), so the fade always finishes
   const ORDER = { difficulty: ['Beginner', 'Intermediate', 'Advanced'] }; // fixed order; languages keep CMS order
 
   /* ---------- 1. Carousel region only below 992px (on desktop it's a plain grid) ---------- */

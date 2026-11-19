@@ -259,7 +259,7 @@ const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
     const clear = section.querySelector<HTMLButtonElement>('[data-clear]')!;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const wide = window.matchMedia('(min-width: 1024px)');
-    const FADE_MS = 200;
+    const FADE_MS = 200; // a little longer than --dur-fast (160ms), so the fade always finishes
 
     /* ---------------- Carousel vs grid ----------------
        Below 1024px the track is a scrollable carousel, so it is a labelled,
