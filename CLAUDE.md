@@ -27,7 +27,7 @@ Each section is one component in `src/components/`, rendered in `src/pages/index
 | # | Section | Component | Background | Notes |
 |---|---|---|---|---|
 | 1 | Hero | `Hero.astro` | `--canvas` | The promise, both CTAs, payout stats, contributor testimonial; keeps its decorative shapes |
-| 2 | WaysToEarn | `WaysToEarn.astro` | `--merged-tint` | Five bounty types (fix bugs, build features, write tests, improve docs, review code) as vertical tabs on desktop and an accordion below 1024px; one item always open. Plus a row of language chips with open bounties (formerly the Stacks section) |
+| 2 | WaysToEarn | `WaysToEarn.astro` | `--brand-tint` | Five bounty types (fix bugs, build features, write tests, improve docs, review code) as vertical tabs on desktop and an accordion below 1024px; one item always open. Plus a row of language chips with open bounties (formerly the Stacks section) |
 | 3 | Paths | `Paths.astro` | Per-path dark colors (`--path-earn-bg`, `--path-grow-bg`, `--path-ship-bg`) | Contributor path vs maintainer path (scroll-pinned, dark, `.section--dark`) |
 | 4 | BountyBoard | `BountyBoard.astro` | `--canvas` | Filterable bounty cards with a counter-offer option (`id="bounties"`) |
 | 5 | Contributors | `Contributors.astro` | `--surface` | Top contributors with earnings, countries, merged PRs |
@@ -62,17 +62,32 @@ Each section is one component in `src/components/`, rendered in `src/pages/index
 
 Borrowed from code review:
 
-- **Violet** (`--merged`) = merged. Primary brand color and CTAs.
-- **Green** (`--payout`) = payouts, added lines.
-- **Red** (`--removed`) = errors, rejected.
+- **Green** (`--brand`, `--brand-hover`, `--brand-tint`, `--brand-soft`) = brand, merged, and money. Primary CTAs, links, focus ring, payouts (`--payout` is the same green), added lines.
+- **Amber** (`--accent`, `--accent-tint`, `--accent-ink`) = bounty highlights and badges only. Text on solid `--accent` is always `--ink`; text on `--accent-tint` is `--accent-ink`. Never white on amber.
+- **Red** (`--removed`, `--removed-tint`) = errors, rejected, removed lines.
 
-Design tokens live in `src/styles/global.css`.
+Token names describe roles, not colours, so the palette can change without renaming.
+
+### Design tokens
+
+All tokens live in `:root` in `src/styles/global.css`:
+
+- **Colour:** neutrals (`--ink`, `--ink-soft`, `--ink-muted`, `--canvas`, `--surface`, `--surface-frosted`, `--line`, `--ink-overlay`, `--scrim`), brand, accent, status, the three `--path-*-bg`, and white layers for dark backgrounds (`--on-dark-*`).
+- **Type:** `--text-display`, `--text-h1`, `--text-h2`, `--text-h3`, `--text-body-lg`, `--text-body`, `--text-small`, `--text-caption`; `--leading-tight|snug|normal|code`; `--tracking-tight|wide`. `--font-code` is for code, repo names, file paths and handles only; numbers use the body font with `font-variant-numeric: tabular-nums`.
+- **Spacing:** `--space-1` … `--space-10` (4, 8, 12, 16, 24, 32, 40, 48, 64, 80px), `--section-pad`, `--gap-section-head`, `--measure-narrow|measure|measure-wide`.
+- **Radius:** `--radius-xs|sm|md|lg|xl|pill`. **Shadow:** `--shadow-sm|md|lg`.
+- **Motion:** `--dur-fast|base|slow|slower` (160, 250, 400, 600ms), `--ease-out`, `--ease-in`. JS timings that must match a transition say which token they mirror.
+- **Focus:** `--focus-ring`, `--focus-ring-on-dark`.
+
+### Buttons
+
+One shared set in `global.css`: `.btn` plus a variant (`--primary`, `--secondary`, `--on-dark`, `--outline-on-dark`) and an optional size (`--sm` 40px, default 48px, `--lg` 52px). Add `.btn__arrow` to a trailing arrow icon for the hover nudge. Components only add layout (width, alignment), never their own button colours.
 
 ## Rules
 
 - One component per section.
 - Vanilla JS only.
-- Use the CSS tokens; never hard-code colors.
+- Only tokens: every colour, font size, line height, letter spacing, spacing, radius, shadow, duration and easing in a component must be a `var(--…)` from `global.css`. No hex, rgb, raw px spacing or ms values outside `:root`. Documented exceptions: decorative watermark sizes and large outer clamps that are built from tokens. If a value is missing, add a token rather than a one-off.
 - Mobile-first and responsive.
 - Visible keyboard focus.
 - Respect `prefers-reduced-motion`.

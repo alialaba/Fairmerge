@@ -46,7 +46,7 @@ A `<script>` inside a Code Embed runs the moment the browser reaches it, so it c
 
 Every Webflow Variable is published as a CSS custom property. The exact name depends on the collection and variable name, and Webflow may add prefixes.
 
-To find a name: in the Variables panel, open the variable's menu and copy its CSS name if offered, or open the published site's CSS and search for the hex value. The snippets below use `var(--colors--merged, #6E3FF3)`. The hex after the comma is a fallback, so a snippet still works if your name differs. Replace the names once and the fallbacks become unused.
+To find a name: in the Variables panel, open the variable's menu and copy its CSS name if offered, or open the published site's CSS and search for the hex value. The snippets below use `var(--colors--brand, #0E6B47)`. The hex after the comma is a fallback, so a snippet still works if your name differs. Replace the names once and the fallbacks become unused.
 
 ---
 
@@ -67,22 +67,26 @@ Go to **Variables panel** (the "Variables" icon in the left bar) → create thes
 | canvas | `#F6F7FB` | Page background, Hero, BountyBoard, FAQ |
 | surface | `#FFFFFF` | Cards, text on dark |
 | line | `#DADDEA` | Borders, dividers |
-| merged | `#6E3FF3` | Primary brand, CTAs, focus ring |
-| merged-hover | `#5A2BD9` | Button hover, domain tag text |
-| merged-tint | `#EFEAFE` | WaysToEarn background, tints, focus ring on dark |
-| payout | `#0F7B4F` | "paid on merge", payout amounts |
+| brand | `#0E6B47` | Primary brand, merged state, CTAs, focus ring |
+| brand-hover | `#0A5537` | Button hover, domain tag text |
+| brand-tint | `#E3F1EA` | WaysToEarn background, tints, focus ring on dark |
+| brand-soft | `#BFE3CF` | Hero decorative shape |
+| accent | `#F2A93B` | Bounty highlights and badges only. Text on it is always ink |
+| accent-tint | `#FCEFD6` | Highlight backgrounds, hero decorative shape |
+| accent-ink | `#6B4206` | Text on accent-tint |
+| payout | `#0E6B47` | "paid on merge", payout amounts (same as brand) |
 | payout-tint | `#E6F4EC` | Added diff lines, HowItWorks background |
 | removed | `#B42318` | Errors |
 | removed-tint | `#FBEAEA` | Removed diff lines |
 | path-earn-bg | `#0B3B2C` | Paths: Earn |
-| path-grow-bg | `#1E2A6B` | Paths: Grow |
-| path-ship-bg | `#3B1A80` | Paths: Ship |
+| path-grow-bg | `#102F3A` | Paths: Grow |
+| path-ship-bg | `#3A2A0E` | Paths: Ship |
 | on-dark-surface | `rgba(255,255,255,0.06)` | Translucent cards on Paths |
 | on-dark-line | `rgba(255,255,255,0.12)` | Borders on Paths |
 | on-dark-muted | `rgba(255,255,255,0.72)` | Muted text on Paths |
 | on-dark-control | `rgba(255,255,255,0.4)` | Inactive carousel segments (3:1 contrast) |
 
-Skip `--hero-shape-violet`, `--hero-shape-green` and `--glass-surface`. They're only used to *export* the hero image, which you upload as a finished file.
+The hero image is exported as a finished file (shapes in brand-soft and accent-tint), so you upload it rather than rebuild it.
 
 **Collection: Typography**
 
@@ -141,7 +145,7 @@ Select the **Body (All Pages)** tag in the Style panel's selector field, then se
 | All H3 | Size: size-h3 |
 | All H4 | Size 1.25rem |
 | All Paragraphs | Margin 0 |
-| All Links | Colour: merged · Hover state: merged-hover · Underline offset: see Part 1.6 |
+| All Links | Colour: brand · Hover state: brand-hover · Underline offset: see Part 1.6 |
 
 `text-wrap: balance` on headings, `text-wrap: pretty` on paragraphs and `text-underline-offset` go into the global CSS (Part 1.6). Add them in **Style panel → Custom properties** instead if your Designer shows that section.
 
@@ -183,12 +187,12 @@ section_[name] (Section)
 | `padding-global` | Padding left/right: content-pad |
 | `container-large` | Max width `1128px` (= 1240 − 2 × 56, the content width at full size) · Margin left/right auto · Width 100% |
 | `padding-section-large` | Padding top/bottom: section-pad |
-| `button` | Display inline-flex · Align center · Justify center · Gap 8px · Min height 52px · Padding 0 24px · Radius radius-sm · Background merged · Colour surface · Weight 600 · Size 1rem · No underline · Transition: background-colour 160ms ease, colour 160ms ease. **Hover:** Background merged-hover |
+| `button` | Display inline-flex · Align center · Justify center · Gap 8px · Min height 52px · Padding 0 24px · Radius radius-sm · Background brand · Colour surface · Weight 600 · Size 1rem · No underline · Transition: background-colour 160ms ease, colour 160ms ease. **Hover:** Background brand-hover |
 | `button` + `is-secondary` | Background transparent · Colour ink · Box shadow inset 0 0 0 1.5px ink. **Hover:** Background ink · Colour surface |
 | `button` + `is-small` | Min height 44px · Padding 0 18px · Size 0.9375rem |
 | `button_icon` | The arrow inside a button. Width/height 18px · Transition transform 160ms ease. Parent hover moves it: add a hover Interaction (Move X 3px, 160ms), or the global CSS rule |
 | `tag` | Padding 2px 10px · Border 1px line · Radius radius-pill · Size 0.8125rem · Colour ink-muted |
-| `tag` + `is-domain` | Background merged-tint · Border colour merged-tint · Colour merged-hover · Weight 600 |
+| `tag` + `is-domain` | Background brand-tint · Border colour brand-tint · Colour brand-hover · Weight 600 |
 | `card` | Background surface · Border 1px line · Radius radius-lg · Padding `clamp(22px, 2.2vw, 30px)` (fallback: Desktop 28px, Mobile 22px) |
 | `chip` | Built by script in BountyBoard, styled in its embed (Part 2.4). WaysToEarn's chips are `ways_panel-chip` and `ways_lang` |
 | `sr-only` | Visually hidden text that screen readers still read (rules in Part 1.6) |
@@ -203,8 +207,8 @@ Put this in **Site settings → Custom code → Head code**, or in the `global-s
 ```html
 <style>
 /* 1. Keyboard focus ring on everything (Webflow can't style :focus-visible globally). */
-:focus-visible { outline: 3px solid var(--colors--merged, #6E3FF3); outline-offset: 3px; }
-.section_paths :focus-visible { outline-color: var(--colors--merged-tint, #EFEAFE); }
+:focus-visible { outline: 3px solid var(--colors--brand, #0E6B47); outline-offset: 3px; }
+.section_paths :focus-visible { outline-color: var(--colors--brand-tint, #E3F1EA); }
 
 /* 2. Visually hidden, still read by screen readers. */
 .sr-only {
@@ -223,7 +227,7 @@ a { text-underline-offset: 0.2em; }
 /* 5. Stretched link: the link's ::after covers the nearest positioned parent (the card). */
 .link-stretched::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
 .link-stretched:focus-visible { outline: none; }
-.link-stretched:focus-visible::after { outline: 3px solid var(--colors--merged, #6E3FF3); outline-offset: 3px; }
+.link-stretched:focus-visible::after { outline: 3px solid var(--colors--brand, #0E6B47); outline-offset: 3px; }
 
 /* 6. Button arrow nudge on hover. */
 .button:hover .button_icon { transform: translateX(3px); }
@@ -249,7 +253,7 @@ a { text-underline-offset: 0.2em; }
 **Global checklist**
 
 - [ ] Publish to the staging domain, open DevTools and confirm the variables appear as CSS custom properties. Update the names in the snippets.
-- [ ] Tab through the page: every link, button and input shows the 3px violet ring.
+- [ ] Tab through the page: every link, button and input shows the 3px green ring.
 - [ ] In DevTools → Rendering, set "Emulate prefers-reduced-motion: reduce" and reload. Nothing animates and nothing stays invisible.
 
 ---
@@ -342,7 +346,7 @@ Give the first slide the combo class `is-active`.
 | `hero_quote-slide` + `is-active` | Opacity 1 |
 | `hero_quote-text` | Size 1rem · Line height 1.55 · Colour ink · No border, padding 0, margin 0 (Webflow styles Block Quote by default) |
 | `hero_quote-person` | Margin top 14px · Flex · Align center · Gap 10px |
-| `hero_avatar` | 36 × 36px · Radius 50% · Grid, centred · Background merged-tint · Colour merged · Font font-display 700 · Size 0.9375rem |
+| `hero_avatar` | 36 × 36px · Radius 50% · Grid, centred · Background brand-tint · Colour brand · Font font-display 700 · Size 0.9375rem |
 | `hero_quote-name` | Weight 600 · Size 0.9375rem · Line height 1.3 · Colour ink |
 | `hero_quote-meta` | Size 0.8125rem · Colour ink-muted |
 
@@ -442,12 +446,12 @@ Put one Code Embed `hero_quote-controls` as the last child of `hero_quote`. The 
   .hero_quote-toggle[aria-pressed="true"] .icon-pause { display: none; }
 
   .hero_quote-dots { display: flex; gap: 2px; }
-  /* 28px hit area, 8px visible dot; the current dot stretches into a 20px violet bar. */
+  /* 28px hit area, 8px visible dot; the current dot stretches into a 20px green bar. */
   .hero_quote-dot { display: grid; place-items: center; width: 28px; height: 28px; padding: 0;
     border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
   .hero_quote-dot::before { content: ''; width: 8px; height: 8px; border-radius: 999px;
     background: var(--colors--ink-muted, #5A5F7A); transition: width 200ms ease, background-color 200ms ease; }
-  .hero_quote-dot[aria-current="true"]::before { width: 20px; background: var(--colors--merged, #6E3FF3); }
+  .hero_quote-dot[aria-current="true"]::before { width: 20px; background: var(--colors--brand, #0E6B47); }
 </style>
 
 <script>
@@ -550,7 +554,7 @@ The Astro version keeps one `aria-label` ("Pause testimonials") and relies on `a
 
 ## Part 2.2: WaysToEarn
 
-**Background:** merged-tint. The five bounty types appear as **vertical tabs** on Desktop and as an **accordion** on Tablet and smaller. One item is always open; clicking the open item does nothing.
+**Background:** brand-tint. The five bounty types appear as **vertical tabs** on Desktop and as an **accordion** on Tablet and smaller. One item is always open; clicking the open item does nothing.
 
 ### Webflow's native Tabs vs one structure + script
 
@@ -694,12 +698,12 @@ The Designer holds the **accordion** look, the base for every breakpoint. The De
 
 | Class | Styles |
 |---|---|
-| `section_ways` | Background merged-tint |
+| `section_ways` | Background brand-tint |
 | `ways_header` | Grid, 2 columns `1fr auto` · Gap 20px · Align end · Padding bottom `clamp(32px, 4vw, 48px)` · Border bottom 1px line |
 | `ways_title` | Size `clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem)` (fallback 4.5rem) · Weight 600 · Line height 1 · Letter spacing −0.025em |
 | `ways_title-line` | Display block |
 | `ways_intro` | Max width 30rem · Justify self end · Text align right · Colour ink-muted |
-| `ways_browse` | Margin top 16px · Inline-flex · Gap 6px · Padding bottom 3px · Border bottom 1.5px solid ink · Weight 600 · Size 0.9375rem · Colour ink · No underline. **Hover:** colour merged |
+| `ways_browse` | Margin top 16px · Inline-flex · Gap 6px · Padding bottom 3px · Border bottom 1.5px solid ink · Weight 600 · Size 0.9375rem · Colour ink · No underline. **Hover:** colour brand |
 | `ways_item` | Border bottom 1px line |
 | `ways_panel` | Grid, 1 row (the embed CSS animates its row) |
 | `ways_panel-clip` | Min height 0 · Overflow hidden · Margin 0 −6px · Padding 0 6px (keeps focus rings visible) |
@@ -708,12 +712,12 @@ The Designer holds the **accordion** look, the base for every breakpoint. The De
 | `ways_panel-title` | Display none (shown on Desktop by the embed CSS) |
 | `ways_panel-desc` | Max width 32rem · Colour ink-muted |
 | `ways_panel-chips` | Flex, wrap · Gap 8px · No list style · Padding 0 |
-| `ways_panel-chip` | Inline-flex · Align center · Gap 8px · Padding 5px 12px · Border 1px line · Radius pill · Background surface · Size 0.875rem. The violet dot is the embed CSS's `::before` |
-| `ways_cta` | Inline-flex · Centre · Gap 8px · Min height 48px · Padding 0 22px · Radius radius-sm · Background ink · Colour surface · Weight 600 · No underline · Align self stretch. **Hover:** Background merged-hover |
+| `ways_panel-chip` | Inline-flex · Align center · Gap 8px · Padding 5px 12px · Border 1px line · Radius pill · Background surface · Size 0.875rem. The green dot is the embed CSS's `::before` |
+| `ways_cta` | Inline-flex · Centre · Gap 8px · Min height 48px · Padding 0 24px · Radius radius-sm · Background brand · Colour surface · Weight 600 · No underline · Align self stretch. **Hover:** Background brand-hover |
 | `ways_langs` | Margin top `clamp(32px, 4vw, 48px)` · Grid, 2 columns `auto 1fr` · Align center · Gap 16px |
 | `ways_langs-label` | Size 0.8125rem · Weight 600 · Letter spacing 0.06em · Uppercase · Colour ink-muted |
 | `ways_lang-list` | Flex, no wrap · Gap 8px · No list style · Padding 4px |
-| `ways_lang` | Inline-flex · Align center · Min height 36px · Padding 0 14px · Border 1px line · Radius pill · Background surface · Size 0.875rem · Colour ink · No underline · No wrap. **Hover:** Border and colour merged |
+| `ways_lang` | Inline-flex · Align center · Min height 36px · Padding 0 14px · Border 1px line · Radius pill · Background surface · Size 0.875rem · Colour ink · No underline · No wrap. **Hover:** Border and colour brand |
 
 **Tablet**
 
@@ -778,7 +782,7 @@ None native. Everything is a CSS transition triggered by classes the script togg
   font-family: var(--typography--font-display, 'Bricolage Grotesque', sans-serif); font-size: 1.25rem; font-weight: 500;
   color: var(--colors--ink-muted, #5A5F7A); transition: color 160ms ease; }
 .ways_tab.is-active { color: var(--colors--ink, #14162B); cursor: default; } /* can't be closed: don't look clickable */
-.ways_icon { flex: none; display: grid; color: var(--colors--merged, #6E3FF3); }
+.ways_icon { flex: none; display: grid; color: var(--colors--brand, #0E6B47); }
 .ways_chevron { flex: none; margin-left: auto; color: var(--colors--ink-muted, #5A5F7A); transition: transform 300ms ease; }
 .ways_tab.is-active .ways_chevron { transform: rotate(180deg); }
 .ways_tab:focus-visible { outline-offset: -3px; border-radius: 8px; }
@@ -786,7 +790,7 @@ None native. Everything is a CSS transition triggered by classes the script togg
 /* The centre-out line: full width, squashed to nothing with scaleX(0);
    transform-origin: center makes it grow (and shrink) from the middle. */
 .ways_tab::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
-  background: var(--colors--merged, #6E3FF3); transform: scaleX(0); transform-origin: center;
+  background: var(--colors--brand, #0E6B47); transform: scaleX(0); transform-origin: center;
   transition: transform 250ms ease-in, opacity 250ms ease-in; }
 .ways_tab.is-active::after { transform: scaleX(1); opacity: 1; transition: transform 400ms cubic-bezier(.2,.7,.2,1); }
 @media (hover: hover) {
@@ -795,7 +799,7 @@ None native. Everything is a CSS transition triggered by classes the script togg
 }
 
 /* Chip dot */
-.ways_panel-chip::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--colors--merged, #6E3FF3); }
+.ways_panel-chip::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--colors--brand, #0E6B47); }
 
 /* ---------- Accordion: height via grid rows 0fr -> 1fr ---------- */
 .is-accordion .ways_panel { grid-template-rows: 0fr; visibility: hidden;
@@ -1104,15 +1108,15 @@ vig                                    vig                                    vi
 | `vig_line` | Grid, columns `1.6em 1fr` · Padding right 8px · White space pre |
 | `vig_line` + `is-add` | Background payout-tint |
 | `vig_sign` | Text align center · Colour ink-muted (`is-add` → payout) |
-| `vig_bubble` | Margin top 12px · Padding 10px 12px · Radius 10px · Background merged-tint · Size 0.8125rem · Line height 1.45 |
-| `vig_bubble-label` | Block · Margin bottom 2px · Size 0.6875rem · Weight 600 · Letter spacing 0.06em · Uppercase · Colour merged |
+| `vig_bubble` | Margin top 12px · Padding 10px 12px · Radius 10px · Background brand-tint · Size 0.8125rem · Line height 1.45 |
+| `vig_bubble-label` | Block · Margin bottom 2px · Size 0.6875rem · Weight 600 · Letter spacing 0.06em · Uppercase · Colour brand |
 | `vig_title` | Font font-display · Size 1rem · Weight 600 |
-| `vig_ai` | Margin top 8px · Padding 8px 10px · Radius 8px · Background merged-tint · Size 0.8125rem |
-| `vig_ai-strong` | Colour merged |
+| `vig_ai` | Margin top 8px · Padding 8px 10px · Radius 8px · Background brand-tint · Size 0.8125rem |
+| `vig_ai-strong` | Colour brand |
 | `vig_posted` | Margin top 10px · Flex · Space between · Padding 8px 0 · Border top and bottom 1px line · Colour ink-muted |
 | `vig_posted-amount` | Font font-code · Weight 600 · Colour ink |
 | `vig_counter` | Margin top 10px · Flex, wrap · Align center · Gap 8px · Size 0.8125rem |
-| `vig_avatar` | 22 × 22px · Radius 50% · Grid centred · Background merged-tint · Colour merged · Size 0.6875rem · Weight 700 |
+| `vig_avatar` | 22 × 22px · Radius 50% · Grid centred · Background brand-tint · Colour brand · Size 0.6875rem · Weight 700 |
 | `vig_chips` | Margin left auto · Flex · Gap 6px |
 | `vig_chip` | Padding 3px 10px · Radius pill · Border 1px line · Size 0.75rem · Weight 600 · Colour ink-muted |
 | `vig_chip` + `is-accept` | Border transparent · Background payout-tint · Colour payout |
@@ -1153,7 +1157,7 @@ vig                                    vig                                    vi
 | `paths_line-fill` | Position absolute, Full (inset 0) · Background surface · **Transform origin: left center** (Style panel → Transforms → settings) |
 | `paths_card-title` | Margin top 20px · Font font-display · Size `clamp(2.5rem, 1.9rem + 2.4vw, 4rem)` (fallback 4rem) · Weight 400 · Line height 1 · Letter spacing −0.02em |
 | `paths_card-quote` | Margin top 20px · Grid, columns `auto 1fr` · Gap 12px · Size 1.0625rem · Line height 1.5 · Padding 0 · Border none |
-| `paths_card-mark` | Colour merged-tint · Margin top 2px |
+| `paths_card-mark` | Colour brand-tint · Margin top 2px |
 | `paths_card-who` | Margin top 10px · Padding left 34px, bottom 20px · Border bottom 1px on-dark-line · Size 0.8125rem · Colour on-dark-muted |
 | `paths_card-body` | Margin top 20px · Size 0.9375rem · Line height 1.55 · Colour on-dark-muted |
 | `paths_controls` | No styles. Its bar starts with `hidden`, and the script shows it only below 992px |
@@ -1295,8 +1299,8 @@ One Code Embed `paths_controls`, placed as the **last child** of `paths_componen
 @media (max-width: 991px) {
   .section_paths { transition: background-color 600ms ease;
     background-color: var(--colors--path-earn-bg, #0B3B2C) !important; }
-  .section_paths[data-active="1"] { background-color: var(--colors--path-grow-bg, #1E2A6B) !important; }
-  .section_paths[data-active="2"] { background-color: var(--colors--path-ship-bg, #3B1A80) !important; }
+  .section_paths[data-active="1"] { background-color: var(--colors--path-grow-bg, #102F3A) !important; }
+  .section_paths[data-active="2"] { background-color: var(--colors--path-ship-bg, #3A2A0E) !important; }
 
   /* Only the active media card shows; it wipes in from the top. */
   .paths_media { transition: opacity 400ms ease; }
@@ -1338,8 +1342,8 @@ One Code Embed `paths_controls`, placed as the **last child** of `paths_componen
   /* Full-width colour band behind each row. */
   .paths_row-bg { display: block !important; grid-column: 1 / -1 !important; margin-inline: calc(50% - 50vw); }
   .paths_row-bg.is-earn { grid-row: 2 !important; background: var(--colors--path-earn-bg, #0B3B2C); }
-  .paths_row-bg.is-grow { grid-row: 3 !important; background: var(--colors--path-grow-bg, #1E2A6B); }
-  .paths_row-bg.is-ship { grid-row: 4 !important; background: var(--colors--path-ship-bg, #3B1A80); }
+  .paths_row-bg.is-grow { grid-row: 3 !important; background: var(--colors--path-grow-bg, #102F3A); }
+  .paths_row-bg.is-ship { grid-row: 4 !important; background: var(--colors--path-ship-bg, #3A2A0E); }
 
   .paths_media, .paths_card { position: relative; z-index: 1; margin-block: 56px;
     opacity: 1 !important; transform: none !important; }
@@ -1804,7 +1808,7 @@ The `button` classes come from the Designer's styles, so they work inside embeds
   border: 1px solid var(--colors--ink-muted, #5A5F7A); border-radius: 999px;
   background: var(--colors--surface, #FFF); color: var(--colors--ink, #14162B);
   font-family: inherit; font-size: 0.9375rem; font-weight: 500; transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease; }
-.chip:hover { border-color: var(--colors--merged, #6E3FF3); color: var(--colors--merged, #6E3FF3); }
+.chip:hover { border-color: var(--colors--brand, #0E6B47); color: var(--colors--brand, #0E6B47); }
 .chip[aria-pressed="true"] { background: var(--colors--ink, #14162B); border-color: var(--colors--ink, #14162B); color: var(--colors--surface, #FFF); }
 
 /* Card details the Style panel can't express. */
@@ -1839,7 +1843,7 @@ The `button` classes come from the Designer's styles, so they work inside embeds
 .board_offer-label { display: block; font-size: 0.875rem; font-weight: 600; }
 .board_offer-field { margin-top: 6px; display: flex; align-items: center; border-radius: 8px;
   border: 1px solid var(--colors--ink-muted, #5A5F7A); background: var(--colors--surface, #FFF); }
-.board_offer-field:focus-within { outline: 3px solid var(--colors--merged, #6E3FF3); outline-offset: 2px; }
+.board_offer-field:focus-within { outline: 3px solid var(--colors--brand, #0E6B47); outline-offset: 2px; }
 .board_offer-field:has([aria-invalid="true"]) { border-color: var(--colors--removed, #B42318); }
 .board_offer-prefix { padding-left: 12px; font-weight: 600; color: var(--colors--ink-muted, #5A5F7A); }
 .board_offer-input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px 0 4px; border: 0; background: transparent;
@@ -1850,7 +1854,7 @@ The `button` classes come from the Designer's styles, so they work inside embeds
 .board_offer-hint { color: var(--colors--ink-muted, #5A5F7A); }
 .board_offer-error { font-weight: 600; color: var(--colors--removed, #B42318); }
 .board_offer-actions { margin-top: 14px; display: flex; align-items: center; gap: 16px; }
-.board_offer-sent { margin-top: 12px; font-size: 0.875rem; font-weight: 600; color: var(--colors--payout, #0F7B4F); }
+.board_offer-sent { margin-top: 12px; font-size: 0.875rem; font-weight: 600; color: var(--colors--payout, #0E6B47); }
 .board_offer-sent:focus { outline: none; }
 </style>
 
