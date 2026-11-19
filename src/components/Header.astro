@@ -1,0 +1,582 @@
+---
+// Site header: sticky; transparent at the top, frosted after 24px of scroll.
+// Desktop: logo, nav (active section underlined), actions.
+// Below 1024px: logo + menu button that opens a native <dialog> sheet.
+import Logo from './Logo.astro';
+
+const links = [
+  { label: 'Bounties', href: '#bounties' },
+  { label: 'How it works', href: '#how-it-works' },
+  { label: 'Ways to earn', href: '#ways-to-earn' },
+  { label: 'For maintainers', href: '#paths' },
+  { label: 'FAQ', href: '#faq' },
+];
+---
+
+<!-- Sits 24px down the page; when it scrolls out of view the header turns solid. -->
+<div class="header-sentinel" aria-hidden="true" data-header-sentinel></div>
+
+<header class="site-header" data-header>
+  <div class="site-header__inner">
+    <Logo />
+
+    <nav class="site-nav" aria-label="Main">
+      <ul class="site-nav__list" role="list">
+        {links.map((l) => (
+          <li><a class="site-nav__link" href={l.href} data-nav-link>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="hbtn hbtn--outline" href="#">Log in</a>
+      <a class="hbtn hbtn--primary" href="#bounties">Get started</a>
+    </div>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="site-menu"
+      data-menu-open
+    >
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<dialog class="menu" id="site-menu" aria-label="Menu" data-menu>
+  <div class="menu__sheet">
+    <div class="menu__top">
+      <Logo />
+      <button class="menu__close" type="button" aria-label="Close menu" data-menu-close autofocus>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
+    </div>
+
+    <ul class="menu__links" role="list">
+      {links.map((l, i) => (
+        <li>
+          <a class="menu__link" href={l.href} style={`--i: ${i}`} data-nav-link data-menu-link>{l.label}</a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="menu__middle">
+      <!-- PLACEHOLDER DEMO STATS: replace with live numbers before launch. -->
+      <a class="menu__card" href="#bounties" data-menu-link>
+        <span>
+          <span class="menu__card-title">24 open bounties</span>
+          <span class="menu__card-sub">$250 average · paid on merge</span>
+        </span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </a>
+    </div>
+
+    <div class="menu__actions">
+      <a class="hbtn hbtn--outline hbtn--block" href="#" data-menu-link>Log in</a>
+      <a class="hbtn hbtn--primary hbtn--block" href="#bounties" data-menu-link>Get started</a>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const html = document.documentElement;
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const sentinel = document.querySelector<HTMLElement>('[data-header-sentinel]')!;
+  const dialog = document.querySelector<HTMLDialogElement>('[data-menu]')!;
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]')!;
+  const closeBtn = dialog.querySelector<HTMLButtonElement>('[data-menu-close]')!;
+  const navLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const wide = window.matchMedia('(min-width: 1024px)');
+  const CLOSE_MS = 180;
+
+  // ---------- 1. Scrolled state ----------
+  // The sentinel is a 1px element 24px down the page. Once it has scrolled
+  // out of view, the page has moved at least 24px: frost the header.
+  new IntersectionObserver(([entry]) => header.classList.toggle('is-scrolled', !entry.isIntersecting)).observe(
+    sentinel,
+  );
+
+  // ---------- 2. Active section ----------
+  // A thin horizontal band 30–40% down the viewport. Whichever linked section
+  // crosses it is "current"; sections without a nav link (hero, contributors)
+  // clear the highlight.
+  const ids = [...new Set(navLinks.map((a) => a.hash.slice(1)))];
+  const sections = ids.map((id) => document.getElementById(id)).filter((s): s is HTMLElement => !!s);
+  const inBand = new Set<string>();
+
+  const setCurrent = (id: string | null) =>
+    navLinks.forEach((a) => {
+      if (a.hash === `#${id}`) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+
+  const bandObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => (e.isIntersecting ? inBand.add(e.target.id) : inBand.delete(e.target.id)));
+      const current = sections.find((s) => inBand.has(s.id)); // first in page order
+      setCurrent(current ? current.id : null);
+    },
+    { rootMargin: '-30% 0px -60% 0px' },
+  );
+  sections.forEach((s) => bandObserver.observe(s));
+
+  // ---------- 3. Mobile / tablet menu (native <dialog>) ----------
+  // Can this browser animate a dialog out by itself (keep it in the top layer
+  // while it fades)? If not, the JS fallback below plays the close animation.
+  const canAnimateOut =
+    CSS.supports('transition-behavior: allow-discrete') && CSS.supports('overlay: auto');
+
+  function openMenu() {
+    dialog.classList.remove('is-closing');
+    dialog.showModal(); // top layer, inert page, focus moves to the autofocus close button
+    html.classList.add('is-menu-open'); // no scrolling behind the menu
+    openBtn.setAttribute('aria-expanded', 'true');
+  }
+
+  // Resolves after the dialog's "close" event has run (page unlocked, focus
+  // back on the menu button). The event fires a moment after close() returns,
+  // so anything that scrolls must wait for it; otherwise returning focus would
+  // interrupt the scroll.
+  function closeMenu(): Promise<void> {
+    return new Promise((resolve) => {
+      if (!dialog.open) return resolve();
+      dialog.addEventListener('close', () => resolve(), { once: true });
+      if (canAnimateOut || reduceMotion.matches) {
+        dialog.close(); // CSS animates the exit (or it's instant under reduced motion)
+        return;
+      }
+      dialog.classList.add('is-closing');
+      window.setTimeout(() => {
+        dialog.classList.remove('is-closing');
+        dialog.close();
+      }, CLOSE_MS);
+    });
+  }
+
+  // Runs however the dialog closes: unlock the page, update the button, return focus.
+  dialog.addEventListener('close', () => {
+    html.classList.remove('is-menu-open');
+    openBtn.setAttribute('aria-expanded', 'false');
+    openBtn.focus({ preventScroll: true }); // never move the page while returning focus
+  });
+
+  // Escape fires "cancel". Let the native close happen, unless we need the
+  // JS fallback to animate it first.
+  dialog.addEventListener('cancel', (e) => {
+    if (!canAnimateOut && !reduceMotion.matches) {
+      e.preventDefault();
+      closeMenu();
+    }
+  });
+
+  openBtn.addEventListener('click', openMenu);
+  closeBtn.addEventListener('click', () => closeMenu());
+
+  // A click whose target is the <dialog> itself landed on the backdrop
+  // (the sheet's content always sits on top of the dialog box).
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) closeMenu();
+  });
+
+  // Links and actions in the menu: close first, then go to the section.
+  dialog.querySelectorAll<HTMLAnchorElement>('[data-menu-link]').forEach((a) =>
+    a.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await closeMenu();
+      const target = a.hash.length > 1 ? document.getElementById(a.hash.slice(1)) : null;
+      if (!target) return; // e.g. "Log in" (placeholder href="#"): just close
+      history.pushState(null, '', a.hash);
+      target.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
+    }),
+  );
+
+  // Resized to desktop width while open: the desktop nav takes over.
+  wide.addEventListener('change', (e) => {
+    if (e.matches && dialog.open) closeMenu();
+  });
+</script>
+
+<style>
+  /* ---------- Header bar ---------- */
+  .header-sentinel {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--header-height);
+    border-bottom: 1px solid transparent;
+    background-color: transparent;
+    transition:
+      background-color 250ms ease,
+      border-color 250ms ease,
+      backdrop-filter 250ms ease;
+  }
+
+  /* After 24px of scroll: frosted white bar with a hairline. */
+  .site-header.is-scrolled {
+    background-color: color-mix(in srgb, var(--surface) 85%, transparent);
+    border-bottom-color: var(--line);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .site-header__inner {
+    height: 100%;
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--content-pad);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .site-nav,
+  .site-header__actions { display: none; }
+
+  /* ---------- Desktop nav ---------- */
+  @media (min-width: 1024px) {
+    .site-nav {
+      display: block;
+      margin-left: auto;
+    }
+
+    .site-header__actions {
+      display: flex;
+      gap: 10px;
+      margin-left: 8px;
+    }
+  }
+
+  .site-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: clamp(16px, 1.8vw, 28px);
+  }
+
+  .site-nav__link {
+    position: relative;
+    display: inline-block;
+    padding-block: 8px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .site-nav__link:hover { color: var(--merged); }
+
+  /* Active-section underline: grows from the centre (scaleX + transform-origin). */
+  .site-nav__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    height: 2px;
+    background: var(--merged);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 250ms ease-in;
+  }
+
+  .site-nav__link[aria-current='true']::after {
+    transform: scaleX(1);
+    transition: transform 400ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  /* ---------- Buttons ---------- */
+  .hbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .hbtn--outline {
+    color: var(--ink);
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+  }
+
+  .hbtn--outline:hover {
+    background: var(--ink);
+    color: var(--surface);
+  }
+
+  .hbtn--primary {
+    background: var(--ink);
+    color: var(--surface);
+  }
+
+  .hbtn--primary:hover {
+    background: var(--merged-hover);
+    color: var(--surface);
+  }
+
+  /* Menu action buttons: share a row equally, but never shrink below 140px.
+     If two can't fit at 140px each (narrow screen, large text), the row wraps. */
+  .hbtn--block {
+    flex: 1 1 140px;
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  /* ---------- Menu button ---------- */
+  .menu-toggle {
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .menu-toggle:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+
+  /* Desktop and laptop: the full nav is visible, so no menu button.
+     (Kept after the base .menu-toggle rule so it wins on source order.) */
+  @media (min-width: 1024px) {
+    .menu-toggle { display: none; }
+  }
+
+  /* ---------- Menu dialog ----------
+     Mobile: fills the screen with an 8px inset. Tablet: a centred 480px sheet. */
+  .menu {
+    position: fixed;
+    inset: 8px;
+    width: auto;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 24px;
+    background: var(--canvas);
+    color: var(--ink);
+    overflow: hidden;
+
+    /* Closed state (also the "from" state when opening, via @starting-style). */
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+    transition:
+      opacity 180ms ease-in,
+      transform 180ms ease-in,
+      overlay 180ms allow-discrete,
+      display 180ms allow-discrete;
+  }
+
+  @media (min-width: 768px) {
+    .menu {
+      inset: 0;
+      margin: 16px auto;
+      width: min(480px, calc(100% - 32px));
+      height: calc(100% - 32px);
+    }
+  }
+
+  .menu[open] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      overlay 300ms allow-discrete,
+      display 300ms allow-discrete;
+  }
+
+  /* Where the opening transition starts from (the dialog was display: none). */
+  @starting-style {
+    .menu[open] {
+      opacity: 0;
+      transform: translateY(8px) scale(0.96);
+    }
+  }
+
+  .menu::backdrop {
+    background: color-mix(in srgb, var(--ink) 40%, transparent);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    transition:
+      opacity 180ms ease-in,
+      overlay 180ms allow-discrete,
+      display 180ms allow-discrete;
+  }
+
+  .menu[open]::backdrop {
+    opacity: 1;
+    transition:
+      opacity 200ms ease-out,
+      overlay 200ms allow-discrete,
+      display 200ms allow-discrete;
+  }
+
+  @starting-style {
+    .menu[open]::backdrop { opacity: 0; }
+  }
+
+  /* JS fallback for browsers that can't animate a dialog out: play the
+     close state on the still-open dialog, then really close it. */
+  .menu[open].is-closing {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+    transition-duration: 180ms;
+  }
+
+  .menu[open].is-closing::backdrop {
+    opacity: 0;
+    transition-duration: 180ms;
+  }
+
+  /* ---------- Sheet layout ---------- */
+  .menu__sheet {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .menu__top {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px 10px 20px;
+    min-height: var(--header-height);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .menu__close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .menu__close:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+
+  .menu__links {
+    flex: none;
+    list-style: none;
+    margin: 0;
+    padding: 4px 20px 0;
+  }
+
+  .menu__links li + li { border-top: 1px solid var(--line); }
+
+  .menu__link {
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    padding-block: 8px;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    /* Staggered entrance: each link waits 40ms longer than the one before. */
+    transition: opacity 300ms ease, transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(80ms + var(--i) * 40ms);
+  }
+
+  @starting-style {
+    .menu[open] .menu__link {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  .menu__link[aria-current='true'] {
+    color: var(--merged);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+  }
+
+  .menu__middle {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .menu__card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .menu__card:hover { border-color: var(--merged); }
+
+  .menu__card-title {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .menu__card-sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+  }
+
+  .menu__card svg { flex: none; color: var(--merged); }
+
+  /* One row: Log in | Get started. wrap-reverse stacks wrapped lines from the
+     bottom up, so when the row breaks, the second button (Get started) ends up
+     on top and Log in below, with no media query. */
+  .menu__actions {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap-reverse;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px 20px 20px;
+    border-top: 1px solid var(--line);
+  }
+</style>

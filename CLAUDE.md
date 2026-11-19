@@ -35,6 +35,17 @@ Each section is one component in `src/components/`, rendered in `src/pages/index
 | 7 | FAQ | `FAQ.astro` | `--surface` (content in a large `--canvas` panel) | Sticky heading (desktop) beside an accordion: payouts, AI tools, AI review, disputes, pricing, countries, fees. Works without JS |
 | 8 | FinalCTA | `FinalCTA.astro` | `--surface` (content in a dark photo panel: optional `public/images/cta-photo.webp` under an `--ink` → `--path-ship-bg` overlay, white text) | Scroll-linked heading that lights up letter by letter; "Find a bounty" and "Post a bounty" (`id="get-started"`) |
 
+### Site header
+
+- `Header.astro` (with `Logo.astro`) is rendered by `layouts/Base.astro` above every page, after a "Skip to content" link to `<main id="main">`.
+- Sticky; transparent at the top, frosted after 24px of scroll. Below 1024px the nav moves into a native `<dialog>` menu.
+- `--header-height` (64px, 72px from 1024px) is the single source for the header's height, `scroll-margin-top` on sections with an id, the hero's `min-height`, and anything sticky that must sit below the header (FAQ heading, Paths pin). Never hard-code the header height.
+
+### Site footer
+
+- `Footer.astro` is rendered by `layouts/Base.astro` below every page: `--ink` background, logo (`theme="dark"`), four link columns in `<nav aria-label="Footer">`, a bottom bar ("Payouts via PayPal.", legal links, designer credit) and a faint "fairmerge" watermark.
+- The designer credit is the `CREDIT` constant at the top of `Footer.astro`.
+
 ### Section backgrounds
 
 - `global.css` defines `.section { background-color: var(--section-bg, transparent); }`.
