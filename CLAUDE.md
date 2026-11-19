@@ -41,6 +41,11 @@ Each section is one component in `src/components/`, rendered in `src/pages/index
 - Sticky; transparent at the top, frosted after 24px of scroll. Below 1024px the nav moves into a native `<dialog>` menu.
 - `--header-height` (64px, 72px from 1024px) is the single source for the header's height, `scroll-margin-top` on sections with an id, the hero's `min-height`, and anything sticky that must sit below the header (FAQ heading, Paths pin). Never hard-code the header height.
 
+### Site footer
+
+- `Footer.astro` is rendered by `layouts/Base.astro` below every page: `--ink` background, logo (`theme="dark"`), four link columns in `<nav aria-label="Footer">`, a bottom bar ("Payouts via PayPal.", legal links, designer credit) and a faint "fairmerge" watermark.
+- The designer credit is the `CREDIT` constant at the top of `Footer.astro`.
+
 ### Section backgrounds
 
 - `global.css` defines `.section { background-color: var(--section-bg, transparent); }`.

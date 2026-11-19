@@ -1,0 +1,300 @@
+---
+// Site footer: logo + one-liner + socials, four link columns, bottom bar,
+// and a faint "fairmerge" watermark cut off by the bottom edge.
+import Logo from './Logo.astro';
+
+// EDIT ME: the designer credit in the bottom bar.
+const CREDIT = { name: 'alialaba', url: 'https://github.com/alialaba' };
+
+const columns = [
+  {
+    title: 'Product',
+    links: [
+      { label: 'Bounties', href: '#bounties' },
+      { label: 'How it works', href: '#how-it-works' },
+      { label: 'Ways to earn', href: '#ways-to-earn' },
+      { label: 'FAQ', href: '#faq' },
+    ],
+  },
+  {
+    title: 'Maintainers',
+    links: [
+      { label: 'Post a bounty', href: '#paths' },
+      { label: 'AI pricing', href: '#' },
+      { label: 'Review rules', href: '#' },
+      { label: 'Docs', href: '#' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { label: 'About', href: '#' },
+      { label: 'Blog', href: '#' },
+      { label: 'Careers', href: '#' },
+      { label: 'Contact', href: '#' },
+    ],
+  },
+  {
+    title: 'Resources',
+    links: [
+      { label: 'Help center', href: '#' },
+      { label: 'Status', href: '#' },
+      { label: 'Changelog', href: '#' },
+      { label: 'Brand', href: '#' },
+    ],
+  },
+];
+
+const socials = [
+  {
+    label: 'Fairmerge on GitHub',
+    path: 'M12 2.5a9.5 9.5 0 0 0-3 18.5c.48.09.65-.2.65-.46v-1.6c-2.64.57-3.2-1.27-3.2-1.27-.43-1.1-1.06-1.39-1.06-1.39-.86-.59.07-.58.07-.58.95.07 1.45.98 1.45.98.85 1.45 2.22 1.03 2.76.79.09-.61.33-1.03.6-1.27-2.11-.24-4.33-1.05-4.33-4.69 0-1.04.37-1.89.98-2.55-.1-.24-.42-1.2.09-2.51 0 0 .8-.26 2.61.97a9 9 0 0 1 4.75 0c1.81-1.23 2.61-.97 2.61-.97.51 1.31.19 2.27.09 2.51.61.66.98 1.51.98 2.55 0 3.65-2.22 4.45-4.34 4.68.34.3.65.88.65 1.78v2.64c0 .26.17.56.66.46A9.5 9.5 0 0 0 12 2.5Z',
+  },
+  {
+    label: 'Fairmerge on X',
+    path: 'M17.6 3h3l-6.6 7.5L21.8 21h-6l-4.7-6.1L5.6 21h-3l7.1-8L2.4 3h6.2l4.2 5.6L17.6 3Zm-1 16.2h1.7L7.5 4.7H5.7l10.9 14.5Z',
+  },
+  {
+    label: 'Fairmerge on LinkedIn',
+    path: 'M4.98 3.5a2.48 2.48 0 1 1 0 4.96 2.48 2.48 0 0 1 0-4.96ZM3 9.75h4v11.75H3V9.75Zm6.5 0h3.83v1.6h.05c.53-1 1.84-2.05 3.79-2.05 4.05 0 4.8 2.67 4.8 6.13v6.07h-4v-5.38c0-1.28-.02-2.93-1.79-2.93-1.79 0-2.06 1.4-2.06 2.84v5.47h-4V9.75Z',
+  },
+];
+---
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <Logo theme="dark" />
+        <p class="footer__tagline">Get paid the moment your code merges, anywhere in the world.</p>
+        <ul class="footer__socials" role="list">
+          {socials.map((s) => (
+            <li>
+              <a class="footer__social" href="#" aria-label={s.label}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d={s.path}></path></svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <nav class="footer__nav" aria-label="Footer">
+        {columns.map((col) => (
+          <div class="footer__col">
+            <h2 class="footer__heading">{col.title}</h2>
+            <ul class="footer__list" role="list">
+              {col.links.map((l) => (
+                <li><a class="footer__link" href={l.href}>{l.label}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+    </div>
+
+    <div class="footer__bottom">
+      <div class="footer__legal-text">
+        <p>© 2026 Fairmerge. A concept project built for the PayPal AI hackathon.</p>
+        <p>Payouts via PayPal.</p>
+      </div>
+      <ul class="footer__legal" role="list">
+        <li><a class="footer__link" href="#">Privacy</a></li>
+        <li><a class="footer__link" href="#">Terms</a></li>
+        <li><a class="footer__link" href="#">Cookies</a></li>
+      </ul>
+      <p class="footer__credit">
+        Designed &amp; built by <a class="footer__link footer__link--strong" href={CREDIT.url}>{CREDIT.name}</a>
+      </p>
+    </div>
+  </div>
+
+  <span class="footer__watermark" aria-hidden="true">fairmerge</span>
+</footer>
+
+<style>
+  .footer {
+    --muted: color-mix(in srgb, var(--surface) 70%, transparent);
+    --divider: color-mix(in srgb, var(--surface) 12%, transparent);
+    position: relative;
+    overflow: clip; /* clips the watermark without creating a scroll container */
+    padding: 56px 0 24px;
+    background: var(--ink);
+    color: var(--surface);
+  }
+
+  @media (min-width: 1024px) {
+    .footer { padding: 80px 0 32px; }
+  }
+
+  .footer__inner {
+    position: relative;
+    z-index: 1; /* above the watermark */
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--content-pad);
+  }
+
+  /* Light focus ring that stands out on --ink. */
+  .footer :global(a:focus-visible) {
+    outline: 3px solid var(--merged-tint);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* ---------- Top area ----------
+     Mobile/tablet: brand block on top, then the link columns.
+     Desktop: brand 35% | columns 65% in one row. */
+  .footer__top {
+    display: grid;
+    gap: 40px;
+  }
+
+  @media (min-width: 1024px) {
+    .footer__top {
+      grid-template-columns: minmax(0, 35fr) minmax(0, 65fr);
+      gap: 48px;
+    }
+  }
+
+  .footer__tagline {
+    margin-top: 16px;
+    max-width: 22rem;
+    color: var(--muted);
+  }
+
+  .footer__socials {
+    list-style: none;
+    margin: 20px 0 0 -10px; /* aligns the icons' glyphs with the text edge */
+    padding: 0;
+    display: flex;
+    gap: 4px;
+  }
+
+  .footer__social {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    transition: color 200ms ease, background-color 200ms ease;
+  }
+
+  .footer__social:hover,
+  .footer__social:focus-visible {
+    color: var(--surface);
+    background: color-mix(in srgb, var(--surface) 8%, transparent);
+  }
+
+  /* Link columns: 2 x 2 below 1024px, 4 across on desktop. */
+  .footer__nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 16px;
+  }
+
+  @media (min-width: 768px) {
+    .footer__nav { gap: 40px 32px; }
+  }
+
+  @media (min-width: 1024px) {
+    .footer__nav {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 32px;
+    }
+  }
+
+  .footer__heading {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.4;
+    color: var(--surface);
+  }
+
+  .footer__list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+  }
+
+  /* ---------- Links ----------
+     Muted white; full white on hover/focus with an underline that grows from
+     the left (a 1px gradient "line" whose width animates from 0% to 100%). */
+  .footer__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px; /* comfortable tap target on touch screens */
+    color: var(--muted);
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 calc(50% + 0.75em);
+    background-size: 0% 1px;
+    transition: color 200ms ease, background-size 200ms ease;
+  }
+
+  @media (min-width: 1024px) {
+    .footer__link { min-height: 32px; } /* mouse precision: tighter lists */
+  }
+
+  .footer__link:hover,
+  .footer__link:focus-visible {
+    color: var(--surface);
+    background-size: 100% 1px;
+  }
+
+  .footer__link--strong { color: var(--surface); }
+
+  /* ---------- Bottom bar ---------- */
+  .footer__bottom {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--divider);
+    display: grid;
+    gap: 12px;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  @media (min-width: 1024px) {
+    .footer__bottom {
+      margin-top: 72px;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 32px;
+    }
+  }
+
+  .footer__legal-text p + p { margin-top: 2px; }
+
+  .footer__legal {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 20px;
+  }
+
+  /* ---------- Watermark ---------- */
+  .footer__watermark {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 34%);
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 18vw, 16rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--surface) 4%, transparent);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Room at the bottom so the watermark doesn't sit on the bottom bar. */
+  .footer__inner { padding-bottom: clamp(48px, 11vw, 160px); }
+</style>
