@@ -9,6 +9,8 @@ import path from 'node:path';
 
 // Background photo: used if public/images/cta-photo.webp exists; otherwise
 // the panel shows its gradient only.
+// Photo: Anthony Riera on Unsplash (Unsplash License, free for commercial use):
+// https://unsplash.com/photos/man-in-black-t-shirt-using-laptop-computer--ZZ7I31c0B8
 const hasPhoto = fs.existsSync(path.join(process.cwd(), 'public/images/cta-photo.webp'));
 
 // Split the heading into lines > words > letters. Every letter gets its index
@@ -27,7 +29,7 @@ const n = i;
     <div class="cta__panel" data-cta-panel>
       <!-- 1. Background photo (decorative) -->
       {hasPhoto && (
-        <img class="cta__photo" src="/images/cta-photo.webp" alt="" width="1600" height="900" loading="lazy" decoding="async" />
+        <img class="cta__photo" src="/images/cta-photo.webp" alt="" width="1600" height="1067" loading="lazy" decoding="async" />
       )}
 
       <!-- 2. Overlay: light on the left (the photo shows), near-solid violet on the right (the text) -->
@@ -209,13 +211,22 @@ const n = i;
     );
   }
 
+  /* Desktop: the photo fills only the left 62%, so the person sits in the
+     left third at a natural size. The overlay stays light over the photo
+     (keeping its warm light) and turns near-solid violet where the text starts. */
   @media (min-width: 1024px) {
+    .cta__photo {
+      width: 62%;
+      object-position: 30% 40%;
+    }
+
     .cta__overlay {
       background: linear-gradient(
         90deg,
-        color-mix(in srgb, var(--ink) 35%, transparent) 0%,
-        color-mix(in srgb, var(--path-ship-bg) 70%, transparent) 40%,
-        color-mix(in srgb, var(--path-ship-bg) 94%, transparent) 60%
+        color-mix(in srgb, var(--ink) 30%, transparent) 0%,
+        color-mix(in srgb, var(--ink) 20%, transparent) 28%,
+        color-mix(in srgb, var(--path-ship-bg) 88%, transparent) 46%,
+        color-mix(in srgb, var(--path-ship-bg) 97%, transparent) 62%
       );
     }
   }

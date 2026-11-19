@@ -4,6 +4,8 @@ A marketing homepage for a bounty platform where developers get paid the moment 
 
 The page layout is inspired by the section structure of [oneforma.com](https://www.oneforma.com)'s homepage. All copy, branding, colours, typography and visuals are original. Every person, bounty, repository and number on the page is sample demo content.
 
+Final CTA photo by [Anthony Riera](https://unsplash.com/photos/man-in-black-t-shirt-using-laptop-computer--ZZ7I31c0B8) on Unsplash (Unsplash License).
+
 ## Tech stack
 
 - [Astro](https://astro.build) (minimal template, static output)
