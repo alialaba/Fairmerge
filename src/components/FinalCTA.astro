@@ -1,13 +1,389 @@
-<section class="final-cta section">
-  <!-- FinalCTA: closing call to action with 'Claim a bounty' and 'Post a bounty'. -->
+---
+// FinalCTA: closing call to action in a large photo panel.
+// The heading lights up letter by letter as the panel scrolls into view
+// (one --progress variable, CSS calc per letter). The supporting line and
+// buttons reveal once and stay. Without JS or with reduced motion, everything
+// is simply visible.
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Background photo: used if public/images/cta-photo.webp exists; otherwise
+// the panel shows its gradient only.
+const hasPhoto = fs.existsSync(path.join(process.cwd(), 'public/images/cta-photo.webp'));
+
+// Split the heading into lines > words > letters. Every letter gets its index
+// (--i); the heading gets the total (--n).
+const lines = ['Your next merge', 'could pay today.'];
+const sentence = lines.join(' ');
+let i = 0;
+const split = lines.map((line) =>
+  line.split(' ').map((word) => [...word].map((ch) => ({ ch, i: i++ }))),
+);
+const n = i;
+---
+
+<section class="cta section" id="get-started" aria-labelledby="cta-title" data-cta>
+  <div class="cta__inner">
+    <div class="cta__panel" data-cta-panel>
+      <!-- 1. Background photo (decorative) -->
+      {hasPhoto && (
+        <img class="cta__photo" src="/images/cta-photo.webp" alt="" width="1600" height="900" loading="lazy" decoding="async" />
+      )}
+
+      <!-- 2. Overlay: light on the left (the photo shows), near-solid violet on the right (the text) -->
+      <div class="cta__overlay" aria-hidden="true"></div>
+
+      <!-- 3. Watermark -->
+      <span class="cta__watermark" aria-hidden="true">fairmerge</span>
+
+      <!-- 4. Inset frame -->
+      <span class="cta__frame" aria-hidden="true"></span>
+
+      <!-- 5. Content -->
+      <div class="cta__content" data-cta-content>
+        <h2 class="cta__title" id="cta-title" aria-label={sentence} style={`--n: ${n}`} data-cta-title>
+          {split.map((words) => (
+            <span class="cta__line" aria-hidden="true">
+              {words.map((letters, w) => (
+                <>
+                  {w > 0 && ' '}
+                  <span class="cta__word">
+                    {letters.map((l) => <span class="cta__letter" style={`--i: ${l.i}`}>{l.ch}</span>)}
+                  </span>
+                </>
+              ))}
+            </span>
+          ))}
+        </h2>
+
+        <!-- PLACEHOLDER DEMO STATS: same as the hero; replace before launch. -->
+        <p class="cta__sub cta__reveal">$250 average bounty. About 5 minutes from merge to payout.</p>
+
+        <div class="cta__actions cta__reveal">
+          <a class="cta__btn cta__btn--primary" href="#bounties">
+            Find a bounty
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+          <a class="cta__btn cta__btn--secondary" href="#paths">Post a bounty</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
+<script>
+  const section = document.querySelector<HTMLElement>('[data-cta]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (section) {
+    const panel = section.querySelector<HTMLElement>('[data-cta-panel]')!;
+    const title = section.querySelector<HTMLElement>('[data-cta-title]')!;
+    const content = section.querySelector<HTMLElement>('[data-cta-content]')!;
+
+    const START = 0.85; // progress 0: panel top at 85% of the viewport height
+    const END = 0.35; //   progress 1: panel top at 35% of the viewport height
+    let ticking = false;
+    let listening = false;
+
+    // Reveal the supporting line and buttons once. Never undone.
+    const reveal = () => content.classList.add('is-revealed');
+
+    const update = () => {
+      ticking = false;
+      const vh = window.innerHeight;
+      const top = panel.getBoundingClientRect().top;
+      const startPx = START * vh;
+      // Where the panel's top would be at the very bottom of the page. On tall
+      // screens the page may end before the top reaches 35%, so finish there.
+      const maxScroll = document.documentElement.scrollHeight - vh;
+      const topAtPageEnd = top + window.scrollY - maxScroll;
+      const endPx = Math.min(Math.max(END * vh, topAtPageEnd), startPx - 1);
+      const progress = Math.min(Math.max((startPx - top) / (startPx - endPx), 0), 1);
+      title.style.setProperty('--progress', progress.toFixed(4)); // CSS lights the letters
+      if (progress > 0.5) reveal();
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+
+    // Only listen to scroll while the section is near the viewport.
+    const listen = (on: boolean) => {
+      if (on === listening) return;
+      listening = on;
+      if (on) {
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        update();
+      } else {
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', onScroll);
+      }
+    };
+
+    const io = new IntersectionObserver(([entry]) => listen(entry.isIntersecting && !reduceMotion.matches), {
+      rootMargin: '25% 0px 25% 0px',
+    });
+
+    // Keyboard users who tab to a button before the reveal get it revealed.
+    content.addEventListener('focusin', reveal);
+
+    const applyMotion = () => {
+      if (reduceMotion.matches) {
+        listen(false);
+        title.style.setProperty('--progress', '1');
+        reveal();
+      }
+    };
+
+    io.observe(section);
+    applyMotion();
+    reduceMotion.addEventListener('change', applyMotion);
+  }
+</script>
+
 <style>
-  .final-cta {
-    --section-bg: var(--ink);
+  .cta {
+    --section-bg: var(--surface);
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --frame-inset: 16px;
+    padding-block: clamp(48px, 8vw, 112px);
+  }
+
+  .cta__inner {
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--content-pad);
+  }
+
+  /* ---------- Panel ---------- */
+  .cta__panel {
+    position: relative;
+    overflow: clip; /* clips the watermark without creating a scroll container */
+    isolation: isolate;
+    min-height: 480px;
+    display: flex;
+    align-items: flex-end; /* mobile: content at the bottom */
+    border-radius: 24px;
+    /* Gradient fallback (also sits under the photo). */
+    background:
+      radial-gradient(120% 90% at 15% 20%, var(--path-grow-bg), transparent 60%),
+      linear-gradient(135deg, var(--ink), var(--path-ship-bg));
     color: var(--surface);
   }
 
-  /* Light focus ring on the dark background. */
-  .final-cta :focus-visible { outline-color: var(--merged-tint); }
+  @media (min-width: 768px) {
+    .cta { --frame-inset: 32px; }
+
+    .cta__panel {
+      min-height: 560px;
+      align-items: center; /* desktop: vertically centred */
+      border-radius: 32px;
+    }
+  }
+
+  /* 1. Photo: person on the left third. */
+  .cta__photo {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 25% 50%;
+  }
+
+  /* 2. Overlay. Below 1024px: darker and fairly even (~75%), because the text
+     sits over the photo. Desktop: light on the left, near-solid on the right. */
+  .cta__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ink) 70%, transparent),
+      color-mix(in srgb, var(--path-ship-bg) 88%, transparent)
+    );
+  }
+
+  @media (min-width: 1024px) {
+    .cta__overlay {
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--ink) 35%, transparent) 0%,
+        color-mix(in srgb, var(--path-ship-bg) 70%, transparent) 40%,
+        color-mix(in srgb, var(--path-ship-bg) 94%, transparent) 60%
+      );
+    }
+  }
+
+  /* 3. Watermark: huge, faint, cut off by the panel's bottom edge. */
+  .cta__watermark {
+    position: absolute;
+    z-index: -1;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 28%);
+    font-family: var(--font-display);
+    font-size: clamp(6rem, 22vw, 19rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--surface) 6%, transparent);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* 4. Inset frame. */
+  .cta__frame {
+    position: absolute;
+    inset: var(--frame-inset);
+    border: 1px solid color-mix(in srgb, var(--surface) 35%, transparent);
+    border-radius: 16px;
+    pointer-events: none;
+  }
+
+  @media (min-width: 768px) {
+    .cta__frame { border-radius: 20px; }
+  }
+
+  /* 5. Content: inside the frame. Mobile full width; desktop the right 55%. */
+  .cta__content {
+    position: relative;
+    container-type: inline-size; /* the heading sizes itself to this column */
+    width: 100%;
+    padding: calc(var(--frame-inset) + 24px);
+  }
+
+  @media (min-width: 1024px) {
+    .cta__content {
+      width: 55%;
+      margin-left: 45%;
+      padding: calc(var(--frame-inset) + 40px) calc(var(--frame-inset) + 48px) calc(var(--frame-inset) + 40px) 0;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023.98px) {
+    .cta__content {
+      width: 70%;
+      margin-left: 30%;
+      padding-left: 0;
+    }
+  }
+
+  /* ---------- Heading ---------- */
+  .cta__title {
+    font-family: var(--font-display);
+    /* The spec's size, capped at 11.5% of the content column (cqi) so each
+       line ("Your next merge" / "could pay today.") always fits on one row. */
+    font-size: min(clamp(2.25rem, 1.2rem + 5vw, 5.25rem), 11.5cqi);
+    font-weight: 400; /* the lightest weight loaded */
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--surface);
+    text-wrap: initial;
+  }
+
+  .cta__line { display: block; }
+
+  /* Words never break in the middle. */
+  .cta__word {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  /* Scroll-linked letters (only when JS will drive --progress).
+     Each letter: (progress x total letters) - its index, clamped to 0..1,
+     so letters light up one after another as progress grows. */
+  :global(.js) .cta__title { --progress: 0; }
+
+  :global(.js) .cta__letter {
+    opacity: calc(0.3 + 0.7 * clamp(0, var(--progress) * var(--n) - var(--i), 1));
+  }
+
+  /* ---------- Supporting line + buttons ---------- */
+  .cta__sub {
+    margin-top: 24px;
+    max-width: 32rem;
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+    line-height: 1.4;
+    color: color-mix(in srgb, var(--surface) 85%, transparent);
+  }
+
+  .cta__actions {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .cta__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 52px;
+    padding: 0 24px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+  }
+
+  .cta__btn--primary {
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  .cta__btn--primary:hover {
+    background: var(--merged-tint);
+    color: var(--ink);
+  }
+
+  .cta__btn--secondary {
+    border: 1px solid color-mix(in srgb, var(--surface) 60%, transparent);
+    color: var(--surface);
+  }
+
+  .cta__btn--secondary:hover {
+    border-color: var(--surface);
+    background: color-mix(in srgb, var(--surface) 10%, transparent);
+    color: var(--surface);
+  }
+
+  /* White focus ring, clearly visible on the dark panel. */
+  .cta__btn:focus-visible {
+    outline: 3px solid var(--surface);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 479.98px) {
+    .cta__actions { flex-direction: column; }
+    .cta__btn { width: 100%; }
+  }
+
+  /* One-time reveal: hidden start state only with JS; opacity + transform only,
+     so the buttons stay focusable and clickable the whole time. */
+  :global(.js) .cta__reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 500ms var(--ease), transform 500ms var(--ease);
+  }
+
+  :global(.js) .cta__actions.cta__reveal { transition-delay: 120ms; }
+
+  :global(.js) .is-revealed .cta__reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Reduced motion: no scroll effect; everything visible immediately. */
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .cta__letter { opacity: 1; }
+    :global(.js) .cta__reveal { opacity: 1; transform: none; }
+  }
 </style>
