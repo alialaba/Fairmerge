@@ -1,6 +1,6 @@
 # Fairmerge in Webflow: build guide
 
-How to rebuild **Hero, WaysToEarn, Paths, BountyBoard, HowItWorks and FAQ** from the Astro site in Webflow, using Client-First naming.
+How to rebuild every section of the Astro site in Webflow (**Hero, WaysToEarn, Paths, BountyBoard, Contributors, HowItWorks, FAQ and FinalCTA**), using Client-First naming. The site header and footer aren't covered yet.
 
 The Astro source is the reference. When something here is unclear, open the matching file in `src/components/` and `src/styles/global.css`.
 
@@ -12,8 +12,10 @@ The Astro source is the reference. When something here is unclear, open the matc
 - [Part 2.2: WaysToEarn](#part-22-waystoearn)
 - [Part 2.3: Paths](#part-23-paths)
 - [Part 2.4: BountyBoard](#part-24-bountyboard)
-- [Part 2.5: HowItWorks](#part-25-howitworks)
-- [Part 2.6: FAQ](#part-26-faq)
+- [Part 2.5: Contributors](#part-25-contributors)
+- [Part 2.6: HowItWorks](#part-26-howitworks)
+- [Part 2.7: FAQ](#part-27-faq)
+- [Part 2.8: FinalCTA](#part-28-finalcta)
 - [Final pass (whole page)](#final-pass-whole-page)
 
 ---
@@ -240,9 +242,10 @@ Body
       ├─ section_ways
       ├─ section_paths
       ├─ section_board
-      ├─ (section_contributors: not covered in this guide yet)
+      ├─ section_contrib
       ├─ section_hiw
-      └─ section_faq
+      ├─ section_faq
+      └─ section_cta
 ```
 
 Every section follows the Client-First pattern:
@@ -2182,7 +2185,424 @@ The "Claim bounty" link's accessible name is "Claim bounty" followed by the boun
 
 ---
 
-## Part 2.5: HowItWorks
+## Part 2.5: Contributors
+
+**Background:** surface.
+
+- Quote-led stories from contributors and maintainers, in a horizontal scroll-snap carousel: 3 cards in view on Desktop, 2 on Tablet, 1 plus a peek of the next on phones.
+- The track runs to the right edge of the screen (full bleed), while the first card lines up with the heading.
+- Prev and next buttons move one page, dots show the page, arrow keys move one card, and a mouse can drag the track. Swiping works without any JavaScript.
+
+**Webflow vs native:** Webflow's Slider element hides off-screen slides, doesn't snap like a native scroll, and its arrows aren't real `<button>`s. Here the cards are a CMS Collection List that scrolls natively, and a small script adds the buttons, dots and keyboard support.
+
+### CMS Collection: "Contributors"
+
+**CMS panel → Create collection → "Contributors"** (singular item name "Contributor").
+
+| Field | Webflow type | Required | Notes |
+|---|---|---|---|
+| Name | Plain text (built-in) | ✓ | e.g. `Amara O.` |
+| Slug | Slug (built-in) | ✓ | |
+| Repo | Plain text | ✓ | Shown in the code font |
+| Stat | Plain text | ✓ | e.g. `Merged in 3 hrs` |
+| Quote | Plain text | ✓ | Without quotation marks: the CSS adds them |
+| Role | Plain text | ✓ | e.g. `Robotics engineer` |
+| Country | Plain text | ✓ | Shown on its own line under the role |
+| Avatar | Image | | Square photo, at least 88 × 88px. When empty, the initial shows instead |
+| Initial | Plain text | ✓ | First letter of the name, shown when there's no Avatar |
+| PR URL | Link | | Where "View PR" goes (defaults to `#`) |
+| Sort order | Number | ✓ | Controls the card order |
+
+**Items** (sample demo content: fictional people, repos and numbers):
+
+| Sort | Name | Initial | Repo | Stat | Role | Country | Quote |
+|---|---|---|---|---|---|---|---|
+| 1 | Amara O. | A | openarm/gripper-sim | Merged in 3 hrs | Robotics engineer | Nigeria | I've debugged flaky robot sims for years. An AI tool wrote the fix in minutes, but knowing the gripper raced the physics step was the real work. |
+| 2 | Lena W. | L | orbitkit/propagator | Merged in 5 hrs | Flight software engineer | Germany | The issue sat open for two months. It was a batching bottleneck I'd fixed in flight software before. PR up before lunch, paid by dinner. |
+| 3 | Tomás R. | T | groundlink/telemetry | Merged in 1 day | Embedded developer | Argentina | I'm no Go expert, but I've decoded satellite beacons for years. AI helped with the syntax. I knew what those AX.25 frames actually meant. |
+| 4 | Kenji T. | K | openarm/motion-planner | Merged same day | Robotics developer | Japan | No proposal, no invoice. I picked the arm-jitter bounty, shipped the smoothing fix, and the payout landed minutes after the merge. |
+| 5 | Priya S. | P | relaykit/agents | 30 issues closed | Agent framework maintainer | India | I don't care if a PR was written with AI. I care that it solves the issue, and the review checks exactly that. |
+| 6 | Sofia R. | S | trailbot/nav-stack | 18 PRs merged | Junior robotics developer | Mexico | Every review told me what was missing and why. My merged simulation tests became the portfolio that got me interviews. |
+
+### Element tree
+
+The heading sits in the normal container, but the card track sits **outside** it, directly in the section, so it can run to the screen edge.
+
+```
+section_contrib (Section, id: contributors)            [aria-labelledby, data-contrib]
+├─ padding-global
+│  └─ container-large
+│     └─ contrib_header (Div)
+│        ├─ contrib_title (H2, id: contrib-title): "Expertise gets merged. However you write the code."
+│        ├─ contrib_lede (Paragraph)
+│        └─ contrib_nav-embed (Code Embed: prev, dots, next)
+├─ contrib_collection (Collection List Wrapper → Contributors)
+│  └─ contrib_list (Collection List)                    [data-track, role, aria-roledescription, aria-label, tabindex]
+│     └─ contrib_item (Collection Item)                 [data-slide, role, aria-roledescription]
+│        └─ contrib_card (Div, tag: article)
+│           ├─ contrib_card-top (Div)
+│           │  ├─ contrib_card-repo (Text Block) ← Repo
+│           │  └─ contrib_card-stat (Div)
+│           │     ├─ Code Embed: merge icon
+│           │     └─ Text Block ← Stat
+│           ├─ contrib_card-quote (Block Quote) ← Quote
+│           └─ contrib_card-foot (Div)
+│              ├─ contrib_card-person (Div)
+│              │  ├─ contrib_card-avatar (Image ← Avatar)          [visible when Avatar is set]
+│              │  ├─ contrib_card-initial (Div) ← Initial          [visible when Avatar is not set]
+│              │  └─ contrib_card-who (Div)
+│              │     ├─ contrib_card-name (Paragraph) ← Name
+│              │     └─ contrib_card-role (Paragraph)
+│              │        ├─ contrib_card-role-part (Text Span) ← Role
+│              │        ├─ sr-only (Text Span): " · "
+│              │        └─ contrib_card-role-part (Text Span) ← Country
+│              └─ contrib_card-link (Link Block ← PR URL)
+│                 ├─ Text Span: "View PR"
+│                 ├─ sr-only (Text Span): " by "
+│                 ├─ sr-only (Text Span) ← Name
+│                 └─ Code Embed: arrow icon
+├─ contrib_live (Paragraph, class sr-only)             [aria-live=polite, data-live]
+└─ contrib_script (Code Embed: CSS + script; see "Custom code")
+```
+
+**Collection List settings:** Sort by Sort order, ascending. No limit.
+
+**Conditional visibility:** select `contrib_card-avatar` → Element settings → Conditional visibility → *Avatar is set*. Select `contrib_card-initial` → *Avatar is not set*. On the avatar image, set the Alt text to the **Name** field.
+
+**Icons** (Code Embeds):
+
+```html
+<!-- merge icon (in contrib_card-stat) -->
+<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="4.5" cy="3.5" r="1.75"/><circle cx="4.5" cy="12.5" r="1.75"/><circle cx="11.5" cy="8" r="1.75"/><path d="M4.5 5.25v5.5M4.5 5.25c0 2.4 2 2.75 5.25 2.75"/></svg>
+
+<!-- arrow icon (in contrib_card-link) -->
+<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+```
+
+### Styles per breakpoint
+
+The track, the card box (width, snapping, background, hover shadow, divider) and the navigation are styled by the CSS in `contrib_script`, because they need `calc()`, scroll snapping and a container query. Style the text in the Style panel:
+
+**Desktop (base)**
+
+| Class | Styles |
+|---|---|
+| `section_contrib` | Background surface · Colour ink · Padding top/bottom section-pad |
+| `contrib_title` | Weight 600 · Max width 22ch (size comes from All H2: text-h1) |
+| `contrib_lede` | Margin top space-4 · Max width measure · Size text-body-lg · Colour ink-muted |
+| `contrib_card-top` | Flex, wrap · Align center · Justify space-between · Row gap space-2 · Column gap space-4 · Size text-caption |
+| `contrib_card-repo` | Font font-code · Colour ink |
+| `contrib_card-stat` | Margin left auto · Inline-flex · Align center · Gap space-2 · Colour ink-muted. The icon inside: Colour brand |
+| `contrib_card-quote` | Margin 0 · Padding 0 · Border none · Font font-display · Size text-body-lg · Weight 500 · Line height leading-normal · Colour ink |
+| `contrib_card-person` | Flex · Align center · Gap space-3 · Min width 0 |
+| `contrib_card-avatar` | 44 × 44px · Radius 50% · Object fit cover · Flex none |
+| `contrib_card-initial` | 44 × 44px · Radius 50% · Grid, centred · Flex none · Background canvas · Border 1px line · Font font-display · Weight 600 · Colour ink |
+| `contrib_card-name` | Size text-small · Weight 600 · Line height leading-snug |
+| `contrib_card-role` | Size text-caption · Line height leading-normal · Colour ink-muted |
+| `contrib_card-role-part` | Display block (role and country on their own lines, so every card breaks the same way) |
+| `contrib_card-link` | Flex none · Inline-flex · Align center · Gap space-1 · Padding top/bottom space-2 · Size text-small · Weight 600 · Colour ink · No underline. **Hover:** Colour ink · Underline |
+
+### Custom code
+
+**1. `contrib_nav-embed`** (last child of `contrib_header`). Hidden until the script runs. Without JavaScript the track still scrolls and snaps, so the buttons would do nothing.
+
+```html
+<div class="contrib_nav" data-nav hidden>
+  <button class="contrib_btn" type="button" aria-label="Previous stories" data-prev>
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg>
+  </button>
+  <div class="contrib_dots" data-dots></div>
+  <button class="contrib_btn" type="button" aria-label="Next stories" data-next>
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg>
+  </button>
+</div>
+```
+
+**2. `contrib_script`** (last child of `section_contrib`). The CSS starts with a **token bridge**: it maps short names like `--brand` to your Webflow Variables (with the hex values as fallbacks), so the rest reads like the Astro source. If your Variables have different CSS names, change them in the bridge only. The HowItWorks, FAQ and FinalCTA embeds work the same way.
+
+```html
+<style>
+/* ---------- Token bridge: Webflow Variables -> short names ---------- */
+.section_contrib {
+  --ink: var(--colors--ink, #14162B);
+  --ink-muted: var(--colors--ink-muted, #5A5F7A);
+  --canvas: var(--colors--canvas, #F6F7FB);
+  --surface: var(--colors--surface, #FFFFFF);
+  --line: var(--colors--line, #DADDEA);
+  --brand: var(--colors--brand, #0E6B47);
+  --space-2: var(--spacing--space-2, 8px);
+  --space-3: var(--spacing--space-3, 12px);
+  --space-4: var(--spacing--space-4, 16px);
+  --space-5: var(--spacing--space-5, 24px);
+  --space-7: var(--spacing--space-7, 40px);
+  --content-width: var(--spacing--content-width, 1240px);
+  --content-pad: var(--spacing--content-pad, clamp(16px, 4vw, 56px));
+  --radius-sm: var(--radius--radius-sm, 8px);
+  --radius-lg: var(--radius--radius-lg, 20px);
+  --radius-pill: var(--radius--radius-pill, 999px);
+
+  /* Left edge of the page container, also when the screen is wider than it. */
+  --edge: max(var(--content-pad), calc((100% - var(--content-width)) / 2 + var(--content-pad)));
+  --gap: var(--space-4);
+}
+@media (min-width: 768px) { .section_contrib { --gap: 20px; } }
+
+/* ---------- Navigation: prev, dots, next ---------- */
+.contrib_nav { margin-top: var(--space-5); display: flex; align-items: center; gap: var(--space-2); }
+.contrib_btn {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink);
+  transition: border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.contrib_btn:hover:not(:disabled), .contrib_btn:focus-visible { border-color: var(--brand); color: var(--brand); }
+.contrib_btn:disabled { cursor: not-allowed; opacity: 0.4; }
+.contrib_dots { display: flex; align-items: center; }
+/* Dots are built by the script: 24px hit area, the visible dot is ::before. */
+.contrib_dot { display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.contrib_dot::before {
+  content: ''; width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--ink-muted);
+  transition: width var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+.contrib_dot[aria-current='true'] { width: 36px; }
+.contrib_dot[aria-current='true']::before { width: 24px; background: var(--brand); }
+
+/* ---------- Track: the Collection List scrolls sideways ---------- */
+.contrib_list {
+  position: relative;             /* cards' offsetLeft is measured from here */
+  container-type: inline-size;    /* 100cqi = the track's content width */
+  display: flex; gap: var(--gap);
+  margin-top: var(--space-7);
+  padding: var(--space-2) var(--edge) var(--space-5);  /* the padding lines the first card up with the heading */
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; scroll-padding-inline: var(--edge);
+  scrollbar-width: none;
+}
+.contrib_list::-webkit-scrollbar { display: none; }
+.contrib_list:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; border-radius: var(--radius-sm); }
+@media (hover: hover) and (pointer: fine) {
+  .contrib_list { cursor: grab; }
+  .contrib_list.is-dragging { cursor: grabbing; user-select: none; scroll-snap-type: none; }
+}
+
+/* ---------- Card: width = cards per view (N cards + N-1 gaps fill the track) ---------- */
+.contrib_item {
+  flex: 0 0 calc((100cqi - var(--gap)) / 1.1);  /* phones: about 1.1 cards in view */
+  scroll-snap-align: start;
+  display: flex;
+}
+@media (min-width: 768px) { .contrib_item { flex-basis: calc((100cqi - var(--gap)) / 2); } }       /* tablet: 2 */
+@media (min-width: 992px) { .contrib_item { flex-basis: calc((100cqi - 2 * var(--gap)) / 3); } }   /* desktop: 3 */
+
+.contrib_card {
+  --pad: 20px;
+  container-type: inline-size;   /* the footer adapts to the card's own width */
+  width: 100%;
+  display: flex; flex-direction: column; gap: var(--space-4);
+  padding: var(--pad);
+  background: linear-gradient(to bottom, var(--canvas), var(--surface));
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  transition: box-shadow var(--dur-fast) var(--ease-out);
+}
+@media (min-width: 768px) { .contrib_card { --pad: var(--space-5); } }
+.contrib_card:hover { box-shadow: var(--shadow-md); }
+
+.contrib_card-quote::before { content: '“'; }
+.contrib_card-quote::after { content: '”'; }
+
+/* Divider + person row: margin-top auto pins the footer to the bottom so it lines
+   up across cards; the negative side margins let the dashed line run edge to edge. */
+.contrib_card-foot {
+  margin: auto calc(-1 * var(--pad)) 0;
+  padding: var(--space-4) var(--pad) 0;
+  border-top: 1px dashed var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+}
+/* Narrow cards: "View PR" drops under the name, lined up with it. */
+@container (max-width: 299px) {
+  .contrib_card-foot { flex-wrap: wrap; row-gap: 0; }
+  .contrib_card-link { flex-basis: 100%; padding-left: calc(44px + var(--space-3)); }  /* avatar + gap */
+}
+</style>
+
+<script>
+(() => {
+  const section = document.querySelector('[data-contrib]');
+  if (!section) return;
+
+  const track = section.querySelector('[data-track]');
+  const slides = [...section.querySelectorAll('[data-slide]')];
+  const prev = section.querySelector('[data-prev]');
+  const next = section.querySelector('[data-next]');
+  const dotsBox = section.querySelector('[data-dots]');
+  const live = section.querySelector('[data-live]');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const count = slides.length;
+
+  section.querySelector('[data-nav]').hidden = false;
+
+  // Each card announces its position: "1 of 6: Amara O."
+  slides.forEach((s, i) => {
+    const name = s.querySelector('.contrib_card-name')?.textContent.trim() ?? '';
+    s.setAttribute('aria-label', `${i + 1} of ${count}: ${name}`);
+  });
+
+  // Cards per page: phones 1, tablet 2, desktop 3 (widest match first).
+  const breakpoints = [[992, 3], [768, 2], [0, 1]].map(([min, n]) => ({ n, mq: matchMedia(`(min-width: ${min}px)`) }));
+  const cardsPerPage = () => Math.min(count, breakpoints.find((b) => b.mq.matches).n);
+
+  let per = cardsPerPage();
+  let pages = 0;
+  let first = -1;      // index of the card at the start edge
+  let dots = [];
+  let lockUntil = 0;   // while a button scroll animates, ignore in-between positions
+
+  const maxFirst = () => Math.max(0, count - per);
+  const pageOf = (i) => (i >= maxFirst() ? pages - 1 : Math.floor(i / per));
+  const padStart = () => parseFloat(getComputedStyle(track).paddingLeft) || 0;
+  const maxScroll = () => track.scrollWidth - track.clientWidth;
+  const stride = () => (count > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth);
+  // Which card is at the start edge? At the very end, the last page.
+  const readScroll = () => (track.scrollLeft >= maxScroll() - 2 ? maxFirst() : Math.round(track.scrollLeft / stride()));
+
+  function buildDots() {
+    pages = Math.ceil(count / per);
+    dots = Array.from({ length: pages }, (_, p) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'contrib_dot';
+      b.setAttribute('aria-label', `Go to page ${p + 1}`);
+      b.addEventListener('click', () => goTo(p * per));
+      return b;
+    });
+    dotsBox.replaceChildren(...dots);
+  }
+
+  function render(i, { announce = false, force = false } = {}) {
+    const target = Math.max(0, Math.min(maxFirst(), i));
+    if (target !== first || force) {
+      first = target;
+      dots.forEach((d, p) => (p === pageOf(first) ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
+    }
+    prev.disabled = first <= 0;
+    next.disabled = first >= maxFirst();
+    if (announce) {
+      const last = Math.min(count, first + per) - 1;
+      live.textContent = first === last ? `Showing story ${first + 1} of ${count}` : `Showing stories ${first + 1} to ${last + 1} of ${count}`;
+    }
+  }
+
+  // Scroll so card i sits at the start edge.
+  function goTo(i, announce = true) {
+    const target = Math.max(0, Math.min(maxFirst(), i));
+    const left = Math.min(slides[target].offsetLeft - padStart(), maxScroll());
+    lockUntil = performance.now() + 1000;
+    track.scrollTo({ left, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+    render(target, { announce });
+  }
+
+  prev.addEventListener('click', () => goTo(first - per));   // one page back
+  next.addEventListener('click', () => goTo(first + per));   // one page on
+
+  track.addEventListener('keydown', (e) => {                 // arrow keys: one card
+    if (e.key === 'ArrowRight') { e.preventDefault(); goTo(first + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(first - 1); }
+  });
+
+  // Swipes and trackpads: follow the scroll position, once per frame.
+  let ticking = false;
+  track.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      if (performance.now() >= lockUntil) render(readScroll());
+    });
+  }, { passive: true });
+  track.addEventListener('scrollend', () => { lockUntil = 0; render(readScroll()); });
+
+  // Mouse drag-to-scroll (touch already scrolls natively).
+  let drag = null;
+  track.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    drag = { x: e.clientX, left: track.scrollLeft, id: e.pointerId, moved: false };
+  });
+  track.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) > 4) {   // past 4px it's a drag, not a click
+      drag.moved = true;
+      track.setPointerCapture(drag.id);
+      track.classList.add('is-dragging');
+    }
+    if (drag.moved) track.scrollLeft = drag.left - dx;
+  });
+  const endDrag = () => {
+    if (!drag) return;
+    const moved = drag.moved;
+    drag = null;
+    if (!moved) return;
+    track.classList.remove('is-dragging');
+    goTo(readScroll(), false);               // settle on the nearest card
+  };
+  track.addEventListener('pointerup', endDrag);
+  track.addEventListener('pointercancel', endDrag);
+
+  // Resizing can change cards-per-page, so rebuild the dots.
+  new ResizeObserver(() => {
+    const n = cardsPerPage();
+    if (n !== per) { per = n; buildDots(); }
+    render(readScroll(), { force: true });
+  }).observe(track);
+
+  buildDots();
+  render(0, { force: true });
+})();
+</script>
+```
+
+**How the carousel works, in plain language.** The sliding itself is the browser's own sideways scrolling: the list scrolls horizontally, and "scroll snap" makes it stop with a card neatly at the left edge. That's why swiping works even without the script. The script only adds what scrolling can't do on its own. It works out which card is at the edge from the scroll position, so it knows the page for the dots. It scrolls to an exact card when you press a button, a dot or an arrow key, and it disables "previous" on the first page and "next" on the last.
+
+### Interactions
+
+None native. The card hover shadow and the dots are CSS transitions; button scrolling is smooth unless reduced motion is on.
+
+### Accessibility
+
+| Element | Attribute | Value |
+|---|---|---|
+| section_contrib | ID | `contributors` |
+| section_contrib | `aria-labelledby` | `contrib-title` |
+| section_contrib | `data-contrib` | `true` |
+| contrib_title | ID | `contrib-title` |
+| contrib_list | `data-track` | `true` |
+| contrib_list | `role` | `region` |
+| contrib_list | `aria-roledescription` | `carousel` |
+| contrib_list | `aria-label` | `Contributor stories` |
+| contrib_list | `tabindex` | `0` (so keyboard users can focus it and use the arrow keys) |
+| contrib_item | `data-slide` | `true` |
+| contrib_item | `role` | `group` |
+| contrib_item | `aria-roledescription` | `slide` (the script adds `aria-label`, e.g. "1 of 6: Amara O.") |
+| contrib_card | Tag (Element settings) | `article` |
+| contrib_card-initial | `role` / `aria-label` | `img` / bind to **Name** |
+| contrib_live | `aria-live` | `polite` |
+| contrib_live | `data-live` | `true` |
+
+The "View PR" link's accessible name is "View PR by" plus the person's name (from the `sr-only` spans), so a list of links stays unambiguous.
+
+### Checklist
+
+- [ ] 1440: three cards in view; the first card lines up with the heading; the track runs to the right edge of the screen.
+- [ ] Next and previous move one page; the dots follow; "previous" is disabled on the first page and "next" on the last.
+- [ ] Click into the track, then use Left/Right: one card at a time. A screen reader announces "Showing stories 4 to 6 of 6".
+- [ ] Drag with the mouse: the track follows and settles on the nearest card.
+- [ ] 768: two cards. 375: one card with the next peeking; swiping snaps to each card; no horizontal page scroll.
+- [ ] Each card's footer (divider, person, View PR) lines up across cards, and on narrow cards "View PR" sits under the name.
+- [ ] Cards without an Avatar show the initial in a circle.
+- [ ] Disable JavaScript: the buttons are hidden and the track still scrolls and snaps.
+
+---
+
+## Part 2.6: HowItWorks
 
 **Background:** payout-tint, with the content in a white (surface) panel.
 
@@ -2930,7 +3350,7 @@ Inside the embeds (already in the code above): the stage is `aria-hidden="true"`
 
 ---
 
-## Part 2.6: FAQ
+## Part 2.7: FAQ
 
 **Background:** surface, with the content in a large canvas panel.
 
@@ -3175,11 +3595,340 @@ Inside the embed (already in the code above): each question is an `h3` containin
 
 ---
 
+## Part 2.8: FinalCTA
+
+**Background:** surface, with the content in a dark photo panel (`id: get-started`).
+
+- The panel layers, from back to front:
+  1. the photo of a developer on the left;
+  2. a dark overlay, from ink to path-ship-bg;
+  3. a huge, faint "fairmerge" watermark, cut off by the bottom edge;
+  4. a thin inset frame;
+  5. the content.
+- **The heading lights up letter by letter as the panel scrolls into view.** It's tied to scroll position, so scrolling back dims it again.
+- The supporting line and both buttons fade up **once** when the heading is half lit, and never hide again. They stay focusable and clickable the whole time.
+- Without JavaScript, or with reduced motion, everything is simply visible.
+
+This is the page's one deliberate exception to "no scroll effects" (see CLAUDE.md, Motion).
+
+### Element tree
+
+```
+section_cta (Section, id: get-started)                 [aria-labelledby, data-cta]
+└─ padding-global
+   └─ container-large
+      ├─ cta_panel (Div)
+      │  ├─ cta_photo (Image: cta-photo.webp, decorative)
+      │  ├─ cta_overlay (Div)
+      │  ├─ cta_watermark (Text Block): "fairmerge"
+      │  ├─ cta_frame (Div)
+      │  └─ cta_content (Div)
+      │     ├─ cta_title (H2, id: cta-title)
+      │     │  ├─ cta_title-line (Text Span): "Your next merge"
+      │     │  └─ cta_title-line (Text Span): "could pay today."
+      │     ├─ cta_sub is-reveal (Paragraph)
+      │     └─ cta_actions is-reveal (Div)
+      │        ├─ button is-on-dark is-large (Link Block → #bounties): "Find a bounty" + button_icon
+      │        └─ button is-outline-on-dark is-large (Link Block → #paths): "Post a bounty"
+      └─ cta_script (Code Embed: CSS + script; see "Custom code")
+```
+
+`cta_script` goes right **after** `cta_panel`, so the heading exists when the script runs and splits it into letters before the first paint.
+
+**Photo:** upload `public/images/cta-photo.webp` (1600 × 1067) from the repository. In the image settings, turn on **Decorative** (empty alt text, the photo carries no information) and set Load to **Lazy**. Photo by Anthony Riera on Unsplash (Unsplash License). If you leave the photo out, the panel shows its dark gradient on its own.
+
+### Styles per breakpoint
+
+The panel's layers, the heading effect and the reveal are styled by the CSS in `cta_script`. They need gradients with transparency, `calc()` with the frame inset, a container query and the `w-mod-js` class. Give the layer elements only their class names in the Designer. In the Style panel:
+
+**Desktop (base)**
+
+| Class | Styles |
+|---|---|
+| `section_cta` | Background surface · Padding top/bottom `clamp(48px, 8vw, 112px)` (fallback 112px) |
+| `cta_title-line` | Display block |
+| `cta_sub` | Margin top space-5 · Max width measure-narrow · Size text-body-lg · Line height leading-normal · Colour on-dark-strong |
+| `cta_actions` | Margin top space-6 · Flex, wrap · Gap space-3 |
+
+**Mobile portrait**
+
+| Class | Changes |
+|---|---|
+| `section_cta` | Padding top/bottom space-8 |
+| `cta_actions` | Direction vertical |
+| `cta_actions` > `button` | Width 100% (use a combo `cta_button` on both buttons, or set it on the elements) |
+
+### Content
+
+- **Heading:** Your next merge / could pay today. (one Text Span per line)
+- **Supporting line:** $250 average bounty. About 5 minutes from merge to payout. These are placeholder demo stats, the same as the hero; replace them before launch.
+- **Buttons:** Find a bounty (→ `#bounties`), Post a bounty (→ `#paths`)
+
+To change the heading, just edit the two Text Spans. The script splits whatever text is there.
+
+### Custom code: `cta_script`
+
+```html
+<style>
+/* ---------- Token bridge: Webflow Variables -> short names ---------- */
+.section_cta {
+  --ink: var(--colors--ink, #14162B);
+  --surface: var(--colors--surface, #FFFFFF);
+  --path-grow-bg: var(--colors--path-grow-bg, #102F3A);
+  --path-ship-bg: var(--colors--path-ship-bg, #3A2A0E);
+  --on-dark-watermark: var(--colors--on-dark-watermark, rgba(255, 255, 255, 0.05));
+  --on-dark-frame: var(--colors--on-dark-frame, rgba(255, 255, 255, 0.35));
+  --brand-tint: var(--colors--brand-tint, #E3F1EA);
+  --font-display: var(--typography--font-display, 'Bricolage Grotesque', sans-serif);
+  --text-display: var(--typography--text-display, clamp(2.5rem, 1.5rem + 4vw, 4.5rem));
+  --space-5: var(--spacing--space-5, 24px);
+  --space-7: var(--spacing--space-7, 40px);
+  --space-8: var(--spacing--space-8, 48px);
+  --radius-md: var(--radius--radius-md, 12px);
+  --radius-lg: var(--radius--radius-lg, 20px);
+  --radius-xl: var(--radius--radius-xl, clamp(24px, 3vw, 32px));
+  --frame-inset: 16px;
+}
+@media (min-width: 768px) { .section_cta { --frame-inset: 32px; } }
+
+/* ---------- Panel: everything below stacks inside it ---------- */
+.cta_panel {
+  position: relative;
+  overflow: clip;        /* clips the watermark without making a scroll container */
+  isolation: isolate;    /* the layers' negative z-index stays inside the panel */
+  min-height: 480px;
+  display: flex;
+  align-items: flex-end; /* phones: content at the bottom */
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(120% 90% at 15% 20%, var(--path-grow-bg), transparent 60%),
+    linear-gradient(135deg, var(--ink), var(--path-ship-bg));
+  color: var(--surface);
+}
+@media (min-width: 768px) { .cta_panel { min-height: 560px; align-items: center; } }
+
+/* 1. Photo: the person sits in the left third. */
+.cta_photo { position: absolute; inset: 0; z-index: -3; width: 100%; height: 100%; object-fit: cover; object-position: 25% 50%; }
+
+/* 2. Overlay. Below 992px it's dark and fairly even, because the text sits over the photo. */
+.cta_overlay {
+  position: absolute; inset: 0; z-index: -2;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--ink) 70%, transparent),
+    color-mix(in srgb, var(--path-ship-bg) 88%, transparent));
+}
+/* Desktop: the photo fills the left 62%; the overlay stays light over it and turns
+   near-solid where the text starts. */
+@media (min-width: 992px) {
+  .cta_photo { width: 62%; object-position: 30% 40%; }
+  .cta_overlay {
+    background: linear-gradient(90deg,
+      color-mix(in srgb, var(--ink) 30%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 20%, transparent) 28%,
+      color-mix(in srgb, var(--path-ship-bg) 88%, transparent) 46%,
+      color-mix(in srgb, var(--path-ship-bg) 97%, transparent) 62%);
+  }
+}
+
+/* 3. Watermark: huge, faint, cut off by the bottom edge. */
+.cta_watermark {
+  position: absolute; z-index: -1; left: 50%; bottom: 0;
+  transform: translate(-50%, 28%);
+  font-family: var(--font-display); font-size: clamp(6rem, 22vw, 19rem); font-weight: 700;
+  line-height: 1.05; letter-spacing: -0.02em; white-space: nowrap;
+  color: var(--on-dark-watermark);
+  pointer-events: none; user-select: none;
+}
+
+/* 4. Inset frame. */
+.cta_frame {
+  position: absolute; inset: var(--frame-inset);
+  border: 1px solid var(--on-dark-frame); border-radius: var(--radius-md);
+  pointer-events: none;
+}
+@media (min-width: 768px) { .cta_frame { border-radius: var(--radius-lg); } }
+
+/* 5. Content: inside the frame. Phones full width; tablet the right 70%; desktop the right 55%. */
+.cta_content {
+  position: relative;
+  container-type: inline-size;   /* the heading sizes itself to this column */
+  width: 100%;
+  padding: calc(var(--frame-inset) + var(--space-5));
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .cta_content { width: 70%; margin-left: 30%; padding-left: 0; }
+}
+@media (min-width: 992px) {
+  .cta_content {
+    width: 55%; margin-left: 45%;
+    padding: calc(var(--frame-inset) + var(--space-7)) calc(var(--frame-inset) + var(--space-8)) calc(var(--frame-inset) + var(--space-7)) 0;
+  }
+}
+
+/* ---------- Heading ---------- */
+.cta_title {
+  font-family: var(--font-display);
+  font-size: min(var(--text-display), 11.5cqi);  /* capped so each line always fits on one row */
+  font-weight: 400;
+  line-height: 1.05; letter-spacing: -0.02em;
+  color: var(--surface);
+  text-wrap: initial;
+}
+.cta_word { display: inline-block; white-space: nowrap; }  /* words never break in the middle */
+
+/* Scroll-linked letters. Each letter: (progress x total letters) - its index,
+   clamped to 0..1, so the letters light up one after another as progress grows. */
+.w-mod-js .cta_title { --progress: 0; }
+.w-mod-js .cta_letter { opacity: calc(0.3 + 0.7 * clamp(0, var(--progress) * var(--n) - var(--i), 1)); }
+
+/* ---------- One-time reveal of the supporting line and buttons ----------
+   Opacity and transform only, so the buttons stay focusable and clickable. */
+.w-mod-js .is-reveal {
+  opacity: 0; transform: translateY(16px);
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+}
+.w-mod-js .cta_actions.is-reveal { transition-delay: 120ms; }
+.w-mod-js .is-revealed .is-reveal { opacity: 1; transform: none; }
+
+/* Light focus ring, clearly visible on the dark panel. */
+.cta_actions .button:focus-visible { outline: 3px solid var(--brand-tint); outline-offset: 3px; }
+
+/* Reduced motion: no scroll effect; everything visible straight away. */
+@media (prefers-reduced-motion: reduce) {
+  .w-mod-js .cta_letter { opacity: 1; }
+  .w-mod-js .is-reveal { opacity: 1; transform: none; }
+}
+</style>
+
+<script>
+(() => {
+  const section = document.querySelector('[data-cta]');
+  if (!section) return;
+  const panel = section.querySelector('.cta_panel');
+  const title = section.querySelector('.cta_title');
+  const content = section.querySelector('.cta_content');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+  // ---------- 1. Split the heading into words and letters ----------
+  // Screen readers get the whole sentence from aria-label; the letter spans are hidden from them.
+  const lines = [...title.querySelectorAll('.cta_title-line')];
+  title.setAttribute('aria-label', lines.map((l) => l.textContent.trim()).join(' '));
+  let n = 0;
+  lines.forEach((line) => {
+    const words = line.textContent.trim().split(/\s+/);
+    line.setAttribute('aria-hidden', 'true');
+    line.replaceChildren(...words.flatMap((word, w) => {
+      const wordEl = document.createElement('span');
+      wordEl.className = 'cta_word';
+      [...word].forEach((ch) => {
+        const letter = document.createElement('span');
+        letter.className = 'cta_letter';
+        letter.style.setProperty('--i', n++);   // this letter's position in the sentence
+        letter.textContent = ch;
+        wordEl.append(letter);
+      });
+      return w > 0 ? [document.createTextNode(' '), wordEl] : [wordEl];
+    }));
+  });
+  title.style.setProperty('--n', n);            // total letters
+
+  // ---------- 2. Scroll progress: 0 when the panel's top is at 85% of the screen, 1 at 35% ----------
+  const START = 0.85;
+  const END = 0.35;
+  let ticking = false;
+  let listening = false;
+
+  // Reveal the supporting line and buttons once. Never undone.
+  const reveal = () => content.classList.add('is-revealed');
+
+  const update = () => {
+    ticking = false;
+    const vh = innerHeight;
+    const top = panel.getBoundingClientRect().top;
+    const startPx = START * vh;
+    // On tall screens the page may end before the top reaches 35%: finish there instead.
+    const maxScroll = document.documentElement.scrollHeight - vh;
+    const topAtPageEnd = top + scrollY - maxScroll;
+    const endPx = Math.min(Math.max(END * vh, topAtPageEnd), startPx - 1);
+    const progress = Math.min(Math.max((startPx - top) / (startPx - endPx), 0), 1);
+    title.style.setProperty('--progress', progress.toFixed(4));  // CSS lights the letters
+    if (progress > 0.5) reveal();
+  };
+
+  const onScroll = () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  };
+
+  // Only listen to scrolling while the section is near the screen.
+  const listen = (on) => {
+    if (on === listening) return;
+    listening = on;
+    if (on) {
+      addEventListener('scroll', onScroll, { passive: true });
+      addEventListener('resize', onScroll);
+      update();
+    } else {
+      removeEventListener('scroll', onScroll);
+      removeEventListener('resize', onScroll);
+    }
+  };
+  new IntersectionObserver(([entry]) => listen(entry.isIntersecting && !reduceMotion.matches), {
+    rootMargin: '25% 0px 25% 0px',
+  }).observe(section);
+
+  // Keyboard users who tab to a button before the reveal get it revealed.
+  content.addEventListener('focusin', reveal);
+
+  const applyMotion = () => {
+    if (reduceMotion.matches) {
+      listen(false);
+      title.style.setProperty('--progress', '1');
+      reveal();
+    }
+  };
+  applyMotion();
+  reduceMotion.addEventListener('change', applyMotion);
+})();
+</script>
+```
+
+**How the heading lights up, in plain language.** The script splits the heading into one span per letter and numbers them (0, 1, 2…). While you scroll, it calculates one number, `--progress`: 0 when the panel's top edge is at 85% of the screen height, 1 when it's at 35%. It doesn't touch the letters themselves. The CSS does that. Each letter's brightness is "progress × number of letters, minus my number", kept between 0 and 1. So when progress is 0.5, the first half of the letters are fully lit, the next one is part-way, and the rest are dim. Scrolling back reverses it. Webflow adds the `w-mod-js` class to the page as soon as JavaScript runs, and the dimming only applies with that class. So without JavaScript, the heading is simply fully visible.
+
+### Interactions
+
+None native. Webflow's "While scrolling in view" Interaction could fade the whole heading, but not one letter at a time. The reveal is a CSS transition switched by the script.
+
+### Accessibility
+
+| Element | Attribute | Value |
+|---|---|---|
+| section_cta | ID | `get-started` |
+| section_cta | `aria-labelledby` | `cta-title` |
+| section_cta | `data-cta` | `true` |
+| cta_title | ID | `cta-title` |
+| cta_overlay, cta_watermark, cta_frame | `aria-hidden` | `true` |
+| cta_photo | Image settings | Decorative (empty alt) |
+
+The script adds `aria-label` with the full sentence to the heading and hides the letter spans, so screen readers read "Your next merge could pay today." instead of single letters. Contrast: white on the overlay passes AA at every breakpoint, because the overlay is darkest where the text sits.
+
+### Checklist
+
+- [ ] Scroll down slowly: the heading's letters light up one after another from dim to full white, and dim again when you scroll back up.
+- [ ] Once the heading is about half lit, the supporting line and buttons fade up, and they stay when you scroll back.
+- [ ] Tab to "Find a bounty" before it has appeared: it appears straight away, with a light focus ring.
+- [ ] On a tall screen where the page ends early, the heading still reaches full white at the bottom of the page.
+- [ ] Reduced motion: the heading is fully lit and the buttons visible from the start.
+- [ ] 1440: photo on the left, text on the right 55%, heading on two lines. 768: text over the darker overlay on the right 70%. 375: content at the bottom, buttons full width and stacked.
+- [ ] The watermark is cut off by the panel's bottom edge, and there's no horizontal page scroll.
+- [ ] Screen reader: the heading reads as one sentence.
+
+---
+
 ## Final pass (whole page)
 
-- [ ] Section order on the page: Hero, WaysToEarn, Paths, BountyBoard, Contributors (not in this guide yet), HowItWorks, FAQ, then FinalCTA (built later).
+- [ ] Section order on the page: Hero, WaysToEarn, Paths, BountyBoard, Contributors, HowItWorks, FAQ, FinalCTA.
 - [ ] Every colour in the Style panel is a Variable; no raw hex values in the Designer.
 - [ ] Lighthouse accessibility score ≥ 95; no contrast warnings. The Astro build passed WCAG AA with these exact tokens.
 - [ ] "Payouts via PayPal" wording is used, and no PayPal brand colours appear.
-- [ ] Only the hero has a load animation; no other section fades in on scroll. HowItWorks' timer and the FAQ accordion are the only other motion in these sections, and both respect reduced motion.
+- [ ] Only the hero has a load animation; no other section fades in on scroll. The other motion is fixed: the Paths pin, BountyBoard filters and counter-offer, the Contributors carousel, the HowItWorks timer, the FAQ accordion and the FinalCTA heading. All of it respects reduced motion.
 - [ ] Test once with the keyboard only, and once with VoiceOver or NVDA, at Desktop and Mobile portrait.

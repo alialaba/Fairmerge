@@ -467,7 +467,7 @@ const avatarSrc = (file: string) =>
 
     .qcard__link {
       flex-basis: 100%; /* always its own line, so every card matches */
-      padding-left: var(--space-9); /* 44px avatar + 12px gap: lines up with the name */
+      padding-left: calc(44px + var(--space-3)); /* 44px avatar + 12px gap: lines up with the name */
     }
   }
 </style>
