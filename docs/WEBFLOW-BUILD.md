@@ -377,7 +377,7 @@ Give the first slide the combo class `is-active`.
 ### Content
 
 - **H1:** Get paid the moment your code merges.
-- **Lede:** Pick an open bounty in robotics, space or AI agents, ship a pull request, and our AI reviews it against the brief. Once it's merged, your payout goes out via PayPal, wherever you are.
+- **Lede:** Claim a bounty in robotics, space or AI agents and ship the fix, AI tools welcome. Our AI checks it against the brief before the maintainer looks. Merged means paid, via PayPal, wherever you are.
 - **Primary button:** Find a bounty → `#bounties`
 - **Secondary button:** Post a bounty → `#paths`
 - **Image alt:** in the embed above.
@@ -1204,7 +1204,7 @@ These margins and paddings equal `content-pad` at each breakpoint. If your conte
 | `sr-only` summary | Example payout history: three merged pull requests paid $400, $150 and $900 via PayPal. | Example AI review on a small fix to a robot's obstacle avoidance, asking for one more test before the bounty requirements are met. | Example bounty for adding timeouts to AI agent tool calls: AI suggested $280 to $360, it was posted at $320, and a contributor countered at $340. |
 | Quote | "I pick up robotics bounties between client projects. It's the most predictable income I have." | "Every AI review taught me something. Six months of merged simulation tests got me my first robotics job." | "The AI suggested a fair price, a contributor countered, and the fix shipped in two days." |
 | Who | Kenji T. · Japan · Robotics, C++ | Sofia R. · Mexico · Robotics, Python | Daniel K. · Germany · CTO, AI agents startup |
-| Body | You already know how to ship. Earn turns your skills into a payout for every merged pull request. No proposals, no invoices, no chasing clients. | Start with beginner-friendly bounties and get AI feedback on every pull request. Build a public record of merged work that hiring managers can actually check. | Turn issues into bounties. AI suggests a fair price from each issue's complexity, reviews every pull request against your brief, and payouts go out via PayPal only when you merge. |
+| Body | You already know how to ship. Earn turns your skills into a payout for every merged pull request. No proposals, no invoices, no chasing clients. | Start with beginner-friendly bounties and get AI feedback on every pull request. Build a public record of merged work that hiring managers can actually check. | Review one verified pull request, not ten. Each bounty goes to one contributor at a time, AI checks their PR against your brief and tests before you look, and payouts go out via PayPal only when you merge. |
 
 - **Earn vignette rows:** PR #512 merged +$400.00 · PR #498 merged +$150.00 · PR #476 merged +$900.00
 - **Grow bubble:** Nice fix. Add a test for the dropped-frame case and this meets the bounty.
