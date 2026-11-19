@@ -7,13 +7,18 @@ Single-page marketing site built with Astro (minimal template). Plain HTML and C
 Fairmerge: developers get paid the moment their code is merged, anywhere in the world.
 
 - Maintainers and startups post bounties on issues.
-- AI reviews the pull request against the bounty requirements, and can suggest a fair bounty price.
+- One contributor claims a bounty at a time (reserved for 72 hours, extendable by the maintainer). No racing: nobody does the same work for nothing, and maintainers review one PR, not ten.
+- AI reviews the pull request against the bounty requirements and runs the project's tests, and can suggest a fair bounty price.
 - Contributors can counter-offer.
+- Acceptance: AI review → project's tests → maintainer's merge. The merge triggers the payout.
 - Payouts go out via PayPal.
+- Fees (placeholder demo policy): posting is free; maintainers pay 10% on top when they merge; contributors keep 100% of the bounty.
 
 **Promise:** "Get paid the moment your code is merged, anywhere in the world."
 
-**Positioning on AI tools:** Contributors are welcome to use AI tools. Fairmerge pays for expertise: someone who truly understands the issue can ship a fix quickly, and the AI review checks whether the PR solves the issue, not how the code was written. Merges are fast when the fix is right.
+**Positioning on AI tools:** Contributors are welcome to use AI tools, including coding agents like Claude Code or Codex. Fairmerge pays for expertise and accountability: someone who truly understands the issue can ship a fix quickly, the contributor who claims a bounty is responsible for the PR, and the AI review checks whether the PR solves the issue, not how the code was written. Merges are fast when the fix is right.
+
+**Why it matters now:** AI makes code cheap, so the scarce things are trust that a PR is right, maintainer review time, and real domain expertise (robotics, space, AI agents). Fairmerge sells verified, merge-ready fixes to maintainers; the payout promise is how it attracts the experts. Copy for maintainers leads with less review time, not more PRs.
 
 ## Audiences
 
@@ -32,7 +37,7 @@ Each section is one component in `src/components/`, rendered in `src/pages/index
 | 4 | BountyBoard | `BountyBoard.astro` | `--canvas` | Filterable bounty cards with a counter-offer option (`id="bounties"`) |
 | 5 | Contributors | `Contributors.astro` | `--surface` | Top contributors with earnings, countries, merged PRs |
 | 6 | HowItWorks | `HowItWorks.astro` | `--payout-tint` (content in a white `--surface` panel) | Four steps (post a bounty → ship a PR → AI review → merged and paid) with an auto-advancing step list and a matching UI card. Not scroll-pinned |
-| 7 | FAQ | `FAQ.astro` | `--surface` (content in a large `--canvas` panel) | Sticky heading (desktop) beside an accordion: payouts, AI tools, AI review, disputes, pricing, countries, fees. Works without JS |
+| 7 | FAQ | `FAQ.astro` | `--surface` (content in a large `--canvas` panel) | Sticky heading (desktop) beside an accordion: payouts, AI tools, AI review, claims, disputes, pricing, countries, fees. Works without JS |
 | 8 | FinalCTA | `FinalCTA.astro` | `--surface` (content in a dark photo panel: optional `public/images/cta-photo.webp` under an `--ink` → `--path-ship-bg` overlay, white text) | Scroll-linked heading that lights up letter by letter; "Find a bounty" and "Post a bounty" (`id="get-started"`) |
 
 ### Site header
@@ -104,6 +109,24 @@ One shared set in `global.css`: `.btn` plus a variant (`--primary`, `--secondary
 - One deliberate page-load reveal on the hero only.
 - No fade-in on every section.
 - Deliberate exception: FinalCTA's scroll-linked heading and its one-time reveal of the supporting line and buttons (never hidden again; content stays focusable throughout).
+
+### Motion budget
+
+- The page's motion moments are fixed:
+  1. Hero load reveal
+  2. Paths pinned scroll
+  3. BountyBoard filters and counter-offer
+  4. Contributors carousel
+  5. HowItWorks auto-advance
+  6. FAQ accordion
+  7. FinalCTA scroll-linked heading
+- Do not add scroll-triggered fade-ins to other sections.
+- Do not add smooth-scroll or scroll-hijacking libraries (e.g. Lenis, Locomotive).
+- Any new motion must:
+  - have a clear job: explain, guide, or give feedback;
+  - animate only `transform` and `opacity`;
+  - use the shared easing curve (`--ease-out`) and the `--dur-*` tokens;
+  - respect `prefers-reduced-motion`.
 
 ### PayPal
 

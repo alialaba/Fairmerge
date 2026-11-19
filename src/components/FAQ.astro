@@ -3,7 +3,7 @@
 // Progressive enhancement: the server renders every answer visible. The script
 // then collapses all but the first, so if JavaScript fails nothing is hidden.
 
-// Fee and dispute details below are PLACEHOLDER DEMO POLICIES, not final terms.
+// Fee, claim-window and dispute details below are PLACEHOLDER DEMO POLICIES, not final terms.
 const faqs = [
   {
     q: 'How and when do I get paid?',
@@ -11,11 +11,15 @@ const faqs = [
   },
   {
     q: 'Can I use AI tools to write my PR?',
-    a: "Yes. The review checks whether your pull request solves the issue and meets the bounty's requirements. How you write the code is up to you. Understanding the problem is what gets you merged.",
+    a: "Yes, including coding agents like Claude Code or Codex. You claim the bounty, so you're accountable for the pull request. The review checks whether it solves the issue and meets the bounty's requirements, not how it was written. Understanding the problem is what gets you merged.",
   },
   {
     q: 'How does the AI review work?',
     a: "It reads your pull request against the bounty's requirements, runs the project's tests, and flags obvious security problems. If something is missing, it tells you exactly what. The maintainer always makes the final decision to merge.",
+  },
+  {
+    q: 'How many people can work on a bounty?',
+    a: "One at a time. When you claim a bounty, it's reserved for you for 72 hours, and the maintainer can extend it. Nobody does the same work for nothing, and maintainers review one pull request instead of ten. If a claim goes quiet, the bounty reopens.",
   },
   {
     q: "What if my PR isn't merged?",
@@ -35,7 +39,7 @@ const faqs = [
   },
   {
     q: 'What does it cost?',
-    a: 'Contributors keep the full bounty. Maintainers pay a small platform fee on top, shown before they post.',
+    a: 'Posting a bounty is free. Maintainers pay a 10% platform fee on top of the bounty, charged only when they merge. Contributors keep 100% of the bounty.',
   },
 ];
 ---
