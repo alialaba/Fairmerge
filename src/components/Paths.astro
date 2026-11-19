@@ -240,8 +240,11 @@ const total = String(paths.length).padStart(2, '0');
     let ticking = false;
     const update = () => {
       ticking = false;
-      const range = section.offsetHeight - window.innerHeight; // the scroll distance while pinned
-      const scrolled = -section.getBoundingClientRect().top;
+      // The pin sits just below the sticky site header, so the visible area
+      // (and the scroll distance while pinned) is the viewport minus the header.
+      const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
+      const range = section.offsetHeight - (window.innerHeight - header); // the scroll distance while pinned
+      const scrolled = header - section.getBoundingClientRect().top;
       const p = Math.min(Math.max(scrolled / range, 0), 1); // 0..1 across the whole section
       const scaled = p * count; // 0..3
       const i = Math.min(count - 1, Math.floor(scaled));
@@ -848,11 +851,12 @@ const total = String(paths.length).padStart(2, '0');
       transition: background-color 600ms ease;
     }
 
+    /* Pinned just below the sticky site header, filling the rest of the screen. */
     .is-pinned .paths__pin {
       position: sticky;
-      top: 0;
-      height: 100vh;
-      height: 100dvh;
+      top: var(--header-height);
+      height: calc(100vh - var(--header-height));
+      height: calc(100dvh - var(--header-height));
       display: flex;
       align-items: center;
       overflow: hidden;
